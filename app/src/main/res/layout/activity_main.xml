@@ -1,0 +1,38 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ImageButton
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <RelativeLayout
+        android:id="@+id/id_topview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#4400ff00">
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="256dp"
+            android:gravity="center"
+            android:text="软件介绍"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+
+    <TextView
+        android:id="@+id/id_indicator"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#ffffffff"></TextView>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/id_viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></android.support.v4.view.ViewPager>
+
+</LinearLayout>

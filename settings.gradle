@@ -1,0 +1,2 @@
+include ':app', ':library:common', ':library:bottom-navigation-bar', ':library:common-dialog-master'
+

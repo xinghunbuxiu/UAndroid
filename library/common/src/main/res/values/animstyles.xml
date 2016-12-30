@@ -1,0 +1,69 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="into_right_left">
+        <item name="android:activityOpenEnterAnimation">@anim/activityrightinto</item>
+        <!-- 打开activity，设置activity进入展示动画 -->
+        <item name="android:activityOpenExitAnimation">@anim/activityleftout</item>
+        <!-- 打开activity，设置上个activity离开动画 -->
+    </style>
+
+    <style name="out_right_left">
+        <item name="android:activityCloseEnterAnimation">@anim/activityleftinto</item>
+        <!-- 结束activity，设置上个activity进入动画 -->
+        <item name="android:activityCloseExitAnimation">@anim/activityrightout</item>
+        <!-- 结束activity，设置当前activity离开动画 -->
+    </style>
+
+    <style name="into_up_down">
+        <item name="android:activityOpenEnterAnimation">@anim/activityupinto</item>
+        <!-- 打开activity，设置activity进入展示动画 -->
+        <item name="android:activityOpenExitAnimation">@anim/activitydownout</item>
+        <!-- 打开activity，设置上个activity离开动画 -->
+    </style>
+
+    <style name="out_up_down">
+        <item name="android:activityCloseEnterAnimation">@anim/activitydowninto</item>
+        <!-- 结束activity，设置上个activity进入动画 -->
+        <item name="android:activityCloseExitAnimation">@anim/activityupout</item>
+        <!-- 结束activity，设置当前activity离开动画 -->
+    </style>
+
+    <style name="right_left">
+        <item name="android:activityOpenEnterAnimation">@anim/activityrightinto</item>
+        <!-- 打开activity，设置activity进入展示动画 -->
+        <item name="android:activityOpenExitAnimation">@anim/activityleftout</item>
+        <!-- 打开activity，设置上个activity离开动画 -->
+        <item name="android:activityCloseEnterAnimation">@anim/activityleftinto</item>
+        <!-- 结束activity，设置上个activity进入动画 -->
+        <item name="android:activityCloseExitAnimation">@anim/activityrightout</item>
+        <!-- 结束activity，设置当前activity离开动画 -->
+    </style>
+
+    <style name="up_down">
+        <item name="android:activityOpenEnterAnimation">@anim/activityupinto</item>
+        <!-- 打开activity，设置activity进入展示动画 -->
+        <item name="android:activityOpenExitAnimation">@anim/activitydownout</item>
+        <!-- 打开activity，设置上个activity离开动画 -->
+        <item name="android:activityCloseEnterAnimation">@anim/activitydowninto</item>
+        <!-- 结束activity，设置上个activity进入动画 -->
+        <item name="android:activityCloseExitAnimation">@anim/activityupout</item>
+        <!-- 结束activity，设置当前activity离开动画 -->
+    </style>
+
+    <style name="down_up">
+        <item name="android:activityOpenEnterAnimation">@anim/activitydowninto</item>
+        <!-- 打开activity，设置activity进入展示动画 -->
+        <item name="android:activityOpenExitAnimation">@anim/activityupout</item>
+        <!-- 打开activity，设置上个activity离开动画 -->
+        <item name="android:activityCloseEnterAnimation">@anim/activityupinto</item>
+        <!-- 结束activity，设置上个activity进入动画 -->
+        <item name="android:activityCloseExitAnimation">@anim/activitydownout</item>
+        <!-- 结束activity，设置当前activity离开动画 -->
+    </style>
+
+    <style name="PopupAnimation" parent="@android:style/Animation">
+        <item name="android:windowEnterAnimation">@anim/pop_enter</item>
+        <item name="android:windowExitAnimation">@anim/pop_exit</item>
+    </style>
+
+</resources>

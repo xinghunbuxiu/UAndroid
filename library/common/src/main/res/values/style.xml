@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--普通dialog-->
+    <style name="CustomProgressDialog" parent="@style/CustomDialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <style name="CustomDialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+        <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
+    </style>
+    <!--  loading 样式
+ -->
+    -
+
+    <style name="loadstyle" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@drawable/iosstyle_halftransparent_bg</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
+    <!--  没有滚动的listView 样式
+     -->
+    -
+
+    <style name="noscrolllistview_style" parent="@style/MatchWrap">
+        <item name="android:divider">@color/color_view_line</item>
+        <item name="android:dividerHeight">0.5dp</item>
+        <item name="android:background">@color/color_sys_bg</item>
+        <item name="android:cacheColorHint">@android:color/transparent</item>
+        <item name="android:listSelector">@android:color/transparent</item>
+        <item name="android:scrollbars">none</item>
+    </style>
+    -<!--  分割线的style-->
+    <style name="color_view_line">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/color_view_line</item>
+    </style>
+
+</resources>
