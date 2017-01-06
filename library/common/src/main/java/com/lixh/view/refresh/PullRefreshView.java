@@ -8,7 +8,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 
 import com.lixh.utils.ULog;
 import com.lixh.view.refresh.ImplPull.Direction;
@@ -21,7 +20,7 @@ import com.lixh.view.refresh.ImplPull.StateType;
  * des
  */
 
-public class PullRefreshView extends RelativeLayout {
+public class PullRefreshView extends ViewGroup {
     protected FooterView mFooter;
     protected HeaderView mHeader;
     protected View mChildView;
@@ -82,6 +81,12 @@ public class PullRefreshView extends RelativeLayout {
         init(context, attrs, defStyleAttr);
     }
 
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        // 计算出所有的childView的宽和高
+        measureChildren(widthMeasureSpec, heightMeasureSpec);
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
 
     @Override
     protected void onAttachedToWindow() {
@@ -98,6 +103,7 @@ public class PullRefreshView extends RelativeLayout {
             footView = new CustomFootView(context);
             addFootView(footView);
         }
+
     }
 
     private void init(Context context, AttributeSet attrs, int defstyleAttr) {
@@ -228,7 +234,9 @@ public class PullRefreshView extends RelativeLayout {
             scrollState = ScrollState.NONE;
             scrollTo(0, tempHeight);
         } else {
+
             scrollTo(0, 0);
+
         }
 
 
@@ -326,7 +334,6 @@ public class PullRefreshView extends RelativeLayout {
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        super.onLayout(changed, l, t, r, b);
         if (mHeader != null) {
             mHeader.getView().layout(0, 0 - mHeader.getHeight(), mChildView.getRight(), 0);
         }
@@ -334,7 +341,7 @@ public class PullRefreshView extends RelativeLayout {
             mChildView.layout(0, 0, r, mChildView.getMeasuredHeight());
         }
         if (mFooter != null) {
-            mFooter.getView().layout(0, b, mChildView.getRight(), mFooter.getHeight() + b);
+            mFooter.getView().layout(0, b, r, mFooter.getHeight() + b);
         }
     }
 

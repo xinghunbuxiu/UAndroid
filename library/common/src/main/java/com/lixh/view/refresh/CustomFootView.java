@@ -41,7 +41,7 @@ public class CustomFootView extends PullRefreshView.FooterView {
     }
 
     @Override
-    public void onScrollChange(PullRefreshView.StateType state) {
+    public void onScrollChange(StateType state) {
         switch (state) {
             case NONE:
                 ObjectAnimator.clearAllAnimations();
