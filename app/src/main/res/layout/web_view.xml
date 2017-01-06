@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.lixh.view.refresh.PullRefreshView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/refresh"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/refresh"
     android:fitsSystemWindows="true">
 
-    <ListView
-        android:id="@+id/list"
+    <WebView
+        android:id="@+id/web_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></ListView>
+        android:layout_height="match_parent"></WebView>
 </com.lixh.view.refresh.PullRefreshView>

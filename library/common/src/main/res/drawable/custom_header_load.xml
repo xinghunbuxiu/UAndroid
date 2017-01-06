@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<level-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:drawable="@mipmap/bga_refresh_loading01"
+        android:maxLevel="0" />
+    <item
+        android:drawable="@mipmap/bga_refresh_loading02"
+        android:maxLevel="1" />
+    <item
+        android:drawable="@mipmap/bga_refresh_loading03"
+        android:maxLevel="2" />
+    <item
+        android:drawable="@mipmap/bga_refresh_loading04"
+        android:maxLevel="3" />
+    <item
+        android:drawable="@mipmap/bga_refresh_loading05"
+        android:maxLevel="4" />
+    <item
+        android:drawable="@mipmap/bga_refresh_loading06"
+        android:maxLevel="5" />
+    <item
+        android:drawable="@mipmap/bga_refresh_loading07"
+        android:maxLevel="6" />
+    <item
+        android:drawable="@mipmap/bga_refresh_loading08"
+        android:maxLevel="7" />
+    <item
+        android:drawable="@mipmap/bga_refresh_loading09"
+        android:maxLevel="8" />
+    <item
+        android:drawable="@mipmap/bga_refresh_loading10"
+        android:maxLevel="9" />
+    <item
+        android:drawable="@mipmap/bga_refresh_loading11"
+        android:maxLevel="10" />
+    <item
+        android:drawable="@mipmap/bga_refresh_loading12"
+        android:maxLevel="11" />
+
+</level-list>
