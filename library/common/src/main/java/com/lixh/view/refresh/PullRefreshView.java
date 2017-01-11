@@ -2,12 +2,15 @@ package com.lixh.view.refresh;
 
 import android.content.Context;
 import android.support.annotation.IdRes;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.ListView;
 
 import com.lixh.utils.ULog;
 import com.lixh.view.refresh.ImplPull.Direction;
@@ -152,6 +155,8 @@ public class PullRefreshView extends ViewGroup {
         return dispatchTouchEvent(newEvent);
     }
 
+    public int oldPosition;
+    int page = 0;
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         ULog.e("onInterceptTouchEvent");
@@ -178,6 +183,13 @@ public class PullRefreshView extends ViewGroup {
                     } else if (dy < 0 && !CanPullUtil.canChildScrollDown(mChildView) && isLoadMore) {
                         if (mFooter != null) {
                             scrollState = ScrollState.BOTTOM;
+                            if (mChildView instanceof AbsListView) {
+                                int position = ((ListView) mChildView).getAdapter().getCount();
+                                page = oldPosition % position;
+                                if (position != oldPosition) {
+                                    oldPosition = position;
+                                }
+                            }
                             setImplPull(mFooter);
                         }
                         return true;
@@ -231,11 +243,17 @@ public class PullRefreshView extends ViewGroup {
                 tempHeight = implPull.getHeight();
                 updateLoadMoreing();
             }
-            scrollState = ScrollState.NONE;
-            scrollTo(0, tempHeight);
-        } else {
 
-            scrollTo(0, 0);
+            super.scrollTo(0, tempHeight);
+        } else {
+            if (scrollState == ScrollState.BOTTOM) {
+                if (mChildView instanceof AbsListView) {
+                    ((ListView) mChildView).smoothScrollBy(getScrollY(),0);
+                }else if (mChildView instanceof RecyclerView){
+                    ((RecyclerView) mChildView).scrollBy(0,getScrollY());
+                }
+            }
+            super.scrollTo(0, 0);
 
         }
 

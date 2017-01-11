@@ -22,6 +22,7 @@ public class FirstFragment extends BaseFragment {
     @Bind(R.id.refresh)
     PullRefreshView refresh;
     List<Integer> list = new ArrayList<>();
+    int position = 0;
     public static FirstFragment newInstance(String param1) {
         FirstFragment fragment = new FirstFragment();
         Bundle args = new Bundle();
@@ -29,15 +30,17 @@ public class FirstFragment extends BaseFragment {
         return fragment;
     }
 
+    CommonAdapter adapter;
     @Override
     protected void init(Bundle savedInstanceState) {
         for (int i = 0; i < 15; i++) {
             list.add(R.mipmap.ic_launcher);
         }
 
-        CommonAdapter adapter = new CommonAdapter<Integer>(getActivity(), R.layout.item_ciew, list) {
+        adapter = new CommonAdapter<Integer>(getActivity(), R.layout.item_ciew, list) {
             @Override
             public void convert(ViewHolder holder, Integer o) {
+                holder.setText(R.id.text,holder.getmPosition()+"");
                 holder.setImageResource(R.id.iv, o);
             }
         };
@@ -59,6 +62,11 @@ public class FirstFragment extends BaseFragment {
                 refresh.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+
+                        for (int i = 0; i < 15; i++) {
+                            list.add(R.mipmap.ic_launcher);
+                        }
+                        adapter.notifyDataSetChanged();
                         refresh.finishLoadMore();
                     }
                 }, 400);

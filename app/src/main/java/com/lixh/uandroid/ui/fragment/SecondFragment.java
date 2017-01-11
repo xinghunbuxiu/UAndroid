@@ -40,7 +40,7 @@ public class SecondFragment extends BaseFragment {
         recycle.setLayoutManager(gridLayoutManager);
         LinearLayoutDecoration layoutDecoration = new LinearLayoutDecoration(activity, LinearLayoutManager.VERTICAL, 10, R.color.color_sys_bg);
         recycle.addItemDecoration(layoutDecoration);
-        CommonAdapter adapter = new CommonAdapter<Integer>(getActivity(), R.layout.item_ciew, list) {
+        final CommonAdapter adapter = new CommonAdapter<Integer>(getActivity(), R.layout.item_ciew, list) {
             @Override
             public void convert(ViewHolder holder, Integer o) {
                 holder.setImageResource(R.id.iv, o);
@@ -52,6 +52,7 @@ public class SecondFragment extends BaseFragment {
                 refresh.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+
                         refresh.finishRefresh();
                     }
                 }, 400);
@@ -64,6 +65,10 @@ public class SecondFragment extends BaseFragment {
                 refresh.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        for (int i = 0; i < 15; i++) {
+                            list.add(R.mipmap.ic_launcher);
+                        }
+                        adapter.notifyDataSetChanged();
                         refresh.finishLoadMore();
                     }
                 }, 400);

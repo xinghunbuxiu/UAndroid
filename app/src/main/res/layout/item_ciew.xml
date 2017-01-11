@@ -10,4 +10,12 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:src="@mipmap/ic_launcher" />
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+
+        android:text="1" />
 </RelativeLayout>
