@@ -4,12 +4,16 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.lixh.base.BaseFragment;
 import com.lixh.base.adapter.ViewHolder;
 import com.lixh.base.adapter.recyclerview.CommonAdapter;
+import com.lixh.base.adapter.recyclerview.OnItemClickListener;
 import com.lixh.uandroid.R;
 import com.lixh.uandroid.ui.LinearLayoutDecoration;
+import com.lixh.uandroid.ui.Main2Activity;
 import com.lixh.uandroid.view.ScrollNavLayout;
 
 import java.util.ArrayList;
@@ -63,6 +67,17 @@ public class HomeFragment extends BaseFragment {
                 holder.setImageResource(R.id.iv, o);
             }
         };
+        adapter1.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(ViewGroup parent, View view, int position) {
+                intent.toActivity(Main2Activity.class);
+            }
+
+            @Override
+            public boolean onItemLongClick(ViewGroup parent, View view, int position) {
+                return false;
+            }
+        });
         recycle1.setAdapter(adapter1);
         recycle.setAdapter(adapter);
 

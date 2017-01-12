@@ -24,7 +24,7 @@
                 android:text="textgggggg" />
         </RelativeLayout>
     </FrameLayout>
-    <!-- TODO: Update blank fragment layout -->
+    <!-- TODO: Update blank fragment scrolllayout -->
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycle"
         android:layout_width="match_parent"

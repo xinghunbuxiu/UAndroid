@@ -16,6 +16,7 @@ import com.lixh.utils.Exit;
 import com.lixh.utils.LoadingTip;
 import com.lixh.utils.StatusBarCompat;
 import com.lixh.utils.TUtil;
+import com.lixh.utils.UIntent;
 import com.lixh.view.LoadView;
 import com.lixh.view.UToolBar;
 
@@ -37,13 +38,13 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         bind();
     }
 
-    UToolBar toolBar;
-
+    public UToolBar toolBar;
+    public UIntent intent;
     public abstract int getLayoutId();
-
-    public abstract boolean initTitle();
+    public abstract boolean initTitle(UToolBar toolBar);
     public void bind() {
         mPresenter = TUtil.getT(this, 0);
+        intent = new UIntent(this);
         // 把actvity放到application栈中管理
         AppManager.getAppManager().addActivity(this);
     }
@@ -55,14 +56,18 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
     public T getPresenter() {
         return (T) mPresenter.getPresenter();
     }
+
+    public boolean hasToolBar() {
+        return true;
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         lifecycleSubject.onNext(LifeEvent.CREATE);
         super.onCreate(savedInstanceState);
         doBeforeSetContentView();
-        layout = new LoadView.Builder(this).setBottomView(getLayoutId()).build();
+        layout = new LoadView.Builder(this).setBottomView(getLayoutId()).setToolBar(hasToolBar()).build();
         tip = layout.getEmptyView();
-        setContentView(getLayoutId());
+        setContentView(layout.getRootView());
         ButterKnife.bind(this);
         initTitleBar();
         init(savedInstanceState);
@@ -78,9 +83,9 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         toolBar = layout.getToolbar();
         if (toolBar != null) {
             toolBar.setDisplayShowTitleEnabled(false);
-            toolBar.setDisplayHomeAsUpEnabled(!initTitle());
+            toolBar.setDisplayHomeAsUpEnabled(!initTitle(toolBar));
             if (mPresenter != null) {
-                mPresenter.setToolBar(layout.getToolbar());
+                mPresenter.setToolBar(toolBar);
         }
         }
     }

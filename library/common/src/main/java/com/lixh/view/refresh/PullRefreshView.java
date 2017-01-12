@@ -132,13 +132,13 @@ public class PullRefreshView extends ViewGroup {
             case MotionEvent.ACTION_MOVE:
                 float dy = currentTouchY - mLastTouchY;
                 mLastTouchY = currentTouchY;
-                direction = dy > 0 ? Direction.DOWN : Direction.UP;
                 if (scrollState == ScrollState.TOP || scrollState == ScrollState.BOTTOM) {
                     if (isFinish) {
                         isFinish = false;
                         return resetDispatchTouchEvent(ev);
                     }
                 }
+                direction = dy > 0 ? Direction.DOWN : Direction.UP;
                 break;
         }
         return super.
@@ -151,12 +151,9 @@ public class PullRefreshView extends ViewGroup {
         ev.setAction(MotionEvent.ACTION_CANCEL);
         dispatchTouchEvent(ev);
         newEvent.setAction(MotionEvent.ACTION_DOWN);
-        direction = Direction.NONE;
         return dispatchTouchEvent(newEvent);
     }
 
-    public int oldPosition;
-    int page = 0;
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         ULog.e("onInterceptTouchEvent");
@@ -183,13 +180,6 @@ public class PullRefreshView extends ViewGroup {
                     } else if (dy < 0 && !CanPullUtil.canChildScrollDown(mChildView) && isLoadMore) {
                         if (mFooter != null) {
                             scrollState = ScrollState.BOTTOM;
-                            if (mChildView instanceof AbsListView) {
-                                int position = ((ListView) mChildView).getAdapter().getCount();
-                                page = oldPosition % position;
-                                if (position != oldPosition) {
-                                    oldPosition = position;
-                                }
-                            }
                             setImplPull(mFooter);
                         }
                         return true;
@@ -204,9 +194,6 @@ public class PullRefreshView extends ViewGroup {
     @Override
     public boolean onTouchEvent(MotionEvent e) {
         ULog.e("onTouchEvent");
-        if (isRefreshing) {
-            return super.onTouchEvent(e);
-        }
         mMaxHeight = (int) (implPull.getHeight() * springBack);
         switch (e.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -217,6 +204,9 @@ public class PullRefreshView extends ViewGroup {
                 mCurrentY = e.getY();
                 float dy = mCurrentY - mLastY;
                 if (scrollState == ScrollState.TOP || scrollState == ScrollState.BOTTOM) {
+                    setStateType(StateType.PULL);
+                    scrollBy(0, (int) -dy);
+                } else if (isRefreshing||isLoadMoreing){
                     setStateType(StateType.PULL);
                     scrollBy(0, (int) -dy);
                 }

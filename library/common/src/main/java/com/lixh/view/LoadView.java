@@ -3,7 +3,6 @@ package com.lixh.view;
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.LayoutRes;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,6 +53,9 @@ public class LoadView {
 
     private void initLayout() {
         toolbar = (UToolBar) RootView.findViewById(R.id.toolbar);
+        if (!builder.hasToolbar) {
+            RootView.removeView(toolbar);
+        }
     }
 
 
@@ -93,10 +95,11 @@ public class LoadView {
     public static class Builder {
 
         int mBottomView;
-
+        boolean hasToolbar;
         public Builder(Activity context) {
             mContext = context;
             mBottomView = -1;
+            hasToolbar=true;
         }
 
         public int getBottomView() {
@@ -110,6 +113,11 @@ public class LoadView {
 
         public LoadView build() {
             return new LoadView(this);
+        }
+
+        public Builder setToolBar(boolean hasToolbar) {
+            this.hasToolbar = hasToolbar;
+            return this;
         }
     }
 

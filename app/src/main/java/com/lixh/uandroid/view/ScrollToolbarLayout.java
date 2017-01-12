@@ -9,14 +9,15 @@ import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.OverScroller;
 
 import com.lixh.uandroid.R;
-import com.lixh.utils.ULog;
-import com.nineoldandroids.view.ViewHelper;
 
 /**
  * 总系数为1f
@@ -25,7 +26,7 @@ import com.nineoldandroids.view.ViewHelper;
  * 从下往上
  */
 
-public class ScrollNavLayout extends LinearLayout implements NestedScrollingParent {
+public class ScrollToolbarLayout extends LinearLayout implements NestedScrollingParent {
     private static final String TAG = "ScrollNavLayout";
     View target;
     Direction direction = Direction.NONE;
@@ -35,7 +36,7 @@ public class ScrollNavLayout extends LinearLayout implements NestedScrollingPare
     boolean isEnabled = true;//是否允许滑动
     int collapseOffset = 0; //阻尼的高度
     int lineHeight = 0;//当前1行的高度
-
+    private VelocityTracker mVelocityTracker;
     public enum Direction {
         DOWN, UP, NONE
     }
@@ -47,6 +48,7 @@ public class ScrollNavLayout extends LinearLayout implements NestedScrollingPare
         COLLAPSED(0),
         SILIDING(1),
         EXPANDED(2);
+
         private int asInt;
 
         PanelState(int i) {
@@ -72,21 +74,6 @@ public class ScrollNavLayout extends LinearLayout implements NestedScrollingPare
             return asInt;
         }
     }
-
-    public interface PanelListener {
-        void onPanelStateChanged(PanelState panelState);
-    }
-
-    /**
-     * Setup the drag listener.
-     *
-     * @return SetupWizard
-     */
-    public ScrollNavLayout setPanelListener(PanelListener panelListener) {
-        this.panelListener = panelListener;
-        return this;
-    }
-
     /**
      * 设置当前的行数
      *
@@ -105,11 +92,24 @@ public class ScrollNavLayout extends LinearLayout implements NestedScrollingPare
         location = position;
         scale = location * scale;
     }
+    public interface PanelListener {
+        void onPanelStateChanged(PanelState panelState);
+    }
+
+    /**
+     * Setup the drag listener.
+     *
+     * @return SetupWizard
+     */
+    public ScrollToolbarLayout setPanelListener(PanelListener panelListener) {
+        this.panelListener = panelListener;
+        return this;
+    }
 
     //关闭
     public void closeTopView() {
         panelState = PanelState.COLLAPSED;
-        mScroller.startScroll(0, getScrollY(), 0, mTopViewHeight - collapseOffset, 400);
+        mScroller.startScroll(0, getScrollY(), 0, mTopViewHeight, 400);
         invalidate();
 
     }
@@ -173,7 +173,6 @@ public class ScrollNavLayout extends LinearLayout implements NestedScrollingPare
 
     @Override
     public void onStopNestedScroll(View target) {
-        stopScroll();
     }
 
 
@@ -189,7 +188,7 @@ public class ScrollNavLayout extends LinearLayout implements NestedScrollingPare
             //记录方向是向上滑动
             direction = Direction.UP;
             //记录方向是向上滑动
-            if (getScrollY() >= mTopViewHeight - collapseOffset) {
+            if (getScrollY() >= mTopViewHeight) {
                 isEnabled = false;
             }
         } else {
@@ -217,23 +216,85 @@ public class ScrollNavLayout extends LinearLayout implements NestedScrollingPare
     @Override
     public boolean onNestedPreFling(View target, float velocityX, float velocityY) {
         //down - //up+
-        if (getScrollY() >= mTopViewHeight - collapseOffset) return false;
+        if (getScrollY() >= mTopViewHeight) return false;
         fling((int) velocityY);
         return true;
     }
 
-
-    public void stopScroll() {
-        ULog.e(getScrollY() + "111111" + panelState.toInt());
-        ULog.e(lineHeight / 2 * location + "");
-        if (direction == Direction.NONE || direction == Direction.UP && panelState == PanelState.COLLAPSED || direction == Direction.DOWN && panelState == PanelState.EXPANDED)
-            return;
-        if (getScrollY() < lineHeight / 2 * location) {
-            openTopView();
-        } else {
-            closeTopView();
+    private void initVelocityTrackerIfNotExists() {
+        if (mVelocityTracker == null) {
+            mVelocityTracker = VelocityTracker.obtain();
         }
-        invalidate();
+    }
+
+    private void recycleVelocityTracker() {
+        if (mVelocityTracker != null) {
+            mVelocityTracker.recycle();
+            mVelocityTracker = null;
+        }
+    }
+
+    float mLastY = 0;
+    boolean mDragging = false;
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        initVelocityTrackerIfNotExists();
+        int action = event.getActionMasked();
+        float y = event.getY();
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+                if (!mScroller.isFinished())
+                    mScroller.abortAnimation();//关闭滚动动画
+                //手指每次按下，清空VelocityTracker的状态
+                mVelocityTracker.clear();
+                //为VelocityTracker添加MotionEvent
+                mVelocityTracker.addMovement(event);
+                mLastY = y;
+                return true;
+            case MotionEvent.ACTION_MOVE:
+                /**
+                 * size=4 表示 拖动的距离为屏幕的高度的1/4
+                 */
+                float dy = y - mLastY;
+                if (!mDragging && Math.abs(dy) > mTouchSlop) {
+                    mDragging = true;
+                }
+
+                if (mDragging) {
+                    //跟随手势移动，用来缩放headerView
+                    if (dy > 0) {
+                        //记录方向是向下滑动
+                        direction = Direction.DOWN;
+                    } else {
+                        //记录方向是向上滑动
+                        direction = Direction.UP;
+                    }
+                    scrollBy(0, (int) -dy);
+                }
+                mLastY = y;
+
+                break;
+            case MotionEvent.ACTION_CANCEL:
+                mDragging = false;
+                if (!mScroller.isFinished()) {
+                    mScroller.abortAnimation();
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+                mDragging = false;
+                mVelocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
+                int velocityY = (int) mVelocityTracker.getYVelocity();
+
+                if (Math.abs(velocityY) > mMinimumVelocity) {
+                    fling(-velocityY);
+                }
+                recycleVelocityTracker();
+                break;
+        }
+
+        return super.onTouchEvent(event);
+
     }
 
     @Override
@@ -247,19 +308,21 @@ public class ScrollNavLayout extends LinearLayout implements NestedScrollingPare
     private OverScroller mScroller;
     private int topViewId = -1;
     private int bottomViewId = -1;
-    private int maxHeight = 0;
-    public ScrollNavLayout(Context context, AttributeSet attrs) {
+    private int mTouchSlop;
+    private int mMaximumVelocity, mMinimumVelocity;
+    public ScrollToolbarLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         setOrientation(VERTICAL);
         TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.StickyNavLayout);
         topViewId = a.getResourceId(R.styleable.StickyNavLayout_topView, -1);
         bottomViewId = a.getResourceId(R.styleable.StickyNavLayout_bottomView, -1);
         mScroller = new OverScroller(context);//内置滚动
-    }
+        mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();//判断是否点击还是拖拽
+        mMaximumVelocity = ViewConfiguration.get(context)
+                .getScaledMaximumFlingVelocity();//得到滑动的最大速度, 以像素/每秒来进行计算
+        mMinimumVelocity = ViewConfiguration.get(context)//得到滑动的最小速度, 以像素/每秒来进行计算
+                .getScaledMinimumFlingVelocity();
 
-
-    public void setCollapseOffset(int collapseOffset) {
-        this.collapseOffset = collapseOffset;
     }
 
     /**
@@ -316,8 +379,8 @@ public class ScrollNavLayout extends LinearLayout implements NestedScrollingPare
         if (!isInEditMode()) {
             mTop.measure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
             ViewGroup.LayoutParams params = mBottom.getLayoutParams();
-            params.height = getMeasuredHeight()+200;
-            setMeasuredDimension(getMeasuredWidth(), mTop.getMeasuredHeight() + mBottom.getMeasuredHeight()+200);
+            params.height = getMeasuredHeight();
+            setMeasuredDimension(getMeasuredWidth(), mTop.getMeasuredHeight() + mBottom.getMeasuredHeight());
         }
 
     }
@@ -328,11 +391,10 @@ public class ScrollNavLayout extends LinearLayout implements NestedScrollingPare
         mTopViewHeight = mTop.getMeasuredHeight();
         lineHeight = mTopViewHeight / line;
         collapseOffset = lineHeight;
-
     }
 
     public interface OnScrollListener {
-        void onScroll(int currentX, int currentY);
+        void onScroll(int x, int y);
 
     }
 
@@ -356,26 +418,24 @@ public class ScrollNavLayout extends LinearLayout implements NestedScrollingPare
     @Override
     public void scrollTo(int x, int y) {
         panelState = PanelState.SILIDING;
-        maxHeight=mTopViewHeight - collapseOffset;
         if (y < 0) {
             y = 0;
         }
-        if (y >= maxHeight) {
-            y = maxHeight;
+        if (y >= mTopViewHeight) {
+            y = mTopViewHeight ;
         }
 
-        if (getScrollY() ==maxHeight) {
+        if (getScrollY() == mTopViewHeight) {
             panelState = PanelState.COLLAPSED;
         }
         if (getScrollY() <= 0) {
             panelState = PanelState.EXPANDED;
 
         }
-
         if (onScrollListener != null) {
             onScrollListener.onScroll(x, y);
         }
-        ViewHelper.setTranslationY(mTop, y * scale);
+
         if (y != getScrollY()) {
             super.scrollTo(x, y);
         }

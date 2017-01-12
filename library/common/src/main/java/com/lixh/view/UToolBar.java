@@ -82,12 +82,13 @@ public class UToolBar extends Toolbar {
     /**
      * tittle的显示必须为 false 不然次不管用
      *
+     *
      * @param isEnabled
      * @return
      */
     public UToolBar setDisplayShowTitleEnabled(boolean isEnabled) {
-        (((AppCompatActivity) getContext())).setSupportActionBar(this);
-        (((AppCompatActivity) getContext())).getSupportActionBar().setDisplayShowTitleEnabled(isEnabled);
+        ((AppCompatActivity) getContext()).setSupportActionBar(this);
+        (((AppCompatActivity)getContext())).getSupportActionBar().setDisplayShowTitleEnabled(isEnabled);
         return this;
     }
 

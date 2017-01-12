@@ -1,26 +1,27 @@
-<com.lixh.uandroid.view.ScrollNavLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/navLayout"
+<com.lixh.uandroid.view.ScrollToolbarLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     android:orientation="vertical">
 
-    <FrameLayout
+    <RelativeLayout
         android:id="@+id/top_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="#0093fe">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycle1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/blue" />
-    </FrameLayout>
+            android:background="@color/white" />
+    </RelativeLayout>
+
+
     <!-- TODO: Update blank fragment scrolllayout -->
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/gray" />
-
-</com.lixh.uandroid.view.ScrollNavLayout>
+        android:background="@color/white" />
+</com.lixh.uandroid.view.ScrollToolbarLayout>

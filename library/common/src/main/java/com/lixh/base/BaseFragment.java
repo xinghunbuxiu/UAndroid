@@ -13,6 +13,7 @@ import com.lixh.presenter.BasePresenter;
 import com.lixh.rxlife.LifeEvent;
 import com.lixh.utils.LoadingTip;
 import com.lixh.utils.TUtil;
+import com.lixh.utils.UIntent;
 import com.lixh.view.LoadView;
 import com.lixh.view.UToolBar;
 
@@ -26,7 +27,7 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment {
     public LoadView layout;
     public UToolBar toolBar;
     public View mContentView;
-
+    public  UIntent intent;
     protected abstract void init(Bundle savedInstanceState);
 
     public BaseFragment() {
@@ -44,7 +45,8 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment {
         lifecycleSubject.onNext(LifeEvent.ATTACH);
         super.onAttach(context);
         this.activity = (Activity) context;
-        layout = new LoadView.Builder(activity).setBottomView(getLayoutId()).build();
+        layout = new LoadView.Builder(activity).setBottomView(getLayoutId()).setToolBar(hasToolBar()).build();
+        intent = new UIntent(activity);
         tip = layout.getEmptyView();
     }
 
@@ -54,7 +56,9 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment {
         super.onCreate(savedInstanceState);
 
     }
-
+    public boolean hasToolBar() {
+        return true;
+    }
     public abstract boolean initTitle();
     public abstract int getLayoutId();
 

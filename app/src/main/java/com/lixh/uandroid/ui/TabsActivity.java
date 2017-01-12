@@ -16,6 +16,7 @@ import com.lixh.uandroid.ui.fragment.FourFragment;
 import com.lixh.uandroid.ui.fragment.HomeFragment;
 import com.lixh.uandroid.ui.fragment.SecondFragment;
 import com.lixh.uandroid.ui.fragment.ThreeFragment;
+import com.lixh.view.UToolBar;
 
 import java.util.ArrayList;
 
@@ -35,6 +36,11 @@ public class TabsActivity extends BaseActivity<TabPresenter> implements BottomNa
     private ArrayList<Fragment> fragments;
 
     @Override
+    public boolean hasToolBar() {
+        return false;
+    }
+
+    @Override
     protected void init(Bundle savedInstanceState) {
         initBottomBar();
     }
@@ -45,7 +51,7 @@ public class TabsActivity extends BaseActivity<TabPresenter> implements BottomNa
     }
 
     @Override
-    public boolean initTitle() {
+    public boolean initTitle(UToolBar toolBar) {
         return false;
     }
 
