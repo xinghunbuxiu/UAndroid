@@ -39,7 +39,10 @@ public class TabsActivity extends BaseActivity<TabPresenter> implements BottomNa
     public boolean hasToolBar() {
         return false;
     }
-
+    @Override
+    public boolean initTitle(UToolBar toolBar) {
+        return false;
+    }
     @Override
     protected void init(Bundle savedInstanceState) {
         initBottomBar();
@@ -50,10 +53,7 @@ public class TabsActivity extends BaseActivity<TabPresenter> implements BottomNa
         return R.layout.activity_tab;
     }
 
-    @Override
-    public boolean initTitle(UToolBar toolBar) {
-        return false;
-    }
+
 
     public void initBottomBar() {
         bottomNavigationBar.setMode(BottomNavigationBar.MODE_FIXED);

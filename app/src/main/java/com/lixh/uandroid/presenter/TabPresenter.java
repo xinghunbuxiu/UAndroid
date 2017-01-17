@@ -20,7 +20,7 @@ public class TabPresenter extends BasePresenter {
     Result<MainModel> m = new Result<MainModel>() {
 
         @Override
-        public void onSuccess(MainModel t, int action) {
+        public void onSuccess(MainModel t) {
 
         }
     };

@@ -66,7 +66,7 @@ public abstract class BasePresenter {
         }
 
         @Override
-        public void onFail(String msg, int action) {
+        public void onFail(String msg) {
 
         }
 

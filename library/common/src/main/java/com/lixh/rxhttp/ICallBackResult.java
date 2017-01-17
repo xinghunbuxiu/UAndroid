@@ -9,9 +9,9 @@ package com.lixh.rxhttp;
 public interface ICallBackResult<E> {
     void onLoad();
 
-    void onSuccess(E t, int action);
+    void onSuccess(E t);
 
-    void onFail(String msg, int action);
+    void onFail(String msg);
 
     void onLoadFinish();
 }

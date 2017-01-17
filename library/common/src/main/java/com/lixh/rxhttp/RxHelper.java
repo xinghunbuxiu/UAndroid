@@ -70,22 +70,14 @@ public class RxHelper {
 
     }
 
-    /**
-     * @param fromNetwork 默认action=0
-     * @param m
-     */
-    public <T> void createSubscriber(Observable fromNetwork, BasePresenter.Result<T> m) {
-        createSubscriber(fromNetwork, m, 0);
-    }
 
     /**
      * T
      *
      * @param fromNetwork
      * @param result
-     * @param action
      */
-    public <T> void createSubscriber(Observable fromNetwork, final BasePresenter.Result<T> result, final int action) {
+    public <T> void createSubscriber(Observable fromNetwork, final BasePresenter.Result<T> result) {
         {
             //数据预处理
             Observable observable = fromNetwork.compose(handleResult(getEvent(), lifeEvent));
@@ -94,12 +86,12 @@ public class RxHelper {
 
                         @Override
                         protected void _onNext(T data) {
-                            result.onSuccess(data,action);
+                            result.onSuccess(data);
                         }
 
                         @Override
                         protected void _onError(String message) {
-                            result.onFail(message,action);
+                            result.onFail(message);
                         }
 
                         @Override
