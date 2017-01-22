@@ -12,7 +12,7 @@ import com.lixh.R;
  * des
  */
 
-public class CustomHeadView extends PullRefreshView.HeaderView {
+public class CustomHeadView extends HeaderView {
 
     ImageView ivNormalRefreshHeader;
     TextView tvNormalRefreshHeaderStatus;
@@ -54,7 +54,7 @@ public class CustomHeadView extends PullRefreshView.HeaderView {
 
     @Override
     public void Scroll(int maxY, int y) {
-        int currentProgress = y / (getHeight() / 11);
+        int currentProgress = Math.abs((y / getHeight()));
         if (currentProgress >= 11) {
             currentProgress = 11;
         }

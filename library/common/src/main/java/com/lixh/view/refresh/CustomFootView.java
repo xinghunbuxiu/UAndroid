@@ -14,7 +14,7 @@ import com.nineoldandroids.view.ViewHelper;
  * des
  */
 
-public class CustomFootView extends PullRefreshView.FooterView {
+public class CustomFootView extends FooterView {
 
 
     ImageView ivNormalRefreshFooterChrysanthemum;
@@ -52,8 +52,8 @@ public class CustomFootView extends PullRefreshView.FooterView {
                 tvNormalRefreshFooterStatus.setText("释放加载...");
                 break;
             case LOADING:
-                AnimUtil.startRotation(ivNormalRefreshFooterChrysanthemum, ViewHelper.getRotation(ivNormalRefreshFooterChrysanthemum) + 359.99f, 500, 0, -1);
                 tvNormalRefreshFooterStatus.setText("正在加载...");
+                AnimUtil.startRotation(ivNormalRefreshFooterChrysanthemum, ViewHelper.getRotation(ivNormalRefreshFooterChrysanthemum) + 359.99f, 500, 0, -1);
                 break;
             case LOAD_CLOSE:
                 tvNormalRefreshFooterStatus.setText("加载完毕...");

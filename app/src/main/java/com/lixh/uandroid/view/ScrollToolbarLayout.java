@@ -186,14 +186,14 @@ public class ScrollToolbarLayout extends LinearLayout implements NestedScrolling
         Log.e(TAG, "onNestedPreScroll" + dy);
         if (dy > 0) {
             //记录方向是向上滑动
-            direction = Direction.UP;
+            direction = Direction.DOWN;
             //记录方向是向上滑动
             if (getScrollY() >= mTopViewHeight) {
                 isEnabled = false;
             }
         } else {
             //记录方向是向下滑动
-            direction = Direction.DOWN;
+            direction = Direction.UP;
             if (!ViewCompat.canScrollVertically(target, -1)) {
                 //记录方向是向下滑动
                 isEnabled = true;
@@ -309,6 +309,12 @@ public class ScrollToolbarLayout extends LinearLayout implements NestedScrolling
     private int topViewId = -1;
     private int bottomViewId = -1;
     private int mTouchSlop;
+
+    public void setMinHeight(int minHeight) {
+        this.minHeight = minHeight;
+    }
+
+    private int minHeight = 0;
     private int mMaximumVelocity, mMinimumVelocity;
     public ScrollToolbarLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -421,11 +427,11 @@ public class ScrollToolbarLayout extends LinearLayout implements NestedScrolling
         if (y < 0) {
             y = 0;
         }
-        if (y >= mTopViewHeight) {
-            y = mTopViewHeight ;
+        if (y >= mTopViewHeight-minHeight) {
+            y = mTopViewHeight-minHeight ;
         }
 
-        if (getScrollY() == mTopViewHeight) {
+        if (getScrollY() == mTopViewHeight-minHeight) {
             panelState = PanelState.COLLAPSED;
         }
         if (getScrollY() <= 0) {

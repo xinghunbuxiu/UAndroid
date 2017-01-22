@@ -71,6 +71,7 @@ public class UToolBar extends Toolbar {
 
     public void setLogo(@DrawableRes int resId) {
         super.setLogo(resId);
+
         try {
             mLogoView = (ImageView) get("mLogoView");
         } catch (NoSuchFieldException e) {
@@ -92,6 +93,30 @@ public class UToolBar extends Toolbar {
         return this;
     }
 
+
+    public UToolBar setCustomView(View view, LayoutParams layoutParams) {
+        //显示自定义视图
+        ((AppCompatActivity) getContext()).getSupportActionBar().setDisplayShowCustomEnabled(true);
+        ((AppCompatActivity) getContext()).getSupportActionBar().setCustomView(view, layoutParams);
+        return this;
+    }
+
+    public View getCustomView() {
+        ((AppCompatActivity) getContext()).getSupportActionBar().setDisplayShowCustomEnabled(true);
+        return ((AppCompatActivity) getContext()).getSupportActionBar().getCustomView();
+    }
+
+    public UToolBar setCustomView(View view) {
+        ((AppCompatActivity) getContext()).getSupportActionBar().setDisplayShowCustomEnabled(true);
+        ((AppCompatActivity) getContext()).getSupportActionBar().setCustomView(view);
+        return this;
+    }
+
+    public UToolBar setCustomView(int resId) {
+        ((AppCompatActivity) getContext()).getSupportActionBar().setDisplayShowCustomEnabled(true);
+        ((AppCompatActivity) getContext()).getSupportActionBar().setCustomView(resId);
+        return this;
+    }
     /**
      * 是否显示返回 默认带返回按钮 子类如果为true
      * 将不显示返回按钮

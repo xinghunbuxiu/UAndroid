@@ -164,14 +164,14 @@ public class ScrollLayout extends LinearLayout implements NestedScrollingParent 
         Log.e(TAG, "onNestedPreScroll" + dy);
         if (dy > 0) {
             //记录方向是向上滑动
-            direction = Direction.UP;
+            direction = Direction.DOWN;
             //记录方向是向上滑动
             if (getScrollY() >= mTopViewHeight) {
                 isEnabled = false;
             }
         } else {
             //记录方向是向下滑动
-            direction = Direction.DOWN;
+            direction = Direction.UP;
             if (!ViewCompat.canScrollVertically(target, -1)) {
                 //记录方向是向下滑动
                 isEnabled = true;

@@ -32,7 +32,7 @@ public class ThreeFragment extends BaseFragment {
                 refresh.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        refresh.finishRefresh();
+                        refresh.finishRefreshAndLoadMore();
                     }
                 }, 400);
 
@@ -44,7 +44,7 @@ public class ThreeFragment extends BaseFragment {
                 refresh.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        refresh.finishLoadMore();
+                        refresh.finishRefreshAndLoadMore();
                     }
                 }, 400);
 

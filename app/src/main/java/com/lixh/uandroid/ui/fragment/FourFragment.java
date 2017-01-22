@@ -33,25 +33,25 @@ public class FourFragment extends BaseFragment {
                 refresh.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        refresh.finishRefresh();
+                        refresh.finishRefreshAndLoadMore();
                     }
                 }, 400);
 
             }
         });
-        refresh.setOnLoadListener(new PullRefreshView.OnLoadListener() {
-            @Override
-            public void onLoad() {
-                refresh.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        refresh.finishLoadMore();
-                    }
-                }, 400);
-
-
-            }
-        });
+//        refresh.setOnLoadListener(new PullRefreshView.OnLoadListener() {
+//            @Override
+//            public void onLoad() {
+//                refresh.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        refresh.finishRefreshAndLoadMore();
+//                    }
+//                }, 400);
+//
+//
+//            }
+//        });
     }
 
     @Override

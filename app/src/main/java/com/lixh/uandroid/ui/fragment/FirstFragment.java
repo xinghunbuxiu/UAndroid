@@ -50,7 +50,7 @@ public class FirstFragment extends BaseFragment {
                 refresh.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        refresh.finishRefresh();
+                        refresh.finishRefreshAndLoadMore();
                     }
                 }, 400);
 
@@ -67,7 +67,7 @@ public class FirstFragment extends BaseFragment {
                             list.add(R.mipmap.ic_launcher);
                         }
                         adapter.notifyDataSetChanged();
-                        refresh.finishLoadMore();
+                        refresh.finishRefreshAndLoadMore();
                     }
                 }, 400);
 

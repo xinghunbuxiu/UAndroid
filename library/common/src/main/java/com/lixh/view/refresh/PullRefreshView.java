@@ -1,19 +1,17 @@
 package com.lixh.view.refresh;
 
 import android.content.Context;
-import android.support.annotation.IdRes;
+import android.support.v4.view.MotionEventCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ListView;
+import android.widget.OverScroller;
 
 import com.lixh.utils.ULog;
-import com.lixh.view.refresh.ImplPull.Direction;
 import com.lixh.view.refresh.ImplPull.ScrollState;
 import com.lixh.view.refresh.ImplPull.StateType;
 
@@ -27,25 +25,22 @@ public class PullRefreshView extends ViewGroup {
     protected FooterView mFooter;
     protected HeaderView mHeader;
     protected View mChildView;
+    //最大拉动距离，拉动距离越靠近这个值拉动就越缓慢
+    private int MAX_HEADER_PULL_HEIGHT = 600;
+    private int MAX_FOOTER_PULL_HEIGHT = 600;
     private OnRefreshListener onRefreshListener;
     private OnLoadListener onLoadListener;
-    protected boolean isRefreshing;
-    protected boolean isLoadMore = true;
-    private boolean isLoadMoreing;
-    private float springBack = 2.0f;
-    private int mMaxHeight = 0;
     private ImplPull implPull;
     CustomHeadView headView;
     CustomFootView footView;
-    float mTouchSlop;
-    float mCurrentY;
     float mLastY;
-    boolean mDragging = false;
-    float mLastTouchY;
+    boolean isChangeFocus = false;
+    private final double MOVE_PARA = 2;
+    boolean isNeedMyMove;
+    boolean needResetAnim;
     ScrollState scrollState = ScrollState.NONE;
     StateType stateType = StateType.NONE;
-    Direction direction = Direction.NONE;
-
+    private int MOVE_TIME = 400;
     public void setImplPull(ImplPull implPull) {
         this.implPull = implPull;
     }
@@ -88,6 +83,14 @@ public class PullRefreshView extends ViewGroup {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         // 计算出所有的childView的宽和高
         measureChildren(widthMeasureSpec, heightMeasureSpec);
+        if (mHeader != null) {
+            int th = mHeader.getDragMaxHeight();
+            MAX_HEADER_PULL_HEIGHT = th > 0 ? th : MAX_HEADER_PULL_HEIGHT;
+        }
+        if (mFooter != null) {
+            int bh = mHeader.getDragMaxHeight();
+            MAX_HEADER_PULL_HEIGHT = bh > 0 ? bh : MAX_HEADER_PULL_HEIGHT;
+        }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
@@ -95,20 +98,21 @@ public class PullRefreshView extends ViewGroup {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         Context context = getContext();
-        if (headView == null) {
+        if (headView == null && onRefreshListener != null) {
             headView = new CustomHeadView(context);
             addHeaderView(headView);
         }
         if (mChildView == null) {
-            mChildView = getChildAt(1);
+            mChildView = getChildAt(getChildCount() - 1);
         }
-        if (footView == null) {
+        if (footView == null && onLoadListener != null) {
             footView = new CustomFootView(context);
             addFootView(footView);
         }
 
     }
 
+    private OverScroller mScroller;
     private void init(Context context, AttributeSet attrs, int defstyleAttr) {
         if (isInEditMode()) {
             return;
@@ -117,28 +121,30 @@ public class PullRefreshView extends ViewGroup {
         if (getChildCount() > 1) {
             throw new RuntimeException("can only have one child widget");
         }
-        mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();//判断是否点击还是拖拽
+        mScroller = new OverScroller(context);
+    }
 
+    public boolean isTop() {
+        return !CanPullUtil.canChildScrollUp(mChildView);
+    }
+
+    public boolean isBottom() {
+        return !CanPullUtil.canChildScrollDown(mChildView);
     }
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        float currentTouchY = ev.getY();
+        dealMulTouchEvent(ev);
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                mLastTouchY = currentTouchY;
-                direction = Direction.NONE;
+                scrollState = ScrollState.NONE;
                 break;
             case MotionEvent.ACTION_MOVE:
-                float dy = currentTouchY - mLastTouchY;
-                mLastTouchY = currentTouchY;
-                if (scrollState == ScrollState.TOP || scrollState == ScrollState.BOTTOM) {
-                    if (isFinish) {
-                        isFinish = false;
-                        return resetDispatchTouchEvent(ev);
-                    }
+                isNeedMyMove = isNeedMyMove();
+                if (isNeedMyMove && !isChangeFocus) {
+                    isChangeFocus = true;
+                    return resetDispatchTouchEvent(ev);
                 }
-                direction = dy > 0 ? Direction.DOWN : Direction.UP;
                 break;
         }
         return super.
@@ -147,74 +153,128 @@ public class PullRefreshView extends ViewGroup {
     }
 
     private boolean resetDispatchTouchEvent(MotionEvent ev) {
-        MotionEvent newEvent = MotionEvent.obtain(ev);
         ev.setAction(MotionEvent.ACTION_CANCEL);
+        MotionEvent newEvent = MotionEvent.obtain(ev);
         dispatchTouchEvent(ev);
         newEvent.setAction(MotionEvent.ACTION_DOWN);
         return dispatchTouchEvent(newEvent);
     }
 
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
-        ULog.e("onInterceptTouchEvent");
-        if (isRefreshing || isLoadMoreing) return true;
-        switch (ev.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                mCurrentY = ev.getY();
-                mLastY = ev.getY();
-                break;
-            case MotionEvent.ACTION_MOVE:
-                float currentY = ev.getY();
-                float dy = currentY - mLastY;
-                if (!mDragging && Math.abs(dy) > mTouchSlop) {
-                    mDragging = true;
-                }
-                if (mDragging) {
-                    if (dy > 0 && !CanPullUtil.canChildScrollUp(mChildView)) {
-                        if (mHeader != null) {
-                            scrollState = ScrollState.TOP;
-                            setImplPull(mHeader);
-
-                        }
-                        return true;
-                    } else if (dy < 0 && !CanPullUtil.canChildScrollDown(mChildView) && isLoadMore) {
-                        if (mFooter != null) {
-                            scrollState = ScrollState.BOTTOM;
-                            setImplPull(mFooter);
-                        }
-                        return true;
-                    }
-                }
-                break;
-
+    /**
+     * 判断是否需要由该控件来控制滑动事件
+     */
+    private boolean isNeedMyMove() {
+        if (Math.abs(dy) < Math.abs(dx)) {
+            return false;
         }
-        return super.onInterceptTouchEvent(ev);
+        if (mHeader != null) {
+            if (dy > 0 && isTop() || getScrollY() < 0 - 20) {
+                scrollState = ScrollState.TOP;
+                setImplPull(mHeader);
+                return true;
+            }
+        }
+        if (mFooter != null) {
+            if (dy < 0 && isBottom() || getScrollY() > 0 + 20) {
+                scrollState = ScrollState.BOTTOM;
+                setImplPull(mFooter);
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    private float dy;
+    private float dx;
+    private float mLastX;
+
+
+    /**
+     * 处理多点触控的情况，准确地计算Y坐标和移动距离dy
+     * 同时兼容单点触控的情况
+     */
+    private int mActivePointerId = MotionEvent.INVALID_POINTER_ID;
+
+    public void dealMulTouchEvent(MotionEvent ev) {
+        final int action = MotionEventCompat.getActionMasked(ev);
+        switch (action) {
+            case MotionEvent.ACTION_DOWN: {
+                final int pointerIndex = MotionEventCompat.getActionIndex(ev);
+                final float x = MotionEventCompat.getX(ev, pointerIndex);
+                final float y = MotionEventCompat.getY(ev, pointerIndex);
+                mLastX = x;
+                mLastY = y;
+                mActivePointerId = MotionEventCompat.getPointerId(ev, 0);
+                break;
+            }
+            case MotionEvent.ACTION_MOVE: {
+                final int pointerIndex = MotionEventCompat.findPointerIndex(ev, mActivePointerId);
+                final float x = MotionEventCompat.getX(ev, pointerIndex);
+                final float y = MotionEventCompat.getY(ev, pointerIndex);
+                dx = x - mLastX;
+                dy = y - mLastY;
+                mLastY = y;
+                mLastX = x;
+                break;
+            }
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
+                mActivePointerId = MotionEvent.INVALID_POINTER_ID;
+                break;
+            case MotionEvent.ACTION_POINTER_DOWN: {
+                final int pointerIndex = MotionEventCompat.getActionIndex(ev);
+                final int pointerId = MotionEventCompat.getPointerId(ev, pointerIndex);
+                if (pointerId != mActivePointerId) {
+                    mLastX = MotionEventCompat.getX(ev, pointerIndex);
+                    mLastY = MotionEventCompat.getY(ev, pointerIndex);
+                    mActivePointerId = MotionEventCompat.getPointerId(ev, pointerIndex);
+                }
+                break;
+            }
+            case MotionEvent.ACTION_POINTER_UP: {
+                final int pointerIndex = MotionEventCompat.getActionIndex(ev);
+                final int pointerId = MotionEventCompat.getPointerId(ev, pointerIndex);
+                if (pointerId == mActivePointerId) {
+                    final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
+                    mLastX = MotionEventCompat.getX(ev, newPointerIndex);
+                    mLastY = MotionEventCompat.getY(ev, newPointerIndex);
+                    mActivePointerId = MotionEventCompat.getPointerId(ev, newPointerIndex);
+                }
+                break;
+            }
+        }
     }
 
     @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        return isNeedMyMove;
+    }
+
+
+    @Override
     public boolean onTouchEvent(MotionEvent e) {
-        ULog.e("onTouchEvent");
-        mMaxHeight = (int) (implPull.getHeight() * springBack);
+
         switch (e.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                mCurrentY = e.getY();
-                mLastY = mCurrentY;
-                return true;
+                break;
             case MotionEvent.ACTION_MOVE:
-                mCurrentY = e.getY();
-                float dy = mCurrentY - mLastY;
-                if (scrollState == ScrollState.TOP || scrollState == ScrollState.BOTTOM) {
-                    setStateType(StateType.PULL);
-                    scrollBy(0, (int) -dy);
-                } else if (isRefreshing||isLoadMoreing){
-                    setStateType(StateType.PULL);
-                    scrollBy(0, (int) -dy);
+                if (isNeedMyMove) {
+                    needResetAnim = false;      //按下的时候关闭回弹
+                    doMove();
+                } else {
+                    if (dy != 0 && getScrollY() > -30 && getScrollY() < 30) {
+                        scrollBy(0, -getScrollY());
+                        isChangeFocus = false;
+                        e.setAction(MotionEvent.ACTION_DOWN);
+                        dispatchTouchEvent(e);
+                    }
                 }
-                mLastY = mCurrentY;
                 break;
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
-                mDragging = false;
+                ULog.e("MotionEvent-ACTION_UP-1");
+                needResetAnim = true;
                 eventUp();
                 break;
         }
@@ -223,79 +283,73 @@ public class PullRefreshView extends ViewGroup {
 
     }
 
-    public void eventUp() {
-        int tempHeight = 0;
-        if (stateType == StateType.RELEASE) {
-            if (scrollState == ScrollState.TOP) {
-                tempHeight = -implPull.getHeight();
-                updateListener();
-            } else if (scrollState == ScrollState.BOTTOM) {
-                tempHeight = implPull.getHeight();
-                updateLoadMoreing();
-            }
+    private void doMove() {
 
-            super.scrollTo(0, tempHeight);
+        //根据下拉高度计算位移距离，（越拉越慢）
+        int moveX = 0;
+        if (dy > 0) {
+            moveX = (int) ((float) ((MAX_HEADER_PULL_HEIGHT + getScrollY()) / (float) MAX_HEADER_PULL_HEIGHT) * dy / MOVE_PARA);
+        } else {
+            moveX = (int) ((float) ((MAX_FOOTER_PULL_HEIGHT - getScrollY()) / (float) MAX_FOOTER_PULL_HEIGHT) * dy / MOVE_PARA);
+        }
+        scrollBy(0, (int) (-moveX));
+    }
+
+    public void eventUp() {
+        if (stateType == StateType.RELEASE) {
+            int tempHeight = implPull.getHeight();
+            if (scrollState == ScrollState.TOP) {
+                updating();
+                mScroller.startScroll(0, getScrollY(), 0, -getScrollY() - tempHeight, MOVE_TIME);
+            } else if (scrollState == ScrollState.BOTTOM) {
+                upLoading();
+                mScroller.startScroll(0, getScrollY(), 0, -getScrollY() + tempHeight, MOVE_TIME);
+            }
+            invalidate();
         } else {
             if (scrollState == ScrollState.BOTTOM) {
                 if (mChildView instanceof AbsListView) {
-                    ((ListView) mChildView).smoothScrollBy(getScrollY(),0);
-                }else if (mChildView instanceof RecyclerView){
-                    ((RecyclerView) mChildView).scrollBy(0,getScrollY());
+                    ((ListView) mChildView).smoothScrollBy(getScrollY(), 0);
+                } else if (mChildView instanceof RecyclerView) {
+                    ((RecyclerView) mChildView).scrollBy(0, getScrollY());
                 }
             }
-            super.scrollTo(0, 0);
-
+            mScroller.startScroll(0, getScrollY(), 0, -getScrollY(), MOVE_TIME);
+            invalidate();
+            dy = 0;
         }
-
-
-    }
-
-    private void updateLoadMoreing() {
-        isLoadMoreing = true;
-        if (onLoadListener != null) {
-            setStateType(StateType.LOADING);
-            onLoadListener.onLoad();
-        }
-    }
-
-    boolean isFinish = false;
-
-    public void setLoadMore(boolean isLoadMore) {
-        this.isLoadMore = isLoadMore;
     }
 
     @Override
-    public void scrollTo(int x, int y) {
-        implPull.Scroll(mMaxHeight, y);
-        if (scrollState == ScrollState.TOP & y < -implPull.getHeight() || scrollState == ScrollState.BOTTOM && y > implPull.getHeight()) {
-            setStateType(StateType.RELEASE);
+    public void computeScroll() {
+        if (mScroller.computeScrollOffset()) {
+            scrollTo(0, mScroller.getCurrY());
+            invalidate();
         }
+    }
+    @Override
+    public void scrollTo(int x, int y) {
+        implPull.Scroll(MAX_HEADER_PULL_HEIGHT, y);
         if (scrollState == ScrollState.TOP) {
-            if (y < -mMaxHeight) {
-                y = -mMaxHeight;
-            }
-            if (y >= 0) {
-                y = 0;
-                isFinish = direction == Direction.UP ? true : false;
+            if (y > -implPull.getHeight()) {
+                setStateType(StateType.PULL);
+            } else {
+                setStateType(StateType.RELEASE);
             }
         } else if (scrollState == ScrollState.BOTTOM) {
-            if (y > mMaxHeight) {
-                y = mMaxHeight;
-            }
-            if (y <= 0) {
-                y = 0;
-                isFinish = direction == Direction.DOWN ? true : false;
+            if (y < implPull.getHeight()) {
+                setStateType(StateType.PULL);
+            } else {
+                setStateType(StateType.RELEASE);
             }
         }
-
         if (y != getScrollY()) {
             super.scrollTo(x, y);
         }
     }
 
 
-    public void updateListener() {
-        isRefreshing = true;
+    public void updating() {
         if (onRefreshListener != null) {
             setStateType(StateType.LOADING);
             onRefreshListener.onRefresh();
@@ -303,52 +357,34 @@ public class PullRefreshView extends ViewGroup {
 
     }
 
-    private void upLoadMoreListener() {
-        isLoadMoreing = true;
+    private void upLoading() {
         if (onLoadListener != null) {
             setStateType(StateType.LOADING);
             onLoadListener.onLoad();
         }
     }
 
-    public void finishRefresh() {
+    public void finishRefreshAndLoadMore() {
         setStateType(StateType.LOAD_CLOSE);
         this.postDelayed(new Runnable() {
             @Override
             public void run() {
-                isRefreshing = false;
-                if (mHeader != null) {
+                if (needResetAnim) {
                     eventUp();
                     setStateType(StateType.NONE);
                 }
             }
         }, 400);
     }
-
-    public void finishLoadMore() {
-        setStateType(StateType.LOAD_CLOSE);
-        this.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (mFooter != null && isLoadMoreing) {
-                    isLoadMoreing = false;
-                    eventUp();
-                    setStateType(StateType.NONE);
-                }
-            }
-        }, 400);
-
-    }
-
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        if (mHeader != null) {
-            mHeader.getView().layout(0, 0 - mHeader.getHeight(), mChildView.getRight(), 0);
+        if (mHeader != null && onRefreshListener != null) {
+            mHeader.getView().layout(0, 0 - mHeader.getHeight(), r, 0);
         }
         if (mChildView != null) {
             mChildView.layout(0, 0, r, mChildView.getMeasuredHeight());
         }
-        if (mFooter != null) {
+        if (mFooter != null && onLoadListener != null) {
             mFooter.getView().layout(0, b, r, mFooter.getHeight() + b);
         }
     }
@@ -361,69 +397,5 @@ public class PullRefreshView extends ViewGroup {
     public void addHeaderView(HeaderView mHeader) {
         this.mHeader = mHeader;
         addView(mHeader.getView(), 0);
-    }
-
-
-    public static abstract class HeaderView implements ImplPull {
-        public View headerView;
-        Context context;
-
-        public View getView() {
-            return headerView;
-        }
-
-        public HeaderView(Context context) {
-            this.context = context;
-            headerView = LayoutInflater.from(context).inflate(getLayoutId(), null);
-            setLayoutParams();
-            initView();
-        }
-
-        public int getHeight() {
-            headerView.measure(0, 0);
-            return headerView.getMeasuredHeight();
-        }
-
-        protected <VT extends View> VT $(@IdRes int id) {
-            return (VT) headerView.findViewById(id);
-        }
-
-        public void setLayoutParams() {
-            LayoutParams lp = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            headerView.setLayoutParams(lp);
-        }
-
-
-    }
-
-    public static abstract class FooterView implements ImplPull {
-        public View footerView;
-        Context context;
-
-        public View getView() {
-            return footerView;
-        }
-
-        public FooterView(Context context) {
-            this.context = context;
-            footerView = LayoutInflater.from(context).inflate(getLayoutId(), null);
-            setLayoutParams();
-            initView();
-        }
-
-        protected <VT extends View> VT $(@IdRes int id) {
-            return (VT) footerView.findViewById(id);
-        }
-
-        public int getHeight() {
-            footerView.measure(0, 0);
-            return footerView.getMeasuredHeight();
-        }
-
-
-        public void setLayoutParams() {
-            LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            footerView.setLayoutParams(layoutParams);
-        }
     }
 }

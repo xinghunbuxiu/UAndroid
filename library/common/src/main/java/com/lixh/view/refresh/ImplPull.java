@@ -1,6 +1,8 @@
 package com.lixh.view.refresh;
 
 public interface ImplPull {
+
+
     enum StateType {
         NONE,
         PULL,
@@ -12,16 +14,9 @@ public interface ImplPull {
     enum ScrollState {
         TOP, NONE, BOTTOM
     }
-
-
-    enum Direction {
-        DOWN, UP, NONE
-    }
-
     public int getLayoutId();
 
     public void initView();
-
     /**
      * @param maxY 滑动的 最大 y
      * @param y
