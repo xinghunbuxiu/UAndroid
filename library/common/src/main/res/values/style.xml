@@ -13,9 +13,7 @@
         <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
         <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
     </style>
-    <!--  loading 样式
- -->
-    -
+    <!--  loading 样式-->
 
     <style name="loadstyle" parent="@android:style/Theme.Dialog">
         <item name="android:windowFrame">@null</item>
@@ -26,9 +24,7 @@
         <item name="android:backgroundDimEnabled">true</item>
     </style>
 
-    <!--  没有滚动的listView 样式
-     -->
-    -
+    <!--  没有滚动的listView 样式 -->
 
     <style name="noscrolllistview_style" parent="@style/MatchWrap">
         <item name="android:divider">@color/color_view_line</item>
@@ -45,4 +41,9 @@
         <item name="android:background">@color/color_view_line</item>
     </style>
 
+    <style name="Widget.MaterialProgressBar.ProgressBar.Horizontal" parent="android:Widget.ProgressBar.Horizontal">
+        <item name="android:indeterminateDrawable">@null</item>
+        <item name="android:minHeight">4dp</item>
+        <item name="android:maxHeight">4dp</item>
+    </style>
 </resources>

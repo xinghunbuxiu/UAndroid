@@ -1,5 +1,6 @@
 package com.lixh.view;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -8,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.os.Build;
 import android.support.annotation.DrawableRes;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -80,6 +82,17 @@ public class UToolBar extends Toolbar {
 
     }
 
+    /**
+     * 设置阴影
+     *
+     * @param elevation
+     */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public void setElevation(float elevation) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setElevation(elevation);
+        }
+    }
     /**
      * tittle的显示必须为 false 不然次不管用
      *

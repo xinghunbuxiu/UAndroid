@@ -11,7 +11,6 @@ import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.OverScroller;
 
-import com.lixh.utils.ULog;
 import com.lixh.view.refresh.ImplPull.ScrollState;
 import com.lixh.view.refresh.ImplPull.StateType;
 
@@ -45,6 +44,10 @@ public class PullRefreshView extends ViewGroup {
         this.implPull = implPull;
     }
 
+    public void setScrollState(ScrollState scrollState) {
+        this.scrollState = scrollState;
+    }
+
     public interface OnRefreshListener {
         void onRefresh();
     }
@@ -59,7 +62,9 @@ public class PullRefreshView extends ViewGroup {
 
     public void setStateType(StateType stateType) {
         this.stateType = stateType;
-        implPull.onScrollChange(stateType);
+        if (implPull != null) {
+            implPull.onScrollChange(stateType);
+        }
     }
 
     public void setOnRefreshListener(OnRefreshListener onRefreshListener) {
@@ -145,6 +150,9 @@ public class PullRefreshView extends ViewGroup {
                     isChangeFocus = true;
                     return resetDispatchTouchEvent(ev);
                 }
+                break;
+            case MotionEvent.ACTION_UP:
+                needResetAnim = true;
                 break;
         }
         return super.
@@ -251,7 +259,26 @@ public class PullRefreshView extends ViewGroup {
         return isNeedMyMove;
     }
 
+    boolean autoRefresh = true;
+    boolean autoLoadMore = false;
 
+    /**
+     * 第一次加载时自动下拉刷新
+     *
+     * @param autoRefresh
+     */
+    public void setAutoRefresh(boolean autoRefresh) {
+        this.autoRefresh = autoRefresh;
+    }
+
+    /**
+     * 自动加载更多
+     *
+     * @param autoLoadMore
+     */
+    public void setAutoLoadMore(boolean autoLoadMore) {
+        this.autoLoadMore = autoLoadMore;
+    }
     @Override
     public boolean onTouchEvent(MotionEvent e) {
 
@@ -273,8 +300,6 @@ public class PullRefreshView extends ViewGroup {
                 break;
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
-                ULog.e("MotionEvent-ACTION_UP-1");
-                needResetAnim = true;
                 eventUp();
                 break;
         }
@@ -297,26 +322,26 @@ public class PullRefreshView extends ViewGroup {
 
     public void eventUp() {
         if (stateType == StateType.RELEASE) {
-            int tempHeight = implPull.getHeight();
             if (scrollState == ScrollState.TOP) {
                 updating();
-                mScroller.startScroll(0, getScrollY(), 0, -getScrollY() - tempHeight, MOVE_TIME);
             } else if (scrollState == ScrollState.BOTTOM) {
                 upLoading();
-                mScroller.startScroll(0, getScrollY(), 0, -getScrollY() + tempHeight, MOVE_TIME);
             }
-            invalidate();
         } else {
+
+            dy = 0;
             if (scrollState == ScrollState.BOTTOM) {
+
                 if (mChildView instanceof AbsListView) {
                     ((ListView) mChildView).smoothScrollBy(getScrollY(), 0);
                 } else if (mChildView instanceof RecyclerView) {
                     ((RecyclerView) mChildView).scrollBy(0, getScrollY());
                 }
             }
+            scrollState = ScrollState.NONE;
             mScroller.startScroll(0, getScrollY(), 0, -getScrollY(), MOVE_TIME);
             invalidate();
-            dy = 0;
+
         }
     }
 
@@ -354,14 +379,17 @@ public class PullRefreshView extends ViewGroup {
             setStateType(StateType.LOADING);
             onRefreshListener.onRefresh();
         }
-
+        mScroller.startScroll(0, getScrollY(), 0, -getScrollY() - implPull.getHeight(), MOVE_TIME);
+        invalidate();
     }
 
-    private void upLoading() {
+    public void upLoading() {
         if (onLoadListener != null) {
             setStateType(StateType.LOADING);
             onLoadListener.onLoad();
         }
+        mScroller.startScroll(0, getScrollY(), 0, -getScrollY() + implPull.getHeight(), MOVE_TIME);
+        invalidate();
     }
 
     public void finishRefreshAndLoadMore() {

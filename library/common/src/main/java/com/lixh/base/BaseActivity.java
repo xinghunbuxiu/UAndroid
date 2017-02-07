@@ -4,16 +4,23 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
+import android.view.View;
 import android.view.Window;
 
 import com.lixh.R;
 import com.lixh.app.AppManager;
-import com.lixh.daynightmodeutils.ChangeModeController;
 import com.lixh.presenter.BasePresenter;
 import com.lixh.rxlife.LifeEvent;
+import com.lixh.setting.AppConfig;
+import com.lixh.swipeback.SwipeBackActivityBase;
+import com.lixh.swipeback.Utils;
+import com.lixh.swipeback.app.SwipeBackActivityHelper;
+import com.lixh.swipeback.app.SwipeBackLayout;
 import com.lixh.utils.Alert;
 import com.lixh.utils.Exit;
 import com.lixh.utils.LoadingTip;
+import com.lixh.utils.SharedPreferencesUtil;
 import com.lixh.utils.StatusBarCompat;
 import com.lixh.utils.TUtil;
 import com.lixh.utils.UIntent;
@@ -26,13 +33,15 @@ import rx.subjects.BehaviorSubject;
 /**
  * 基类Activity
  */
-public abstract class BaseActivity<T extends BasePresenter> extends AppCompatActivity {
+public abstract class BaseActivity<T extends BasePresenter> extends AppCompatActivity implements SwipeBackActivityBase {
     public T mPresenter; //当前类需要的操作类
     public LoadingTip tip;
     public LoadView layout;
     public final BehaviorSubject<LifeEvent> lifecycleSubject = BehaviorSubject.create();
     public Exit exit = new Exit();// 双击退出 封装
-
+    private boolean mNowMode;
+    private SwipeBackLayout mSwipeBackLayout;
+    private SwipeBackActivityHelper mHelper;
     protected abstract void init(Bundle savedInstanceState);
     public BaseActivity() {
         bind();
@@ -57,9 +66,41 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         return (T) mPresenter.getPresenter();
     }
 
+    /**
+     * 是否有标题栏
+     *
+     * @return
+     */
     public boolean hasToolBar() {
         return true;
     }
+
+    /**
+     * @return 是否双j击退出
+     */
+    public boolean isDoubleExit() {
+        return false;
+    }
+
+    @Override
+    public SwipeBackLayout getSwipeBackLayout() {
+        return mHelper.getSwipeBackLayout();
+    }
+
+    /**
+     * 是否滑动结束
+     */
+    @Override
+    public void setSwipeBackEnable(boolean enable) {
+        getSwipeBackLayout().setEnableGesture(enable);
+    }
+
+    @Override
+    public void scrollToFinishActivity() {
+        Utils.convertActivityToTranslucent(this);
+        getSwipeBackLayout().scrollToFinishActivity();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         lifecycleSubject.onNext(LifeEvent.CREATE);
@@ -69,6 +110,7 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         tip = layout.getEmptyView();
         setContentView(layout.getRootView());
         ButterKnife.bind(this);
+        initSwipe();
         initTitleBar();
         init(savedInstanceState);
         if (mPresenter != null) {
@@ -78,6 +120,40 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
 
     }
 
+    protected void gone(final View... views) {
+        if (views != null && views.length > 0) {
+            for (View view : views) {
+                if (view != null) {
+                    view.setVisibility(View.GONE);
+                }
+            }
+        }
+    }
+
+    protected void visible(final View... views) {
+        if (views != null && views.length > 0) {
+            for (View view : views) {
+                if (view != null) {
+                    view.setVisibility(View.VISIBLE);
+                }
+            }
+        }
+
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mHelper.onPostCreate();
+    }
+
+    public void initSwipe() {
+        mHelper = new SwipeBackActivityHelper(this);
+        mHelper.onActivityCreate();
+        //侧滑
+        mSwipeBackLayout = getSwipeBackLayout();
+        mSwipeBackLayout.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);
+    }
 
     private void initTitleBar() {
         toolBar = layout.getToolbar();
@@ -101,7 +177,7 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
      * 设置layout前配置
      */
     private void doBeforeSetContentView() {
-        ChangeModeController.setTheme(this, R.style.DayTheme, R.style.NightTheme);
+        mNowMode = SharedPreferencesUtil.getInstance().getBoolean(AppConfig.ISNIGHT);
         // 无标题
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         // 设置竖屏
@@ -111,6 +187,18 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (SharedPreferencesUtil.getInstance().getBoolean(AppConfig.ISNIGHT, false) != mNowMode) {
+            if (SharedPreferencesUtil.getInstance().getBoolean(AppConfig.ISNIGHT, false)) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            }
+            recreate();
+        }
+    }
 
     /**
      * 着色状态栏（4.4以上系统有效）
@@ -158,12 +246,6 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         AppManager.getAppManager().finishActivity(this);
     }
 
-    /**
-     * @return 是否双j击退出
-     */
-    public boolean isDoubleExit() {
-        return false;
-    }
 
     @Override
     public void onBackPressed() {

@@ -3,6 +3,10 @@ package com.lixh.app;
 import android.app.Application;
 import android.content.Context;
 import android.content.res.Resources;
+import android.support.v7.app.AppCompatDelegate;
+
+import com.lixh.setting.AppConfig;
+import com.lixh.utils.SharedPreferencesUtil;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -18,9 +22,27 @@ public abstract class BaseApplication extends Application {
     public void onCreate() {
         super.onCreate();
         baseApplication = this;
+        initPrefs();
+        initNightMode();
         init();
+
     }
 
+    /**
+     * 初始化SharedPreference
+     */
+    protected void initPrefs() {
+        SharedPreferencesUtil.init(getApplicationContext(), getPackageName() + "_preference", Context.MODE_MULTI_PROCESS);
+    }
+
+    protected void initNightMode() {
+        boolean isNight = SharedPreferencesUtil.getInstance().getBoolean(AppConfig.ISNIGHT, false);
+        if (isNight) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
+    }
     public static BaseApplication getAppContext() {
         return baseApplication;
     }

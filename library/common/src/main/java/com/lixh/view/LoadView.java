@@ -10,6 +10,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import com.lixh.R;
+import com.lixh.swipeback.app.SwipeBackLayout;
 import com.lixh.utils.LoadingTip;
 
 /**
@@ -30,6 +31,7 @@ public class LoadView {
     public LoadView(Builder builder) {
         this.builder = builder;
         commonView(builder);
+
     }
 
     public UToolBar getToolbar() {
@@ -44,11 +46,10 @@ public class LoadView {
     }
 
     //通用布局
-    public View commonView(Builder builder) {
+    public void commonView(Builder builder) {
         RootView = (LinearLayout) inflate(R.layout.toolbar_layout);
         RootView.addView(getBottomView(builder));
         initLayout();
-        return RootView;
     }
 
     private void initLayout() {
@@ -64,6 +65,7 @@ public class LoadView {
         return (int) (spValue * fontScale + 0.5f);
     }
 
+    protected SwipeBackLayout layout;
 
     /**
      * 创建内容的布局 这里用的事RelativeLayout
@@ -96,6 +98,7 @@ public class LoadView {
 
         int mBottomView;
         boolean hasToolbar;
+
         public Builder(Activity context) {
             mContext = context;
             mBottomView = -1;
@@ -110,15 +113,16 @@ public class LoadView {
             this.mBottomView = mBottomView;
             return this;
         }
-
         public LoadView build() {
             return new LoadView(this);
         }
+
 
         public Builder setToolBar(boolean hasToolbar) {
             this.hasToolbar = hasToolbar;
             return this;
         }
+
     }
 
     ;

@@ -13,6 +13,7 @@ public class CanPullUtil {
 
     /**
      * * @param 负数表示检测上滑，正数表示下滑
+     *
      * @return Whether it is possible for the child view of this layout to
      * scroll up. Override this if the child view is a custom view.
      */

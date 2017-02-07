@@ -13,6 +13,5 @@ public class UApplication extends BaseApplication {
     public void init() {
         //初始化logger
         ULog.logInit(BuildConfig.DEBUG);
-
     }
 }

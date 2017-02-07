@@ -45,6 +45,7 @@ public class TabsActivity extends BaseActivity<TabPresenter> implements BottomNa
     }
     @Override
     protected void init(Bundle savedInstanceState) {
+        setSwipeBackEnable(false);
         initBottomBar();
     }
 
@@ -52,7 +53,6 @@ public class TabsActivity extends BaseActivity<TabPresenter> implements BottomNa
     public int getLayoutId() {
         return R.layout.activity_tab;
     }
-
 
 
     public void initBottomBar() {
