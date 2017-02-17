@@ -23,6 +23,7 @@ import com.nineoldandroids.view.ViewHelper;
  * 1f/（行数- 停留的行数) 例如GridView 4行 要想停留一行
  * 1f/(4-1)
  * 从下往上
+ *
  */
 
 public class ScrollNavLayout extends LinearLayout implements NestedScrollingParent {
@@ -30,7 +31,7 @@ public class ScrollNavLayout extends LinearLayout implements NestedScrollingPare
     View target;
     Direction direction = Direction.NONE;
     int line = 4;//行数
-    int location = 3;//当前行数
+    int location = 3;//当前行数 //五行: 收缩比例是：0.25，0.5，0.75，1
     float scale = 1f;  // 重点 收缩的比例
     boolean isEnabled = true;//是否允许滑动
     int collapseOffset = 0; //阻尼的高度

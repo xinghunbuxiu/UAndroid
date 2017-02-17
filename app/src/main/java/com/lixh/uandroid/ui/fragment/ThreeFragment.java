@@ -5,7 +5,7 @@ import android.widget.ScrollView;
 
 import com.lixh.base.BaseFragment;
 import com.lixh.uandroid.R;
-import com.lixh.view.refresh.PullRefreshView;
+import com.lixh.view.refresh.SpringView;
 
 import butterknife.Bind;
 
@@ -15,7 +15,7 @@ public class ThreeFragment extends BaseFragment {
     @Bind(R.id.list)
     ScrollView list;
     @Bind(R.id.refresh)
-    PullRefreshView refresh;
+    SpringView refresh;
 
     public static ThreeFragment newInstance(String param1) {
         ThreeFragment fragment = new ThreeFragment();
@@ -26,7 +26,7 @@ public class ThreeFragment extends BaseFragment {
 
     @Override
     protected void init(Bundle savedInstanceState) {
-        refresh.setOnRefreshListener(new PullRefreshView.OnRefreshListener() {
+        refresh.setOnRefreshListener(new SpringView.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 refresh.postDelayed(new Runnable() {
@@ -38,7 +38,7 @@ public class ThreeFragment extends BaseFragment {
 
             }
         });
-        refresh.setOnLoadListener(new PullRefreshView.OnLoadListener() {
+        refresh.setOnLoadListener(new SpringView.OnLoadListener() {
             @Override
             public void onLoad() {
                 refresh.postDelayed(new Runnable() {

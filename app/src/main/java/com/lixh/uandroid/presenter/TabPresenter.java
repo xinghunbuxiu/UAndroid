@@ -7,6 +7,7 @@ import com.lixh.presenter.BasePresenter;
 import com.lixh.uandroid.api.Api;
 import com.lixh.uandroid.api.HostType;
 import com.lixh.uandroid.model.MainModel;
+import com.lixh.uandroid.ui.TabsActivity;
 
 ;
 
@@ -17,6 +18,7 @@ import com.lixh.uandroid.model.MainModel;
  * des
  */
 public class TabPresenter extends BasePresenter {
+    TabsActivity tabsActivity;
     Result<MainModel> m = new Result<MainModel>() {
 
         @Override
@@ -27,7 +29,9 @@ public class TabPresenter extends BasePresenter {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        tabsActivity = getActivity();
         rxHelper.createSubscriber(Api.getDefault(HostType.BASE_URL).login("us", "dd"), m);
+
     }
 
 

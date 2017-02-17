@@ -9,8 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.lixh.base.BaseActivity;
-import com.lixh.base.adapter.ViewHolder;
-import com.lixh.base.adapter.recyclerview.OnItemClickListener;
+import com.lixh.view.refresh.adapter.ViewHolder;
+import com.lixh.view.refresh.adapter.recyclerview.OnItemClickListener;
 import com.lixh.uandroid.R;
 import com.lixh.uandroid.presenter.MainPresenter;
 import com.lixh.uandroid.view.ScrollLayout;
@@ -61,13 +61,13 @@ public class MainActivity extends BaseActivity<MainPresenter> {
         recycle.setLayoutManager(gridLayoutManager);
         LinearLayoutDecoration layoutDecoration = new LinearLayoutDecoration(this, LinearLayoutManager.VERTICAL, 10, R.color.color_sys_bg);
         recycle.addItemDecoration(layoutDecoration);
-        com.lixh.base.adapter.recyclerview.CommonAdapter adapter = new com.lixh.base.adapter.recyclerview.CommonAdapter<Integer>(this, R.layout.item_ciew, list) {
+        com.lixh.view.refresh.adapter.recyclerview.CommonAdapter adapter = new com.lixh.view.refresh.adapter.recyclerview.CommonAdapter<Integer>(this, R.layout.item_ciew, list) {
             @Override
             public void convert(ViewHolder holder, Integer o) {
                 holder.setImageResource(R.id.iv, o);
             }
         };
-        com.lixh.base.adapter.recyclerview.CommonAdapter adapter1 = new com.lixh.base.adapter.recyclerview.CommonAdapter<Integer>(this, R.layout.item_ciew, list) {
+        com.lixh.view.refresh.adapter.recyclerview.CommonAdapter adapter1 = new com.lixh.view.refresh.adapter.recyclerview.CommonAdapter<Integer>(this, R.layout.item_ciew, list) {
             @Override
             public void convert(ViewHolder holder, Integer o) {
                 holder.setImageResource(R.id.iv, o);

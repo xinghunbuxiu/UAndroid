@@ -5,7 +5,7 @@ import android.webkit.WebView;
 
 import com.lixh.base.BaseFragment;
 import com.lixh.uandroid.R;
-import com.lixh.view.refresh.PullRefreshView;
+import com.lixh.view.refresh.SpringView;
 
 import butterknife.Bind;
 
@@ -15,7 +15,7 @@ public class FourFragment extends BaseFragment {
     @Bind(R.id.web_view)
     WebView webView;
     @Bind(R.id.refresh)
-    PullRefreshView refresh;
+    SpringView refresh;
 
     public static FourFragment newInstance(String param1) {
         FourFragment fragment = new FourFragment();
@@ -27,7 +27,7 @@ public class FourFragment extends BaseFragment {
     @Override
     protected void init(Bundle savedInstanceState) {
         webView.loadUrl("https://www.diycode.cc/topics/409");
-        refresh.setOnRefreshListener(new PullRefreshView.OnRefreshListener() {
+        refresh.setOnRefreshListener(new SpringView.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 refresh.postDelayed(new Runnable() {

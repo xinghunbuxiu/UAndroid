@@ -13,9 +13,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.lixh.base.BaseActivity;
-import com.lixh.base.adapter.ViewHolder;
-import com.lixh.base.adapter.recyclerview.CommonAdapter;
-import com.lixh.base.adapter.recyclerview.OnItemClickListener;
+import com.lixh.view.refresh.adapter.ViewHolder;
+import com.lixh.view.refresh.adapter.recyclerview.CommonAdapter;
+import com.lixh.view.refresh.adapter.recyclerview.OnItemClickListener;
 import com.lixh.uandroid.R;
 import com.lixh.uandroid.presenter.MainPresenter;
 import com.lixh.uandroid.view.ScrollToolbarLayout;
