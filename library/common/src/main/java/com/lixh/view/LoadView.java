@@ -10,8 +10,12 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import com.lixh.R;
+import com.lixh.rxhttp.Observable;
 import com.lixh.swipeback.app.SwipeBackLayout;
 import com.lixh.utils.LoadingTip;
+
+
+
 
 /**
  * Created by LIXH on 2016/11/5.
@@ -19,7 +23,7 @@ import com.lixh.utils.LoadingTip;
  * des
  */
 
-public class LoadView {
+public class LoadView  extends Observable {
     public static final String TAG = "LoadView";
     public static Activity mContext;
     LinearLayout RootView;
@@ -94,6 +98,8 @@ public class LoadView {
         return view;
     }
 
+
+
     public static class Builder {
 
         int mBottomView;
@@ -113,6 +119,7 @@ public class LoadView {
             this.mBottomView = mBottomView;
             return this;
         }
+
         public LoadView build() {
             return new LoadView(this);
         }

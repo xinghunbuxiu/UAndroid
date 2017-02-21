@@ -9,14 +9,15 @@ public interface ImplPull {
         RELEASE,
         LOADING,
         LOAD_CLOSE,
+        ONCLICK
     }
 
     enum ScrollState {
         TOP, NONE, BOTTOM
     }
-    public int getLayoutId();
-
-    public void initView();
+     int getLayoutId();
+     void setPull(SpringView refreshView);
+     void initView();
     /**
      * @param maxY 滑动的 最大 y
      * @param y

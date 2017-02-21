@@ -3,13 +3,17 @@ package com.lixh.base;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.lixh.bean.Message;
 import com.lixh.presenter.BasePresenter;
+import com.lixh.rxhttp.Observable;
+import com.lixh.rxhttp.Observer;
 import com.lixh.rxlife.LifeEvent;
 import com.lixh.utils.LoadingTip;
 import com.lixh.utils.TUtil;
@@ -20,7 +24,7 @@ import com.lixh.view.UToolBar;
 import butterknife.ButterKnife;
 import rx.subjects.BehaviorSubject;
 
-public abstract class BaseFragment<T extends BasePresenter> extends Fragment {
+public abstract class BaseFragment<T extends BasePresenter> extends Fragment implements Observer<Message> {
     T mPresenter; //当前类需要的操作类
     public Activity activity;
     public LoadingTip tip;
@@ -46,8 +50,10 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment {
         super.onAttach(context);
         this.activity = (Activity) context;
         layout = new LoadView.Builder(activity).setBottomView(getLayoutId()).setToolBar(hasToolBar()).build();
+        layout.addObserver(this);
         intent = new UIntent(activity);
         tip = layout.getEmptyView();
+
     }
 
     @Override
@@ -117,6 +123,10 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment {
         return mContentView;
     }
 
+    protected <VT extends View> VT $(@IdRes int id) {
+        return (VT) mContentView.findViewById(id);
+    }
+
     @Override
     public void onStart() {
         lifecycleSubject.onNext(LifeEvent.START);
@@ -172,5 +182,8 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment {
 
     }
 
+    @Override
+    public void update(Observable o, Message arg) {
 
+    }
 }

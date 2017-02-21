@@ -19,7 +19,7 @@ import rx.subjects.BehaviorSubject;
  * Created by xsf
  * on 2016.07.11:55
  */
-public abstract class BasePresenter {
+public abstract class BasePresenter{
     public UToolBar toolbar;
     public LoadingTip tip;
     public UIntent intent;

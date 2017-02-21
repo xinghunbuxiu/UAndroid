@@ -8,11 +8,15 @@ import android.view.View;
 public abstract class FooterView implements ImplPull {
     public View footerView;
     Context context;
-
+    public SpringView refreshView;
     public View getView() {
         return footerView;
     }
 
+    @Override
+    public void setPull(SpringView refreshView) {
+        this.refreshView = refreshView;
+    }
     public FooterView(Context context) {
         this.context = context;
         footerView = LayoutInflater.from(context).inflate(getLayoutId(), null);

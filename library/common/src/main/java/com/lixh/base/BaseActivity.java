@@ -10,7 +10,10 @@ import android.view.Window;
 
 import com.lixh.R;
 import com.lixh.app.AppManager;
+import com.lixh.bean.Message;
 import com.lixh.presenter.BasePresenter;
+import com.lixh.rxhttp.Observable;
+import com.lixh.rxhttp.Observer;
 import com.lixh.rxlife.LifeEvent;
 import com.lixh.setting.AppConfig;
 import com.lixh.swipeback.SwipeBackActivityBase;
@@ -33,7 +36,7 @@ import rx.subjects.BehaviorSubject;
 /**
  * 基类Activity
  */
-public abstract class BaseActivity<T extends BasePresenter> extends AppCompatActivity implements SwipeBackActivityBase {
+public abstract class BaseActivity<T extends BasePresenter> extends AppCompatActivity implements SwipeBackActivityBase, Observer<Message> {
     public T mPresenter; //当前类需要的操作类
     public LoadingTip tip;
     public LoadView layout;
@@ -107,6 +110,7 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         super.onCreate(savedInstanceState);
         doBeforeSetContentView();
         layout = new LoadView.Builder(this).setBottomView(getLayoutId()).setToolBar(hasToolBar()).build();
+        layout.addObserver(this);
         tip = layout.getEmptyView();
         setContentView(layout.getRootView());
         ButterKnife.bind(this);
@@ -259,5 +263,10 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public void update(Observable o, Message arg) {
+
     }
 }

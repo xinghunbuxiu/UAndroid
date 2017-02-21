@@ -8,11 +8,14 @@ import android.view.View;
 public abstract class HeaderView implements ImplPull {
     public View headerView;
     Context context;
-
+    SpringView refreshView;
     public View getView() {
         return headerView;
     }
-
+    @Override
+    public void setPull(SpringView refreshView) {
+       this.refreshView=refreshView;
+    }
     public HeaderView(Context context) {
         this.context = context;
         headerView = LayoutInflater.from(context).inflate(getLayoutId(), null);

@@ -14,7 +14,7 @@ import io.realm.RealmConfiguration;
 /**
  * APPLICATION
  */
-public abstract class BaseApplication extends Application {
+public abstract class BaseApplication extends Application  {
 
     private static BaseApplication baseApplication;
 

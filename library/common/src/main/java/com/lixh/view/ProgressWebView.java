@@ -71,7 +71,7 @@ public class ProgressWebView extends LinearLayout {
 
     public void loadUrl(String url) {
         if (TextUtils.isEmpty(url)) {
-            url = "https://github.com/JustWayward/BookReader";
+            url = "";
         }
         initWebview(url);
     }

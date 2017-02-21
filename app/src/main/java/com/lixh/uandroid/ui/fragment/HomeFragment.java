@@ -14,6 +14,7 @@ import java.util.List;
 public class HomeFragment extends BaseRVFragment {
 
     List<Integer> list = new ArrayList<>();
+
     public static HomeFragment newInstance(String param1) {
         HomeFragment fragment = new HomeFragment();
         Bundle args = new Bundle();
@@ -21,10 +22,15 @@ public class HomeFragment extends BaseRVFragment {
         return fragment;
     }
 
-
+    protected void initList() {
+        for (int i = 0; i < 15; i++) {
+            list.add(R.mipmap.ic_launcher);
+        }
+    }
     @Override
     protected void init(Bundle savedInstanceState) {
-        getInfo(page);
+        super.init(savedInstanceState);
+        initList();
     }
 
     @Override
@@ -33,10 +39,9 @@ public class HomeFragment extends BaseRVFragment {
         return true;
     }
 
-    CommonAdapter adapter;
     @Override
-    public RecyclerView.Adapter getAdapter() {
-        adapter = new CommonAdapter<Integer>(R.layout.item_ciew, list) {
+    public RecyclerView.Adapter initAdapter() {
+        CommonAdapter adapter = new CommonAdapter<Integer>(R.layout.item_ciew, list) {
             @Override
             protected void onBindData(EasyRVHolder holder, int position, Integer item) {
                 super.onBindData(holder, position, item);
@@ -52,23 +57,6 @@ public class HomeFragment extends BaseRVFragment {
 
     @Override
     public void onLoadMore() {
-        getInfo(page);
-    }
-
-    @Override
-    public void onRefresh() {
-        getInfo(page);
-    }
-
-    @Override
-    public void onItemClick(int position) {
-
-    }
-
-    public void getInfo(int page) {
-        for (int i = 0; i < 15; i++) {
-            list.add(R.mipmap.ic_launcher);
-        }
 
     }
 
@@ -76,4 +64,5 @@ public class HomeFragment extends BaseRVFragment {
     public void reload() {
 
     }
+
 }

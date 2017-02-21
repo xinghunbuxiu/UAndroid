@@ -20,8 +20,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.TabsActivity"></activity>
-        <activity android:name=".ui.MainActivity"></activity>
-        <activity android:name=".ui.Main2Activity"></activity>
 
     </application>
 

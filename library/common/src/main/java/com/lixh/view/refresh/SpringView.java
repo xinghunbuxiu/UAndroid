@@ -20,7 +20,7 @@ import com.lixh.view.refresh.ImplPull.StateType;
  * des
  */
 
-public class PullRefreshView extends ViewGroup {
+public class SpringView extends ViewGroup {
     protected FooterView mFooter;
     protected HeaderView mHeader;
     protected View mChildView;
@@ -71,15 +71,15 @@ public class PullRefreshView extends ViewGroup {
         this.onRefreshListener = onRefreshListener;
     }
 
-    public PullRefreshView(Context context) {
+    public SpringView(Context context) {
         this(context, null, 0);
     }
 
-    public PullRefreshView(Context context, AttributeSet attrs) {
+    public SpringView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public PullRefreshView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public SpringView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context, attrs, defStyleAttr);
     }
@@ -109,12 +109,17 @@ public class PullRefreshView extends ViewGroup {
         }
         if (mChildView == null) {
             mChildView = getChildAt(getChildCount() - 1);
+//            CanPullUtil.addScrollListener(mChildView, this);
         }
         if (footView == null && onLoadListener != null) {
             footView = new CustomFootView(context);
             addFootView(footView);
         }
-
+        setImplPull(mHeader);
+        if (autoRefresh) {
+            needResetAnim = true;
+            updating();
+        }
     }
 
     private OverScroller mScroller;
@@ -328,7 +333,6 @@ public class PullRefreshView extends ViewGroup {
                 upLoading();
             }
         } else {
-
             dy = 0;
             if (scrollState == ScrollState.BOTTOM) {
 
@@ -338,7 +342,6 @@ public class PullRefreshView extends ViewGroup {
                     ((RecyclerView) mChildView).scrollBy(0, getScrollY());
                 }
             }
-            scrollState = ScrollState.NONE;
             mScroller.startScroll(0, getScrollY(), 0, -getScrollY(), MOVE_TIME);
             invalidate();
 
@@ -377,19 +380,23 @@ public class PullRefreshView extends ViewGroup {
     public void updating() {
         if (onRefreshListener != null) {
             setStateType(StateType.LOADING);
+            scrollState = ScrollState.NONE;
+            mScroller.startScroll(0, getScrollY(), 0, -getScrollY() - implPull.getHeight(), MOVE_TIME);
             onRefreshListener.onRefresh();
+            invalidate();
         }
-        mScroller.startScroll(0, getScrollY(), 0, -getScrollY() - implPull.getHeight(), MOVE_TIME);
-        invalidate();
+
     }
 
     public void upLoading() {
         if (onLoadListener != null) {
             setStateType(StateType.LOADING);
+            scrollState = ScrollState.NONE;
+            mScroller.startScroll(0, getScrollY(), 0, -getScrollY() + implPull.getHeight(), MOVE_TIME);
             onLoadListener.onLoad();
+            invalidate();
         }
-        mScroller.startScroll(0, getScrollY(), 0, -getScrollY() + implPull.getHeight(), MOVE_TIME);
-        invalidate();
+
     }
 
     public void finishRefreshAndLoadMore() {
