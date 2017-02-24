@@ -2,4 +2,5 @@
 <resources>
     <color name="wheel_timebtn_nor">#54a3fa</color>
     <color name="wheel_timebtn_pre">#CCCCCC</color>
+    <color name="dialog_theme">#FFFFFF</color>
 </resources>

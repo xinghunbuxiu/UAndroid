@@ -194,9 +194,9 @@ public class UFile {
      * @return
      */
     public static File getDir() {
-        String packname = BaseApplication.getAppContext().getPackageName();
-        String name = packname.substring(packname.lastIndexOf(".") + 1,
-                packname.length());
+        String packName = BaseApplication.getAppContext().getPackageName();
+        String name = packName.substring(packName.lastIndexOf(".") + 1,
+                packName.length());
         File dir = null;
         if ((!Environment.getExternalStorageState().equals(
                 Environment.MEDIA_MOUNTED))) {
@@ -248,7 +248,7 @@ public class UFile {
      *
      * @return
      */
-    public static String getdbDir() {
+    public static String getDbDir() {
         File file = new File(getDir().getAbsolutePath() + "/db");
         file.mkdirs();
         return file.getAbsolutePath();

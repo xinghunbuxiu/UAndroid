@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.support.v7.app.AppCompatDelegate;
 
+import com.common.dialog.pickerview.Alert;
 import com.lixh.setting.AppConfig;
 import com.lixh.utils.SharedPreferencesUtil;
 
@@ -22,6 +23,7 @@ public abstract class BaseApplication extends Application  {
     public void onCreate() {
         super.onCreate();
         baseApplication = this;
+        Alert.init(this);
         initPrefs();
         initNightMode();
         init();

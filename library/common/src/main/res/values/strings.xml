@@ -5,13 +5,20 @@
     <string name="loading">请稍后...</string>
     <string name="reload">重新尝试</string>
     <string name="no_net">网络不可用,请检查你的网络</string>
-    <!-- dialog -->
-    <string name="back">返回</string>
-    <string name="dialog_title">提示</string>
-    <string name="ok">确\u3000\u3000定</string>
-    <string name="cancel">取消</string>
-    <string name="finding">加载中···</string>
-    <string name="finish">完成</string>
-    <string name="close">关闭</string>
-    <string name="bind">绑\u3000\u3000定</string>
+
+    <!--更新-->
+    <string name="soft_update_no">已经是最新版本</string>
+    <string name="soft_update_title">软件更新</string>
+    <string name="soft_update_info">检测到新版本，立即更新吗</string>
+    <string name="soft_update_updatebtn">更新</string>
+    <string name="soft_update_later">稍后更新</string>
+    <string name="soft_updating">正在更新</string>
+    <string name="soft_update_cancel">取消</string>
+    <string name="check_versions">检查是否有新版本\u2026</string>
+    <string name="not_connect_networks">网络不给力！</string>
+    <string name="service_error">服务出错！</string>
+    <string name="no_update_tip">您现在使用的是最新版本,不需要更新!</string>
+    <string name="backstage_down">已转入后台下载中！</string>
+    <string name="plug_sdcard_tip">请插入sdcard！</string>
+
 </resources>

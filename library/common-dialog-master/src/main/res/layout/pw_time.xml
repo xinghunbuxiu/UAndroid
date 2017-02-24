@@ -8,8 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@android:color/white"
-        android:gravity="center_vertical"
-         >
+        android:gravity="center_vertical">
 
         <Button
             android:id="@+id/btnCancel"
@@ -47,8 +46,7 @@
         android:layout_alignBottom="@id/timepicker"
         android:background="@drawable/bg_above_timepicker"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
+        android:layout_height="wrap_content" />
     </RelativeLayout>
 
 </LinearLayout>

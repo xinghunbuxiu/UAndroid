@@ -20,7 +20,6 @@ import com.lixh.swipeback.SwipeBackActivityBase;
 import com.lixh.swipeback.Utils;
 import com.lixh.swipeback.app.SwipeBackActivityHelper;
 import com.lixh.swipeback.app.SwipeBackLayout;
-import com.lixh.utils.Alert;
 import com.lixh.utils.Exit;
 import com.lixh.utils.LoadingTip;
 import com.lixh.utils.SharedPreferencesUtil;

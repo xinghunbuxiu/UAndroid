@@ -126,7 +126,7 @@ public class TabsActivity extends BaseActivity<TabPresenter> implements BottomNa
 
     @Override
     public void onTabReselected(int position) {
-
+//       intent.withBoolean("sss",false).withBoolean("dddd",true).go(WelcomeActivity.class);
     }
 
 }

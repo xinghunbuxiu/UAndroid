@@ -74,14 +74,14 @@ public class ClientHelper {
             @Override
             public Response intercept(Chain chain) throws IOException {
                 Request request = chain.request();
-                if (!UNetWork.isNetConnected(BaseApplication.getAppContext())) {
+                if (!UNetWork.isNetworkAvailable(BaseApplication.getAppContext())) {
                     //无网络下强制使用缓存，无论缓存是否过期,此时该请求实际上不会被发送出去。
                     request = request.newBuilder().cacheControl(CacheControl.FORCE_CACHE)
                             .build();
                 }
 
                 Response response = chain.proceed(request);
-                if (!UNetWork.isNetConnected(BaseApplication.getAppContext())) {//有网络情况下，根据请求接口的设置
+                if (!UNetWork.isNetworkAvailable(BaseApplication.getAppContext())) {//有网络情况下，根据请求接口的设置
                     String cacheControl = request.cacheControl().toString();
                     if (cacheControl != null) {//服务端设置了缓存策略，则使用服务端缓存策略
                         return response.newBuilder().header("Cache-Control", cacheControl)

@@ -20,7 +20,7 @@ public class UNetWork {
      * @param paramContext
      * @return
      */
-    public static boolean isNetConnected(Context paramContext) {
+    public static boolean isNetworkAvailable(Context paramContext) {
         boolean i = false;
         NetworkInfo localNetworkInfo = ((ConnectivityManager) paramContext
                 .getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();

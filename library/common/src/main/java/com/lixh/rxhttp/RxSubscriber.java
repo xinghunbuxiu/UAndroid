@@ -7,7 +7,6 @@ import com.lixh.R;
 import com.lixh.app.BaseApplication;
 import com.lixh.rxhttp.exception.ApiException;
 import com.lixh.rxhttp.view.ProgressCancelListener;
-import com.lixh.utils.Alert;
 import com.lixh.utils.UNetWork;
 
 import rx.Subscriber;
@@ -86,7 +85,7 @@ public abstract class RxSubscriber<T> extends Subscriber<T> implements ProgressC
             e.printStackTrace();
         }
         //网络
-        if (!UNetWork.isNetConnected(BaseApplication.getAppContext())) {
+        if (!UNetWork.isNetworkAvailable(BaseApplication.getAppContext())) {
             _onError(BaseApplication.getAppContext().getString(R.string.no_net));
         }
         //服务器
