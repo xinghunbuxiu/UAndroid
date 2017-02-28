@@ -26,6 +26,7 @@ import com.lixh.utils.SharedPreferencesUtil;
 import com.lixh.utils.StatusBarCompat;
 import com.lixh.utils.TUtil;
 import com.lixh.utils.UIntent;
+import com.lixh.utils.UToast;
 import com.lixh.view.LoadView;
 import com.lixh.view.UToolBar;
 
@@ -257,7 +258,7 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
                 AppManager.getAppManager().NotifyExitApp();
             } else {
                 exit.doExitInOneSecond();
-                Alert.showShort("再按一次退出");
+                UToast.showShort("再按一次退出");
             }
         } else {
             super.onBackPressed();

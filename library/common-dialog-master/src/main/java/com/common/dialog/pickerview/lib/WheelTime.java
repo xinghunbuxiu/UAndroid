@@ -3,8 +3,8 @@ package com.common.dialog.pickerview.lib;
 import android.content.Context;
 import android.view.View;
 
+import com.common.dialog.Alert.TimeType;
 import com.common.dialog.R;
-import com.common.dialog.pickerview.TimePopupWindow.Type;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -21,8 +21,8 @@ public class WheelTime {
 	private WheelView wv_hours;
 	private WheelView wv_mins;
 	public int screenheight;
-	
-	private Type type;
+	@TimeType
+	private int type;
 	private static int START_YEAR = 1990, END_YEAR = 2100;
 
 	public View getView() {
@@ -52,10 +52,11 @@ public class WheelTime {
 	public WheelTime(View view) {
 		super();
 		this.view = view;
-		type = Type.ALL;
+		type = TimeType.All;
 		setView(view);
 	}
-	public WheelTime(View view,Type type) {
+
+	public WheelTime(View view, @TimeType int type) {
 		super();
 		this.view = view;
 		this.type = type;
@@ -163,21 +164,21 @@ public class WheelTime {
 		// 根据屏幕密度来指定选择器字体的大小(不同屏幕可能不同)
 		int textSize = 0;
 		switch(type){
-		case ALL:
+			case TimeType.All:
 			textSize = (screenheight / 100) * 3;
 			break;
-		case YEAR_MONTH_DAY:
+			case TimeType.Year_Month_Day:
 			textSize = (screenheight / 100) * 4;
 			wv_hours.setVisibility(View.GONE);
 			wv_mins.setVisibility(View.GONE);
 			break;
-		case HOURS_MINS:
+			case TimeType.Hours_Min:
 			textSize = (screenheight / 100) * 4;
 			wv_year.setVisibility(View.GONE);
 			wv_month.setVisibility(View.GONE);
 			wv_day.setVisibility(View.GONE);
 			break;
-		case MONTH_DAY_HOUR_MIN:
+			case TimeType.Month_Day_Hour_Min:
 			textSize = (screenheight / 100) * 3;
 			wv_year.setVisibility(View.GONE);
 			break;

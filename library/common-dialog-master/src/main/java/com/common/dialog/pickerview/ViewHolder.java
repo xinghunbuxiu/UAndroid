@@ -1,6 +1,7 @@
 package com.common.dialog.pickerview;
 
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -44,6 +45,34 @@ public class ViewHolder {
         return this;
     }
 
+    /**
+     * 设置TextView的值
+     *
+     * @param viewId
+     * @param text
+     * @param onClickListener
+     * @return
+     */
+    public ViewHolder setText(int viewId, String text, View.OnClickListener onClickListener) {
+        TextView tv = $(viewId);
+        tv.setText(text);
+        tv.setOnClickListener(onClickListener);
+        return this;
+    }
+    /**
+     * 设置TextView的值
+     *
+     * @param viewId
+     * @param text
+     * @param onClickListener
+     * @return
+     */
+    public ViewHolder setBtnText(int viewId, String text, View.OnClickListener onClickListener) {
+        Button tv = $(viewId);
+        tv.setText(text);
+        tv.setOnClickListener(onClickListener);
+        return this;
+    }
     public ViewHolder setOnClickListener(int viewId, View.OnClickListener onClickListener) {
         View view = $(viewId);
         view.setOnClickListener(onClickListener);

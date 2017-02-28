@@ -36,7 +36,7 @@ public abstract class LaunchActivity extends AppCompatActivity {
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            intent.toActivity(toActivity(msg.what));
+            intent.go(toActivity(msg.what));
             finish();
             super.handleMessage(msg);
         }
