@@ -14,8 +14,6 @@ import android.view.View;
 import com.common.dialog.Alert;
 import com.lixh.R;
 
-import java.util.HashMap;
-
 /**
  * @author Administrator 更新应用版本API
  */
@@ -91,14 +89,14 @@ public class UpdateHelper {
     Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            Alert.cancelDialog();
+            Alert.dismiss();
             String msgStr = msg.obj.toString();
             switch (msg.what) {
                 case 1:
                     builder.getOnResultListener().parse(msgStr);
                     break;
                 case 2:
-                    Alert.showShort(R.string.not_connect_networks);
+                    UToast.showShort(R.string.not_connect_networks);
                     break;
             }
         }
@@ -112,7 +110,7 @@ public class UpdateHelper {
                 try {
                     if (UNetWork.isNetworkAvailable(context)) {// 判断网络是否可用
                         //请求
-                        msg.obj = builder.getOnResultListener().post("", new HashMap<String, String>());
+                        msg.obj = builder.getOnResultListener().post();
                         msg.what = 1;
                     } else {
                         // 网络异常时
@@ -131,7 +129,7 @@ public class UpdateHelper {
     public Runnable showUpdate = new Runnable() {
         public void run() {
             // 更新
-            Alert.displayAlertDialog("发现新版本", "最新版本:" + "\n"
+            Alert.displayAlertDialog(context, "发现新版本", "最新版本:" + "\n"
                     + versionName, "立即更新", "以后再说", new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -142,9 +140,9 @@ public class UpdateHelper {
                         context.bindService(updateIntent, builder.getServiceConnection(),
                                 Context.BIND_AUTO_CREATE);
 
-                        Alert.showLong(R.string.backstage_down);
+                        UToast.showLong(R.string.backstage_down);
                     } else {
-                        Alert.showLong(R.string.plug_sdcard_tip);
+                        UToast.showLong(R.string.plug_sdcard_tip);
                     }
                 }
             }, null);

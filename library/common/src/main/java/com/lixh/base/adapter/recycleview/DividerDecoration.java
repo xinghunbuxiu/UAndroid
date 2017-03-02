@@ -1,4 +1,4 @@
-package com.lixh.uandroid.ui;
+package com.lixh.base.adapter.recycleview;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -14,7 +14,7 @@ import android.view.View;
  * 介绍：分割线
  * 时间：2016/9/23
  */
-public class LinearLayoutDecoration extends RecyclerView.ItemDecoration {
+public class DividerDecoration extends RecyclerView.ItemDecoration {
     public RecyclerView getRecyclerView() {
         return recyclerView;
     }
@@ -49,7 +49,7 @@ public class LinearLayoutDecoration extends RecyclerView.ItemDecoration {
      * @param context
      * @param orientation
      */
-    public LinearLayoutDecoration(Context context, int orientation, int mItemSize, int Color) {
+    public DividerDecoration(Context context, int orientation, int mItemSize, int Color) {
         this.mOrientation = orientation;
         if (orientation != LinearLayoutManager.VERTICAL && orientation != LinearLayoutManager.HORIZONTAL) {
             throw new IllegalArgumentException("请传入正确的参数");
@@ -133,11 +133,4 @@ public class LinearLayoutDecoration extends RecyclerView.ItemDecoration {
         }
     }
 
-    public int getmItemSize() {
-        return mItemSize;
-    }
-
-    public void setmItemSize(int mItemSize) {
-        this.mItemSize = mItemSize;
-    }
 }

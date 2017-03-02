@@ -1,78 +1,77 @@
 package com.lixh.uandroid.ui.fragment;
 
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
+import android.os.Handler;
 import android.view.View;
 
-import com.lixh.base.BaseRVFragment;
-import com.lixh.base.adapter.BaseViewHolder;
+import com.lixh.base.BaseFragment;
+import com.lixh.base.Page;
+import com.lixh.base.adapter.recycleview.BaseViewHolder;
 import com.lixh.uandroid.R;
+import com.lixh.utils.ULog;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class FirstFragment extends BaseRVFragment {
+public class FirstFragment extends BaseFragment {
+    Page.Builder builder;
 
 
-    public static FirstFragment newInstance(String param1) {
-        FirstFragment fragment = new FirstFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
+    public FirstFragment() {
+
     }
 
+    int i = 0;
     @Override
-    public boolean initTitle() {
-        toolBar.setTitle("listView");
-        return true;
-    }
-
-    CommonArrayAdapter arrayAdapter;
-    @Override
-    public RecyclerView.Adapter initAdapter() {
-        arrayAdapter = new CommonArrayAdapter<Integer>(R.layout.item_ciew) {
-
+    protected void init(Bundle savedInstanceState) {
+        builder = new Page.Builder<Integer>(activity) {
             @Override
-            protected void onBindData(BaseViewHolder viewHolder, int position, Integer item) {
-                super.onBindData(viewHolder, position, item);
+            public void onBindViewData(BaseViewHolder viewHolder, int position, Integer item) {
+                i++;
+                ULog.e(i + "");
             }
 
             @Override
             public void onItemClick(View view, int position, Integer data) {
 
             }
-        };
-        return arrayAdapter;
+        }.setAutoLoadMore(true).setRefresh(true).setDivideHeight(R.dimen.space_7, android.R.color.primary_text_light);
+        builder.setOnLoadingListener(onLoadingListener);
+        builder.setArrayAdapter(R.layout.item_ciew);
+        Page page=builder.Build(Page.PageType.List);
+        layout.setContentView(page.getRootView());
     }
 
-    @Override
-    public void onLoadMore() {
-        getInfo(page);
-    }
-
-    @Override
-    public void onRefresh() {
-        getInfo(page);
-    }
-
-    public void getInfo(int page) {
-        finishRefreshAndLoadMore();
-        mRecyclerView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-               List<Integer> list = new ArrayList<>();
-                for (int i = 0; i < 15; i++) {
-                    list.add(R.mipmap.ic_launcher);
+    Page.OnLoadingListener onLoadingListener = new Page.OnLoadingListener() {
+        @Override
+        public void load(int page, final Page.OnLoadFinish onLoadFinish) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    List<Integer> list = new ArrayList<>();
+                    for (int i = 0; i < 15; i++) {
+                        list.add(R.mipmap.ic_launcher);
+                    }
+                    onLoadFinish.finish(list);
                 }
-                arrayAdapter.addAll(list);
-            }
-        }, 100);
-
-
+            }, 100);
+        }
+    };
+    @Override
+    public boolean initTitle() {
+        toolBar.setTitle("listView");
+        return true;
     }
+
+    @Override
+    public int getLayoutId() {
+      return   0;
+    }
+
     @Override
     public void reload() {
 
     }
+
 }

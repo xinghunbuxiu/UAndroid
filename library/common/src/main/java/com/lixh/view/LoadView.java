@@ -2,7 +2,6 @@ package com.lixh.view;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.annotation.LayoutRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +29,8 @@ public class LoadView  extends Observable {
     LoadingTip tip;
     Builder builder;
     UToolBar toolbar;
-
+    FrameLayout bottomView;
+    protected SwipeBackLayout layout;
     //定义通用的布局 根布局为Liearlayout +ToolBar + LinearLayout
     public LoadView(Builder builder) {
         this.builder = builder;
@@ -52,7 +52,10 @@ public class LoadView  extends Observable {
     //通用布局
     public void commonView(Builder builder) {
         RootView = (LinearLayout) inflate(R.layout.toolbar_layout);
-        RootView.addView(getBottomView(builder));
+        bottomView = new FrameLayout(mContext);
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        bottomView.setLayoutParams(lp);
+        RootView.addView(getContentView(builder));
         initLayout();
     }
 
@@ -69,19 +72,20 @@ public class LoadView  extends Observable {
         return (int) (spValue * fontScale + 0.5f);
     }
 
-    protected SwipeBackLayout layout;
+    public void setContentView(View view) {
+        bottomView.addView(view);
+    }
 
     /**
      * 创建内容的布局 这里用的事RelativeLayout
      */
-    public View getBottomView(Builder builder) {
-        FrameLayout r = new FrameLayout(mContext);
-        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        r.setLayoutParams(lp);
+    public View getContentView(Builder builder) {
         tip = getEmptyView();
-        r.addView(tip);
-        r.addView(inflate(builder.getBottomView()));
-        return r;
+        bottomView.addView(tip);
+        if (builder.getBottomLayout() > 0) {
+            bottomView.addView(inflate(builder.getBottomLayout()));
+        }
+        return bottomView;
     }
 
     public LoadingTip getEmptyView() {
@@ -98,25 +102,24 @@ public class LoadView  extends Observable {
         return view;
     }
 
-
-
     public static class Builder {
 
-        int mBottomView;
+        int mBottomLayout;
         boolean hasToolbar;
-
+        View mBottomView;
         public Builder(Activity context) {
             mContext = context;
-            mBottomView = -1;
+            mBottomLayout = -1;
+            mBottomView = null;
             hasToolbar=true;
         }
 
-        public int getBottomView() {
-            return mBottomView;
+        public int getBottomLayout() {
+            return mBottomLayout;
         }
 
-        public Builder setBottomView(@LayoutRes int mBottomView) {
-            this.mBottomView = mBottomView;
+        public Builder setBottomLayout(int mBottomLayout) {
+            this.mBottomLayout = mBottomLayout;
             return this;
         }
 

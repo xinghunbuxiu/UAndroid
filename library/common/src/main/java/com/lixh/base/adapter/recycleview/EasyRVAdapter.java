@@ -1,4 +1,4 @@
-package com.lixh.base.adapter;
+package com.lixh.base.adapter.recycleview;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -6,6 +6,8 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.lixh.base.adapter.DataHelper;
 
 import java.util.List;
 
@@ -17,7 +19,7 @@ import java.util.List;
  */
 public abstract class EasyRVAdapter<T> extends RecyclerView.Adapter<EasyRVHolder> implements DataHelper<T> {
 
-    protected Context mContext;
+    protected Context context;
     protected List<T> mList;
     protected int[] layoutIds;
     protected LayoutInflater mLInflater;
@@ -25,10 +27,10 @@ public abstract class EasyRVAdapter<T> extends RecyclerView.Adapter<EasyRVHolder
     private SparseArray<View> mConvertViews = new SparseArray<>();
 
     public EasyRVAdapter(Context context, List<T> list, int... layoutIds) {
-        this.mContext = context;
+        this.context = context;
         this.mList = list;
         this.layoutIds = layoutIds;
-        this.mLInflater = LayoutInflater.from(mContext);
+        this.mLInflater = LayoutInflater.from(this.context);
     }
 
     @Override
@@ -46,7 +48,7 @@ public abstract class EasyRVAdapter<T> extends RecyclerView.Adapter<EasyRVHolder
         }
         EasyRVHolder viewHolder = (EasyRVHolder) view.getTag();
         if (viewHolder == null || viewHolder.getLayoutId() != layoutId) {
-            viewHolder = new EasyRVHolder(mContext, layoutId, view);
+            viewHolder = new EasyRVHolder(context, layoutId, view);
             return viewHolder;
         }
         return viewHolder;

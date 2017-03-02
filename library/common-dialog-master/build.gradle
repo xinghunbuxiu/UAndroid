@@ -24,4 +24,5 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.android.support:support-annotations:24.2.1'
+    compile 'com.tbruyelle.rxpermissions:rxpermissions:0.7.0'
 }

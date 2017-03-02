@@ -2,6 +2,7 @@ package com.lixh.rxhttp;
 
 import android.content.Context;
 
+import com.common.dialog.Alert;
 import com.lixh.BuildConfig;
 import com.lixh.R;
 import com.lixh.app.BaseApplication;
@@ -42,8 +43,7 @@ public abstract class RxSubscriber<T> extends Subscriber<T> implements ProgressC
     public void onCompleted() {
         _onFinish();
         if (showDialog)
-            Alert.cancelDialog();
-
+            Alert.dismiss();
 
     }
     @Override
@@ -64,7 +64,7 @@ public abstract class RxSubscriber<T> extends Subscriber<T> implements ProgressC
     public void showProgressDialog() {
         if (showDialog) {
             try {
-                Alert.showDialog(R.layout.alert_proress);
+                Alert.showCustomDialog(mContext,R.layout.alert_proress);
             } catch (Exception e) {
 
                 e.printStackTrace();
@@ -80,7 +80,7 @@ public abstract class RxSubscriber<T> extends Subscriber<T> implements ProgressC
     @Override
     public void onError(Throwable e) {
         if (showDialog)
-            Alert.cancelDialog();
+            Alert.dismiss();
         if (BuildConfig.DEBUG) {
             e.printStackTrace();
         }

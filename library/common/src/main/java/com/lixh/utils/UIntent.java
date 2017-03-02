@@ -1,14 +1,19 @@
 package com.lixh.utils;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.NavUtils;
 import android.support.v4.app.TaskStackBuilder;
+import android.util.Size;
+import android.util.SizeF;
 import android.util.SparseArray;
 
 import java.io.Serializable;
@@ -22,8 +27,7 @@ import java.util.ArrayList;
 
 public class UIntent {
     public Activity mContext;
-    Intent mIntent;
-    Bundle mBundle;
+    private Bundle mBundle;
     private int flags = -1;         // Flags of route
 
     /**
@@ -37,6 +41,14 @@ public class UIntent {
         return this;
     }
 
+    public Bundle getBundle() {
+        return mBundle;
+    }
+
+    public UIntent getNewBundle() {
+        mBundle = new Bundle();
+        return this;
+    }
     /**
      * Set special flags controlling how this intent is handled.  Most values
      * here depend on the type of component being executed by the Intent,
@@ -347,6 +359,7 @@ public class UIntent {
 
     public UIntent(Activity mContext) {
         this.mContext = mContext;
+        mBundle = mContext.getIntent().getExtras();
     }
 
 
@@ -363,6 +376,353 @@ public class UIntent {
         localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(localIntent);
     }
+
+    /**
+     * Returns the value associated with the given key, or (byte) 0 if
+     * no mapping of the desired type exists for the given key.
+     *
+     * @param key a String
+     * @return a byte value
+     */
+    public byte getByte(String key) {
+        return mBundle.getByte(key);
+    }
+
+    /**
+     * Returns the value associated with the given key, or defaultValue if
+     * no mapping of the desired type exists for the given key.
+     *
+     * @param key          a String
+     * @param defaultValue Value to return if key does not exist
+     * @return a byte value
+     */
+    public Byte getByte(String key, byte defaultValue) {
+        return mBundle.getByte(key, defaultValue);
+    }
+
+    /**
+     * Returns the value associated with the given key, or (char) 0 if
+     * no mapping of the desired type exists for the given key.
+     *
+     * @param key a String
+     * @return a char value
+     */
+    public char getChar(String key) {
+        return mBundle.getChar(key);
+    }
+
+    /**
+     * Returns the value associated with the given key, or defaultValue if
+     * no mapping of the desired type exists for the given key.
+     *
+     * @param key          a String
+     * @param defaultValue Value to return if key does not exist
+     * @return a char value
+     */
+
+    public char getChar(String key, char defaultValue) {
+        return mBundle.getChar(key, defaultValue);
+    }
+
+    /**
+     * Returns the value associated with the given key, or (short) 0 if
+     * no mapping of the desired type exists for the given key.
+     *
+     * @param key a String
+     * @return a short value
+     */
+
+    public short getShort(String key) {
+        return mBundle.getShort(key);
+    }
+
+    /**
+     * Returns the value associated with the given key, or defaultValue if
+     * no mapping of the desired type exists for the given key.
+     *
+     * @param key          a String
+     * @param defaultValue Value to return if key does not exist
+     * @return a short value
+     */
+    public short getShort(String key, short defaultValue) {
+        return mBundle.getShort(key, defaultValue);
+    }
+
+    /**
+     * Returns the value associated with the given key, or 0.0f if
+     * no mapping of the desired type exists for the given key.
+     *
+     * @param key a String
+     * @return a float value
+     */
+    public float getFloat(String key) {
+        return mBundle.getFloat(key);
+    }
+
+    /**
+     * Returns the value associated with the given key, or defaultValue if
+     * no mapping of the desired type exists for the given key.
+     *
+     * @param key          a String
+     * @param defaultValue Value to return if key does not exist
+     * @return a float value
+     */
+    public float getFloat(String key, float defaultValue) {
+        return mBundle.getFloat(key, defaultValue);
+    }
+
+    /**
+     * Returns the value associated with the given key, or null if
+     * no mapping of the desired type exists for the given key or a null
+     * value is explicitly associated with the key.
+     *
+     * @param key a String, or null
+     * @return a CharSequence value, or null
+     */
+    @Nullable
+    public CharSequence getCharSequence(@Nullable String key) {
+        return mBundle.getCharSequence(key);
+    }
+
+    /**
+     * Returns the value associated with the given key, or defaultValue if
+     * no mapping of the desired type exists for the given key or if a null
+     * value is explicitly associatd with the given key.
+     *
+     * @param key          a String, or null
+     * @param defaultValue Value to return if key does not exist or if a null
+     *                     value is associated with the given key.
+     * @return the CharSequence value associated with the given key, or defaultValue
+     * if no valid CharSequence object is currently mapped to that key.
+     */
+    public CharSequence getCharSequence(@Nullable String key, CharSequence defaultValue) {
+        return mBundle.getCharSequence(key, defaultValue);
+    }
+
+    /**
+     * Returns the value associated with the given key, or null if
+     * no mapping of the desired type exists for the given key or a null
+     * value is explicitly associated with the key.
+     *
+     * @param key a String, or null
+     * @return a Size value, or null
+     */
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @Nullable
+    public Size getSize(@Nullable String key) {
+        return mBundle.getSize(key);
+    }
+
+    /**
+     * Returns the value associated with the given key, or null if
+     * no mapping of the desired type exists for the given key or a null
+     * value is explicitly associated with the key.
+     *
+     * @param key a String, or null
+     * @return a Size value, or null
+     */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    @Nullable
+    public SizeF getSizeF(@Nullable String key) {
+        return mBundle.getSizeF(key);
+    }
+
+    /**
+     * Returns the value associated with the given key, or null if
+     * no mapping of the desired type exists for the given key or a null
+     * value is explicitly associated with the key.
+     *
+     * @param key a String, or null
+     * @return a Bundle value, or null
+     */
+    @Nullable
+    public Bundle getBundle(@Nullable String key) {
+        return mBundle.getBundle(key);
+    }
+
+    /**
+     * Returns the value associated with the given key, or null if
+     * no mapping of the desired type exists for the given key or a null
+     * value is explicitly associated with the key.
+     *
+     * @param key a String, or null
+     * @return a Parcelable value, or null
+     */
+    @Nullable
+    public <T extends Parcelable> T getParcelable(@Nullable String key) {
+        return mBundle.getParcelable(key);
+    }
+
+    /**
+     * Returns the value associated with the given key, or null if
+     * no mapping of the desired type exists for the given key or a null
+     * value is explicitly associated with the key.
+     *
+     * @param key a String, or null
+     * @return a Parcelable[] value, or null
+     */
+    @Nullable
+    public Parcelable[] getParcelableArray(@Nullable String key) {
+        return mBundle.getParcelableArray(key);
+    }
+
+    /**
+     * Returns the value associated with the given key, or null if
+     * no mapping of the desired type exists for the given key or a null
+     * value is explicitly associated with the key.
+     *
+     * @param key a String, or null
+     * @return an ArrayList<T> value, or null
+     */
+    @Nullable
+    public <T extends Parcelable> ArrayList<T> getParcelableArrayList(@Nullable String key) {
+        return mBundle.getParcelableArrayList(key);
+    }
+
+    /**
+     * Returns the value associated with the given key, or null if
+     * no mapping of the desired type exists for the given key or a null
+     * value is explicitly associated with the key.
+     *
+     * @param key a String, or null
+     * @return a SparseArray of T values, or null
+     */
+    @Nullable
+    public <T extends Parcelable> SparseArray<T> getSparseParcelableArray(@Nullable String key) {
+        return mBundle.getSparseParcelableArray(key);
+    }
+
+    /**
+     * Returns the value associated with the given key, or null if
+     * no mapping of the desired type exists for the given key or a null
+     * value is explicitly associated with the key.
+     *
+     * @param key a String, or null
+     * @return a Serializable value, or null
+     */
+    @Nullable
+    public Serializable getSerializable(@Nullable String key) {
+        return mBundle.getSerializable(key);
+    }
+
+    /**
+     * Returns the value associated with the given key, or null if
+     * no mapping of the desired type exists for the given key or a null
+     * value is explicitly associated with the key.
+     *
+     * @param key a String, or null
+     * @return an ArrayList<String> value, or null
+     */
+    @Nullable
+    public ArrayList<Integer> getIntegerArrayList(@Nullable String key) {
+        return mBundle.getIntegerArrayList(key);
+    }
+
+    /**
+     * Returns the value associated with the given key, or null if
+     * no mapping of the desired type exists for the given key or a null
+     * value is explicitly associated with the key.
+     *
+     * @param key a String, or null
+     * @return an ArrayList<String> value, or null
+     */
+    @Nullable
+    public ArrayList<String> getStringArrayList(@Nullable String key) {
+        return mBundle.getStringArrayList(key);
+    }
+
+    /**
+     * Returns the value associated with the given key, or null if
+     * no mapping of the desired type exists for the given key or a null
+     * value is explicitly associated with the key.
+     *
+     * @param key a String, or null
+     * @return an ArrayList<CharSequence> value, or null
+     */
+    @Nullable
+    public ArrayList<CharSequence> getCharSequenceArrayList(@Nullable String key) {
+        return mBundle.getCharSequenceArrayList(key);
+    }
+
+    /**
+     * Returns the value associated with the given key, or null if
+     * no mapping of the desired type exists for the given key or a null
+     * value is explicitly associated with the key.
+     *
+     * @param key a String, or null
+     * @return a byte[] value, or null
+     */
+    @Nullable
+    public byte[] getByteArray(@Nullable String key) {
+        return mBundle.getByteArray(key);
+    }
+
+    /**
+     * Returns the value associated with the given key, or null if
+     * no mapping of the desired type exists for the given key or a null
+     * value is explicitly associated with the key.
+     *
+     * @param key a String, or null
+     * @return a short[] value, or null
+     */
+    @Nullable
+    public short[] getShortArray(@Nullable String key) {
+        return mBundle.getShortArray(key);
+    }
+
+    /**
+     * Returns the value associated with the given key, or null if
+     * no mapping of the desired type exists for the given key or a null
+     * value is explicitly associated with the key.
+     *
+     * @param key a String, or null
+     * @return a char[] value, or null
+     */
+    @Nullable
+    public char[] getCharArray(@Nullable String key) {
+        return mBundle.getCharArray(key);
+    }
+
+    /**
+     * Returns the value associated with the given key, or null if
+     * no mapping of the desired type exists for the given key or a null
+     * value is explicitly associated with the key.
+     *
+     * @param key a String, or null
+     * @return a float[] value, or null
+     */
+    @Nullable
+    public float[] getFloatArray(@Nullable String key) {
+        return mBundle.getFloatArray(key);
+    }
+
+    /**
+     * Returns the value associated with the given key, or null if
+     * no mapping of the desired type exists for the given key or a null
+     * value is explicitly associated with the key.
+     *
+     * @param key a String, or null
+     * @return a CharSequence[] value, or null
+     */
+    @Nullable
+    public CharSequence[] getCharSequenceArray(@Nullable String key) {
+        return mBundle.getCharSequenceArray(key);
+    }
+
+    /**
+     * Returns the value associated with the given key, or null if
+     * no mapping of the desired type exists for the given key or a null
+     * value is explicitly associated with the key.
+     *
+     * @param key a String, or null
+     * @return an IBinder value, or null
+     */
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+    @Nullable
+    public IBinder getBinder(@Nullable String key) {
+        return mBundle.getBinder(key);
+    }
+
 
     /**
      * 跳转到父Activity
@@ -394,7 +754,7 @@ public class UIntent {
     }
 
     /**
-     * 含有Bundle通过Class跳转界面
+     * &#x542b;&#x6709;Bundle&#x901a;&#x8fc7;Class&#x8df3;&#x8f6c;&#x754c;&#x9762;
      **/
     public void goForResult(Class<?> cls, int requestCode) {
         Intent mIntent = new Intent(mContext, cls);
@@ -403,5 +763,6 @@ public class UIntent {
         }
         mContext.startActivityForResult(mIntent, requestCode);
     }
+
 
 }

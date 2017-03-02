@@ -85,11 +85,11 @@ public class TabsActivity extends BaseActivity<TabPresenter> implements BottomNa
 
     private ArrayList<Fragment> getFragments() {
         ArrayList<Fragment> fragments = new ArrayList<>();
-        fragments.add(HomeFragment.newInstance("Home"));
-        fragments.add(FirstFragment.newInstance("Books"));
-        fragments.add(SecondFragment.newInstance("Music"));
-        fragments.add(ThreeFragment.newInstance("Movies & TV"));
-        fragments.add(FourFragment.newInstance("Games"));
+        fragments.add(new HomeFragment());
+        fragments.add(new FirstFragment());
+        fragments.add(new SecondFragment());
+        fragments.add(new ThreeFragment());
+        fragments.add(new FourFragment());
         return fragments;
     }
 
@@ -129,4 +129,8 @@ public class TabsActivity extends BaseActivity<TabPresenter> implements BottomNa
 //       intent.withBoolean("sss",false).withBoolean("dddd",true).go(WelcomeActivity.class);
     }
 
+    @Override
+    public void reload() {
+
+    }
 }

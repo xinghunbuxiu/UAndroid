@@ -83,7 +83,7 @@ public class UpdateService extends Service {
                                     startDownload(downloadUrl, saveFileName);
                                 } else {
                                     // 请求失败回收当前服务
-                                    Alert.showShort("没有SD卡储存权限,下载失败");
+                                    UToast.showShort("没有SD卡储存权限,下载失败");
                                     intentWebDown(downloadUrl);
                                     stopSelf();
                                 }

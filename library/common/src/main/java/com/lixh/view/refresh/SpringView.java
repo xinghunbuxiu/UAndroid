@@ -109,7 +109,6 @@ public class SpringView extends ViewGroup {
         }
         if (mChildView == null) {
             mChildView = getChildAt(getChildCount() - 1);
-//            CanPullUtil.addScrollListener(mChildView, this);
         }
         if (footView == null && onLoadListener != null) {
             footView = new CustomFootView(context);
@@ -357,6 +356,9 @@ public class SpringView extends ViewGroup {
     }
     @Override
     public void scrollTo(int x, int y) {
+        if (implPull == null) {
+            return;
+        }
         implPull.Scroll(MAX_HEADER_PULL_HEIGHT, y);
         if (scrollState == ScrollState.TOP) {
             if (y > -implPull.getHeight()) {

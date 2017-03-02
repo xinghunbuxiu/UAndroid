@@ -16,12 +16,8 @@ public class FourFragment extends BaseFragment {
     WebView webView;
     @Bind(R.id.refresh)
     SpringView refresh;
+    public FourFragment() {
 
-    public static FourFragment newInstance(String param1) {
-        FourFragment fragment = new FourFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override

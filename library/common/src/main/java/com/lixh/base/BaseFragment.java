@@ -24,7 +24,7 @@ import com.lixh.view.UToolBar;
 import butterknife.ButterKnife;
 import rx.subjects.BehaviorSubject;
 
-public abstract class BaseFragment<T extends BasePresenter> extends Fragment implements Observer<Message> {
+public abstract class BaseFragment<T extends BasePresenter> extends Fragment implements Observer<Message>, LoadingTip.onReloadListener {
     T mPresenter; //当前类需要的操作类
     public Activity activity;
     public LoadingTip tip;
@@ -44,18 +44,19 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment imp
         return (T) this;
     }
 
+
     @Override
     public void onAttach(Context context) {
         lifecycleSubject.onNext(LifeEvent.ATTACH);
         super.onAttach(context);
         this.activity = (Activity) context;
-        layout = new LoadView.Builder(activity).setBottomView(getLayoutId()).setToolBar(hasToolBar()).build();
+        layout = new LoadView.Builder(activity).setBottomLayout(getLayoutId()).setToolBar(hasToolBar()).build();
         layout.addObserver(this);
         intent = new UIntent(activity);
         tip = layout.getEmptyView();
-
+        //重新请求监听
+        tip.setOnReloadListener(this);
     }
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         lifecycleSubject.onNext(LifeEvent.CREATE);
@@ -66,6 +67,7 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment imp
         return true;
     }
     public abstract boolean initTitle();
+
     public abstract int getLayoutId();
 
     private void initTitleBar() {
@@ -184,6 +186,11 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment imp
 
     @Override
     public void update(Observable o, Message arg) {
+
+    }
+
+    @Override
+    public void reload() {
 
     }
 }

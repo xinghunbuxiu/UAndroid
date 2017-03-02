@@ -36,7 +36,7 @@ public class UToast {
      *
      * @param strResId
      */
-    public void showShort(int strResId) {
+    public static void showShort(int strResId) {
         initToast(BaseApplication.getAppResources().getText(strResId), Toast.LENGTH_SHORT).show();
     }
 
@@ -45,7 +45,7 @@ public class UToast {
      *
      * @param message
      */
-    public void showLong(CharSequence message) {
+    public static void showLong(CharSequence message) {
         initToast(message, Toast.LENGTH_LONG).show();
     }
 
@@ -54,7 +54,7 @@ public class UToast {
      *
      * @param strResId
      */
-    public void showLong(int strResId) {
+    public static void showLong(int strResId) {
         initToast(BaseApplication.getAppResources().getText(strResId), Toast.LENGTH_LONG).show();
     }
 
@@ -64,7 +64,7 @@ public class UToast {
      * @param message
      * @param duration
      */
-    public void show(CharSequence message, int duration) {
+    public static void show(CharSequence message, int duration) {
         initToast(message, duration).show();
     }
 
@@ -75,7 +75,7 @@ public class UToast {
      * @param strResId
      * @param duration
      */
-    public void show(Context context, int strResId, int duration) {
+    public static void show(Context context, int strResId, int duration) {
         initToast(context.getResources().getText(strResId), duration).show();
     }
 

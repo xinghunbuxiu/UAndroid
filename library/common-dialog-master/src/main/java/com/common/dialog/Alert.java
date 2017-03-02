@@ -1,5 +1,6 @@
 package com.common.dialog;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
@@ -7,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
+import android.support.annotation.LayoutRes;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +19,14 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.common.dialog.ImpAlert.ChoiceModelItemClickListener;
+import com.common.dialog.ImpAlert.DialogType;
+import com.common.dialog.ImpAlert.IBindView;
+import com.common.dialog.ImpAlert.OnOptionsSelectListener;
+import com.common.dialog.ImpAlert.OnSelectedItemListener;
+import com.common.dialog.ImpAlert.Type;
 import com.common.dialog.effects.BaseEffects;
 import com.common.dialog.effects.FadeIn;
 import com.common.dialog.effects.Fall;
@@ -34,22 +43,19 @@ import com.common.dialog.effects.SlideRight;
 import com.common.dialog.effects.SlideTop;
 import com.common.dialog.effects.Slit;
 import com.common.dialog.pickerview.BaseAdapter;
-import com.common.dialog.ImpAlert.ChoiceModelItemClickListener;
-import com.common.dialog.ImpAlert.DialogType;
-import com.common.dialog.ImpAlert.IBindView;
-import com.common.dialog.ImpAlert.OnOptionsSelectListener;
-import com.common.dialog.ImpAlert.OnSelectedItemListener;
-import com.common.dialog.ImpAlert.Type;
 import com.common.dialog.pickerview.ViewHolder;
 import com.common.dialog.pickerview.lib.ScreenInfo;
 import com.common.dialog.pickerview.lib.WheelOptions;
 import com.common.dialog.pickerview.lib.WheelTime;
+import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+
+import rx.functions.Action1;
 
 import static com.common.dialog.ImpAlert.AlertCancelListener;
 import static com.common.dialog.ImpAlert.EffectsType;
@@ -68,15 +74,36 @@ public class Alert {
     /**
      * 加载数据对话框
      */
-    private Dialog dialog;
-    private PopupWindow mPopView;
+    private static Dialog dialog;
+    private static PopupWindow mPopView;
     long mDuration = 0L;
     private Builder builder;
     WheelTime wheelTime;
     ScreenInfo screenInfo;
 
+    public static void showCustomDialog(Context context, @LayoutRes int layoutId) {
+        Alert.Builder mBuilder = new Builder(context);
+        mBuilder.setLayoutId(layoutId).Build(DialogType.Custom);
+    }
 
+    public static void displayAlertDialog(Context context, String title, String msg, String okStr, String cancelStr, View.OnClickListener onOkClickListener, View.OnClickListener onCancelClickListener) {
+        Alert.Builder mBuilder = new Builder(context);
+        mBuilder.setTitle(title).setMessage(msg).setOkBtnStr(okStr).setCancelStr(cancelStr)
+                .setOnOkClickListener(onOkClickListener).setOnCancelClickLister(onCancelClickListener)
+                .Build(DialogType.Warn);
+    }
 
+    /**
+     * 关闭加载对话框
+     */
+    public static void dismiss() {
+        if (mPopView != null) {
+            mPopView.dismiss();
+        }
+        if (dialog != null) {
+            dialog.cancel();
+        }
+    }
     private class MenuItem {
         private OnSelectedItemListener onSelectedItemListener;
         private int position;
@@ -161,11 +188,22 @@ public class Alert {
             mPopView.showAtLocation(parent, gravity, x, y);
     }
 
-    public Alert(Builder builder, @Type int type) {
+    public Alert(Builder builder, @Type int type, @DialogType int dialogType) {
         this.builder = builder;
         screenInfo = new ScreenInfo((Activity) mContext);
-        int dialog_type = builder.getDialogType();
-        switch (dialog_type) {
+        RxPermissions.getInstance(mContext)
+                // 申请权限
+                .request(Manifest.permission.SYSTEM_ALERT_WINDOW)
+                .subscribe(new Action1<Boolean>() {
+                    @Override
+                    public void call(Boolean granted) {
+                        if (!granted) {
+                            Toast.makeText(mContext, "没有SD卡储存权限,下载失败", Toast.LENGTH_SHORT);
+                            return;
+                        }
+                    }
+                });
+        switch (dialogType) {
             case DialogType.Edit:
                 createEditDialog(builder, type);
                 break;
@@ -177,7 +215,7 @@ public class Alert {
                 break;
             case DialogType.SingleList:
             case DialogType.MultipleList:
-                createListDialog(builder, type);
+                createListDialog(builder, type, dialogType);
                 break;
             case DialogType.Time:
                 createTime(builder, type);
@@ -628,21 +666,6 @@ public class Alert {
 
         String messAges[];
 
-        @DialogType
-        public int getDialogType() {
-            return dialogType;
-        }
-
-        /**
-         * dialog的样式
-         *
-         * @param dialogType
-         * @return
-         */
-        public Builder setDialogType(@DialogType int dialogType) {
-            this.dialogType = dialogType;
-            return this;
-        }
 
         /**
          * 标题
@@ -744,12 +767,12 @@ public class Alert {
             mContext = context;
         }
 
-        public Alert Build() {
-            return new Alert(this, Type.Dialog);
+        public Alert Build(@DialogType int dialogType) {
+            return new Alert(this, Type.Dialog, dialogType);
         }
 
-        public Alert BuildPopWindow() {
-            return new Alert(this, Type.PopWindow);
+        public Alert BuildPopWindow(@DialogType int dialogType) {
+            return new Alert(this, Type.PopWindow, dialogType);
         }
 
 
@@ -846,7 +869,7 @@ public class Alert {
 
     }
 
-    public void createListDialog(final Builder builder, @Type int type) {// 点击
+    public void createListDialog(final Builder builder, @Type int type, @DialogType final int dialogType) {// 点击
         final SparseArray<SparseArray<String>> item = new SparseArray<>();
         final SparseArray<String> array = new SparseArray(builder.getMessAges().length);
         IBindView bindView = new IBindView() {
@@ -856,7 +879,7 @@ public class Alert {
                 holder.setText(R.id.titleView, builder.getTitle());
                 holder.setText(R.id.okBtn, builder.getOkBtnStr());
                 holder.setText(R.id.cancelBtn, builder.getCancelStr());
-                if (builder.getDialogType() == DialogType.SingleList) {
+                if (dialogType == DialogType.SingleList) {
                     holder.setVisible(R.id.btn_pane, View.GONE);
                 }
                 //多选时确认按钮
@@ -881,7 +904,7 @@ public class Alert {
                         } else {
                             item.removeAt(which);
                         }
-                        if (builder.getDialogType() == DialogType.SingleList) {
+                        if (dialogType == DialogType.SingleList) {
                             dismiss();
                             builder.getChoiceModelItemClickListener().onItemClick(item);
                         }
@@ -963,18 +986,6 @@ public class Alert {
         return dialog;
     }
 
-
-    /**
-     * 关闭加载对话框
-     */
-    public void dismiss() {
-        if (mPopView != null) {
-            mPopView.dismiss();
-        }
-        if (dialog != null) {
-            dialog.cancel();
-        }
-    }
 
 
 }

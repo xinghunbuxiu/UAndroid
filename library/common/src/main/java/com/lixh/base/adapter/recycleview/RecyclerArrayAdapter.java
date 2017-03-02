@@ -29,7 +29,7 @@
  * limitations under the License.
  */
 
-package com.lixh.base.adapter;
+package com.lixh.base.adapter.recycleview;
 
 import android.content.Context;
 import android.support.v7.appcompat.BuildConfig;
@@ -633,12 +633,12 @@ abstract public class RecyclerArrayAdapter<T> extends RecyclerView.Adapter<BaseV
         }
     }
 
-    public interface OnItemClickListener {
-        void onItemClick(int position);
+    public interface OnItemClickListener<T> {
+        void onItemClick(View view, int position, T data);
     }
 
-    public interface OnItemLongClickListener {
-        boolean onItemLongClick(int position);
+    public interface OnItemLongClickListener<T> {
+        boolean onItemLongClick(View view, int position, T data);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {

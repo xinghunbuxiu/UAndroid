@@ -17,11 +17,8 @@ public class ThreeFragment extends BaseFragment {
     @Bind(R.id.refresh)
     SpringView refresh;
 
-    public static ThreeFragment newInstance(String param1) {
-        ThreeFragment fragment = new ThreeFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
+    public ThreeFragment() {
+
     }
 
     @Override

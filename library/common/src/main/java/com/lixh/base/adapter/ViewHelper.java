@@ -5,6 +5,9 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import com.lixh.base.adapter.abslistview.EasyLVHolder;
+import com.lixh.base.adapter.recycleview.EasyRVHolder;
+
 /**
  * @author yuyh.
  * @date 2016/7/21.

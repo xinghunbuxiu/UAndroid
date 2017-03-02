@@ -3,7 +3,7 @@ package com.common.dialog.pickerview.lib;
 import android.content.Context;
 import android.view.View;
 
-import com.common.dialog.Alert.TimeType;
+import com.common.dialog.ImpAlert.TimeType;
 import com.common.dialog.R;
 
 import java.text.DateFormat;

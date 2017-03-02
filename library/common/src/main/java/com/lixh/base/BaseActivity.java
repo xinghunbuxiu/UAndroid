@@ -36,7 +36,7 @@ import rx.subjects.BehaviorSubject;
 /**
  * 基类Activity
  */
-public abstract class BaseActivity<T extends BasePresenter> extends AppCompatActivity implements SwipeBackActivityBase, Observer<Message> {
+public abstract class BaseActivity<T extends BasePresenter> extends AppCompatActivity implements SwipeBackActivityBase, Observer<Message>,LoadingTip.onReloadListener {
     public T mPresenter; //当前类需要的操作类
     public LoadingTip tip;
     public LoadView layout;
@@ -47,20 +47,15 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
     private SwipeBackActivityHelper mHelper;
     protected abstract void init(Bundle savedInstanceState);
     public BaseActivity() {
-        bind();
+        mPresenter = TUtil.getT(this, 0);
+        // 把actvity放到application栈中管理
+        AppManager.getAppManager().addActivity(this);
     }
 
     public UToolBar toolBar;
     public UIntent intent;
     public abstract int getLayoutId();
     public abstract boolean initTitle(UToolBar toolBar);
-    public void bind() {
-        mPresenter = TUtil.getT(this, 0);
-        intent = new UIntent(this);
-        // 把actvity放到application栈中管理
-        AppManager.getAppManager().addActivity(this);
-    }
-
     public <T> T getActivity() {
         return (T) this;
     }
@@ -109,11 +104,14 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         lifecycleSubject.onNext(LifeEvent.CREATE);
         super.onCreate(savedInstanceState);
         doBeforeSetContentView();
-        layout = new LoadView.Builder(this).setBottomView(getLayoutId()).setToolBar(hasToolBar()).build();
+        layout = new LoadView.Builder(this).setBottomLayout(getLayoutId()).setToolBar(hasToolBar()).build();
         layout.addObserver(this);
-        tip = layout.getEmptyView();
         setContentView(layout.getRootView());
         ButterKnife.bind(this);
+        intent = new UIntent(this);
+        tip = layout.getEmptyView();
+        //重新请求监听
+        tip.setOnReloadListener(this);
         initSwipe();
         initTitleBar();
         init(savedInstanceState);
@@ -265,6 +263,10 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         }
     }
 
+    @Override
+    public void reload() {
+
+    }
     @Override
     public void update(Observable o, Message arg) {
 
