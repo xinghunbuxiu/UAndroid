@@ -8,15 +8,7 @@
     android:paddingRight="5dip"
     android:paddingTop="13dip">
 
-    <TextView
-        android:id="@+id/titleView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="@string/dialog_title"
-        android:textColor="@android:color/holo_blue_light"
-        android:textSize="18sp" />
-
+    <include layout="@layout/include_title"></include>
     <TextView
         android:id="@+id/messageView"
         android:layout_width="wrap_content"
@@ -26,34 +18,6 @@
         android:textColor="@android:color/holo_blue_light"
         android:textSize="15sp" />
 
-    <LinearLayout
-        android:id="@+id/btn_pane"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:id="@+id/okBtn"
-            android:layout_width="fill_parent"
-            android:layout_height="40dip"
-            android:layout_marginRight="2.5dip"
-            android:layout_weight="1.0"
-            android:background="@android:color/holo_blue_light"
-            android:gravity="center"
-            android:text="@string/ok"
-            android:textColor="@android:color/white"
-            android:textSize="15sp" />
-
-        <TextView
-            android:id="@+id/cancelBtn"
-            android:layout_width="match_parent"
-            android:layout_height="40dip"
-            android:layout_marginLeft="2.5dip"
-            android:layout_weight="1.0"
-            android:background="@android:color/white"
-            android:gravity="center"
-            android:text="@string/cancel"
-            android:textColor="@android:color/holo_blue_light"
-            android:textSize="15sp" />
-    </LinearLayout>
+    <include layout="@layout/include_layout_ok_cancel"></include>
 
 </LinearLayout>

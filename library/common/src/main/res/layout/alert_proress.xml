@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 
     <com.github.ybq.android.spinkit.SpinKitView xmlns:app="http://schemas.android.com/apk/res-auto"
-        style="@style/SpinKitView.Circle"
+        style="@style/SpinKitView.Large.Circle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="20dp"

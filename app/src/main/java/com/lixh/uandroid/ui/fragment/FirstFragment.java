@@ -8,6 +8,7 @@ import com.lixh.base.BaseFragment;
 import com.lixh.base.Page;
 import com.lixh.base.adapter.recycleview.BaseViewHolder;
 import com.lixh.uandroid.R;
+import com.lixh.utils.LoadingTip;
 import com.lixh.utils.ULog;
 
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ public class FirstFragment extends BaseFragment {
             public void onItemClick(View view, int position, Integer data) {
 
             }
-        }.setAutoLoadMore(true).setRefresh(true).setDivideHeight(R.dimen.space_7, android.R.color.primary_text_light);
+        }.setAutoLoadMore(true).setRefresh(true).setDivideHeight(R.dimen.space_7).setLoadTip(tip);
         builder.setOnLoadingListener(onLoadingListener);
         builder.setArrayAdapter(R.layout.item_ciew);
         Page page=builder.Build(Page.PageType.List);
@@ -53,9 +54,10 @@ public class FirstFragment extends BaseFragment {
                     for (int i = 0; i < 15; i++) {
                         list.add(R.mipmap.ic_launcher);
                     }
-                    onLoadFinish.finish(list);
+                    onLoadFinish.finish(list, LoadingTip.LoadStatus.FINISH);
                 }
             }, 100);
+
         }
     };
     @Override
@@ -67,11 +69,6 @@ public class FirstFragment extends BaseFragment {
     @Override
     public int getLayoutId() {
       return   0;
-    }
-
-    @Override
-    public void reload() {
-
     }
 
 }

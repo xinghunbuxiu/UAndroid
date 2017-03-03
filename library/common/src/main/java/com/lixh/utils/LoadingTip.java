@@ -3,6 +3,7 @@ package com.lixh.utils;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
+import android.support.annotation.IntDef;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -13,6 +14,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.lixh.R;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 
 /**
@@ -55,16 +59,17 @@ public class LoadingTip extends LinearLayout {
      * 根据状态显示不同的提示
      * @param loadStatus
      */
-    public void setLoadingTip(LoadStatus loadStatus){
+    public void setLoadingTip(@LoadStatus int loadStatus) {
         switch (loadStatus){
-            case EMPTY:
+            case LoadStatus.EMPTY:
                 setVisibility(View.VISIBLE);
                 img_tip_logo.setVisibility(View.VISIBLE);
                 progress.setVisibility(View.GONE);
                 tv_tips.setText(getContext().getText(R.string.empty).toString());
                 img_tip_logo.setImageResource(R.mipmap.no_content_tip);
                 break;
-            case SEREVERERROR:
+            case LoadStatus.SERVER_ERROR:
+            case LoadStatus.NET_ERROR:
                 setVisibility(View.VISIBLE);
                 img_tip_logo.setVisibility(View.VISIBLE);
                 progress.setVisibility(View.GONE);
@@ -73,26 +78,15 @@ public class LoadingTip extends LinearLayout {
                 }else {
                     tv_tips.setText(errorMsg);
                 }
-                img_tip_logo.setImageResource(R.mipmap.ic_wrong);
+                img_tip_logo.setImageResource(loadStatus == LoadStatus.SERVER_ERROR ? R.mipmap.ic_wrong : R.mipmap.ic_wifi_off);
                 break;
-            case ERROR:
-                setVisibility(View.VISIBLE);
-                img_tip_logo.setVisibility(View.VISIBLE);
-                progress.setVisibility(View.GONE);
-                if (TextUtils.isEmpty(errorMsg)){
-                    tv_tips.setText(getContext().getText(R.string.net_error).toString());
-                }else {
-                    tv_tips.setText(errorMsg);
-                }
-                img_tip_logo.setImageResource(R.mipmap.ic_wifi_off);
-                break;
-            case LOADING:
+            case LoadStatus.LOADING:
                 setVisibility(View.VISIBLE);
                 img_tip_logo.setVisibility(View.GONE);
                 progress.setVisibility(View.VISIBLE);
                 tv_tips.setText(getContext().getText(R.string.loading).toString());
                 break;
-            case FINISH:
+            case LoadStatus.FINISH:
                 setVisibility(View.GONE);
                 break;
         }
@@ -122,9 +116,22 @@ public class LoadingTip extends LinearLayout {
         }
     }
 
-    //分为服务器失败，网络加载失败、数据为空、加载中、完成四种状态
-    public static enum LoadStatus {
-        SEREVERERROR, ERROR, EMPTY, LOADING, FINISH
+    @IntDef({
+            LoadStatus.SHOW_LOAD_MORE_VIEW,//分页加载失败
+            LoadStatus.SERVER_ERROR,//分为服务器失败
+            LoadStatus.NET_ERROR,//网络加载失败
+            LoadStatus.EMPTY,//数据为空
+            LoadStatus.LOADING,//加载中
+            LoadStatus.FINISH,//完成
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface LoadStatus {
+        int SHOW_LOAD_MORE_VIEW = 1;
+        int SERVER_ERROR = 2;
+        int NET_ERROR = 3;
+        int EMPTY = 4;
+        int LOADING = 5;
+        int FINISH = 6;
     }
 
 

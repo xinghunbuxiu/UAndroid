@@ -24,7 +24,7 @@ import com.lixh.view.UToolBar;
 import butterknife.ButterKnife;
 import rx.subjects.BehaviorSubject;
 
-public abstract class BaseFragment<T extends BasePresenter> extends Fragment implements Observer<Message>, LoadingTip.onReloadListener {
+public abstract class BaseFragment<T extends BasePresenter> extends Fragment implements Observer<Message> {
     T mPresenter; //当前类需要的操作类
     public Activity activity;
     public LoadingTip tip;
@@ -55,7 +55,7 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment imp
         intent = new UIntent(activity);
         tip = layout.getEmptyView();
         //重新请求监听
-        tip.setOnReloadListener(this);
+
     }
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -114,8 +114,7 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment imp
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (mContentView == null) {
             mContentView = layout.getRootView();
-
-        ButterKnife.bind(this, mContentView);
+            ButterKnife.bind(this, mContentView);
         initTitleBar();
             init(savedInstanceState);
         if (mPresenter != null) {
@@ -189,8 +188,4 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment imp
 
     }
 
-    @Override
-    public void reload() {
-
-    }
 }

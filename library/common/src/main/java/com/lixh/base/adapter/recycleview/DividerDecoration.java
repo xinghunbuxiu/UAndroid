@@ -4,6 +4,9 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.support.annotation.ColorRes;
+import android.support.annotation.DimenRes;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -49,15 +52,15 @@ public class DividerDecoration extends RecyclerView.ItemDecoration {
      * @param context
      * @param orientation
      */
-    public DividerDecoration(Context context, int orientation, int mItemSize, int Color) {
+    public DividerDecoration(Context context, int orientation, @DimenRes int resId, @ColorRes int Color) {
         this.mOrientation = orientation;
         if (orientation != LinearLayoutManager.VERTICAL && orientation != LinearLayoutManager.HORIZONTAL) {
             throw new IllegalArgumentException("请传入正确的参数");
         }
         final float scale = context.getResources().getDisplayMetrics().density;
-        this.mItemSize = (int) (mItemSize * scale + 0.5f);
+        this.mItemSize = (int) context.getResources().getDimension(resId);
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mPaint.setColor(context.getResources().getColor(Color));
+        mPaint.setColor(ContextCompat.getColor(context, Color));
          /*设置填充*/
         mPaint.setStyle(Paint.Style.FILL);
     }
@@ -71,8 +74,6 @@ public class DividerDecoration extends RecyclerView.ItemDecoration {
         }
     }
 
-    LinearLayoutManager layoutManager;
-
     /**
      * 绘制纵向 item 分割线
      *
@@ -85,7 +86,7 @@ public class DividerDecoration extends RecyclerView.ItemDecoration {
         final int left = parent.getPaddingLeft();
         final int right = parent.getMeasuredWidth() - parent.getPaddingRight();
         final int childSize = parent.getChildCount();
-        for (int i = 0; i < childSize; i++) {
+        for (int i = 0; i < (isShowLast ? childSize : childSize - 1); i++) {
             final View child = parent.getChildAt(i);
             RecyclerView.LayoutParams layoutParams = (RecyclerView.LayoutParams) child.getLayoutParams();
             final int top = child.getBottom() + layoutParams.bottomMargin;
@@ -96,6 +97,11 @@ public class DividerDecoration extends RecyclerView.ItemDecoration {
 
     }
 
+    boolean isShowLast;
+
+    public void showLastDivider(boolean isShowLast) {
+        this.isShowLast = isShowLast;
+    }
     /**
      * 绘制横向 item 分割线
      *

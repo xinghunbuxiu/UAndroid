@@ -99,6 +99,7 @@ public class SpringView extends ViewGroup {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
+    boolean isFirstLoad = true;
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
@@ -115,8 +116,9 @@ public class SpringView extends ViewGroup {
             addFootView(footView);
         }
         setImplPull(mHeader);
-        if (autoRefresh) {
+        if (autoRefresh && isFirstLoad) {
             needResetAnim = true;
+            isFirstLoad = false;
             updating();
         }
     }
@@ -275,14 +277,6 @@ public class SpringView extends ViewGroup {
         this.autoRefresh = autoRefresh;
     }
 
-    /**
-     * 自动加载更多
-     *
-     * @param autoLoadMore
-     */
-    public void setAutoLoadMore(boolean autoLoadMore) {
-        this.autoLoadMore = autoLoadMore;
-    }
     @Override
     public boolean onTouchEvent(MotionEvent e) {
 

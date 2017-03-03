@@ -2,9 +2,11 @@ package com.lixh.uandroid.ui.fragment;
 
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 
 import com.lixh.base.BaseFragment;
+import com.lixh.base.adapter.recycleview.DividerDecoration;
 import com.lixh.base.adapter.recycleview.EasyRVAdapter;
 import com.lixh.base.adapter.recycleview.EasyRVHolder;
 import com.lixh.uandroid.R;
@@ -24,6 +26,7 @@ public class HomeFragment extends BaseFragment {
             list.add(R.mipmap.ic_launcher);
         }
         adapter.addAll(list);
+
     }
     @Override
     protected void init(Bundle savedInstanceState) {
@@ -36,6 +39,8 @@ public class HomeFragment extends BaseFragment {
 
             }
         };
+        recyclerView.addItemDecoration(new DividerDecoration(activity, OrientationHelper.VERTICAL,R.dimen.space_6,R.color.main_color));
+
         recyclerView.setAdapter(adapter);
         initList();
     }

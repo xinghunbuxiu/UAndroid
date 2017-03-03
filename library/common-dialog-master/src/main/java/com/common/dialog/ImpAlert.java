@@ -4,6 +4,21 @@ import android.support.annotation.IntDef;
 import android.util.SparseArray;
 import android.view.View;
 
+import com.common.dialog.effects.BaseEffects;
+import com.common.dialog.effects.FadeIn;
+import com.common.dialog.effects.Fall;
+import com.common.dialog.effects.FlipH;
+import com.common.dialog.effects.FlipV;
+import com.common.dialog.effects.NewsPaper;
+import com.common.dialog.effects.RotateBottom;
+import com.common.dialog.effects.RotateLeft;
+import com.common.dialog.effects.Shake;
+import com.common.dialog.effects.SideFall;
+import com.common.dialog.effects.SlideBottom;
+import com.common.dialog.effects.SlideLeft;
+import com.common.dialog.effects.SlideRight;
+import com.common.dialog.effects.SlideTop;
+import com.common.dialog.effects.Slit;
 import com.common.dialog.pickerview.ViewHolder;
 
 import java.lang.annotation.Retention;
@@ -99,6 +114,26 @@ public class ImpAlert {
         int SideFall = 13;
 
     }
+    public static SparseArray<Class<? extends BaseEffects>> animClass = new SparseArray<Class<? extends BaseEffects>>() {
+        {
+            put(EffectsType.FadeIn, FadeIn.class);
+            put(EffectsType.SlideLeft, SlideLeft.class);
+            put(EffectsType.SlideTop, SlideTop.class);
+            put(EffectsType.SlideBottom, SlideBottom.class);
+            put(EffectsType.SlideRight, SlideRight.class);
+            put(EffectsType.Fall, Fall.class);
+            put(EffectsType.NewsPaper, NewsPaper.class);
+            put(EffectsType.FlipH, FlipH.class);
+            put(EffectsType.FlipV, FlipV.class);
+            put(EffectsType.RotateBottom, RotateBottom.class);
+            put(EffectsType.RotateLeft, RotateLeft.class);
+            put(EffectsType.Slit, Slit.class);
+            put(EffectsType.Shake, Shake.class);
+            put(EffectsType.SideFall, SideFall.class);
+        }
+
+
+    };
 
     public interface AlertCancelListener {
         void onCancelProgress();

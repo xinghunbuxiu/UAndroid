@@ -1,13 +1,14 @@
 package com.common.dialog;
 
-import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
+import android.provider.Settings;
 import android.support.annotation.LayoutRes;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -19,7 +20,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.common.dialog.ImpAlert.ChoiceModelItemClickListener;
 import com.common.dialog.ImpAlert.DialogType;
@@ -28,34 +28,17 @@ import com.common.dialog.ImpAlert.OnOptionsSelectListener;
 import com.common.dialog.ImpAlert.OnSelectedItemListener;
 import com.common.dialog.ImpAlert.Type;
 import com.common.dialog.effects.BaseEffects;
-import com.common.dialog.effects.FadeIn;
-import com.common.dialog.effects.Fall;
-import com.common.dialog.effects.FlipH;
-import com.common.dialog.effects.FlipV;
-import com.common.dialog.effects.NewsPaper;
-import com.common.dialog.effects.RotateBottom;
-import com.common.dialog.effects.RotateLeft;
-import com.common.dialog.effects.Shake;
-import com.common.dialog.effects.SideFall;
-import com.common.dialog.effects.SlideBottom;
-import com.common.dialog.effects.SlideLeft;
-import com.common.dialog.effects.SlideRight;
-import com.common.dialog.effects.SlideTop;
-import com.common.dialog.effects.Slit;
 import com.common.dialog.pickerview.BaseAdapter;
 import com.common.dialog.pickerview.ViewHolder;
 import com.common.dialog.pickerview.lib.ScreenInfo;
 import com.common.dialog.pickerview.lib.WheelOptions;
 import com.common.dialog.pickerview.lib.WheelTime;
-import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-
-import rx.functions.Action1;
 
 import static com.common.dialog.ImpAlert.AlertCancelListener;
 import static com.common.dialog.ImpAlert.EffectsType;
@@ -132,31 +115,11 @@ public class Alert {
 
 
 
-    public SparseArray<Class<? extends BaseEffects>> animClass = new SparseArray<Class<? extends BaseEffects>>() {
-        {
-            put(EffectsType.FadeIn, FadeIn.class);
-            put(EffectsType.SlideLeft, SlideLeft.class);
-            put(EffectsType.SlideTop, SlideTop.class);
-            put(EffectsType.SlideBottom, SlideBottom.class);
-            put(EffectsType.SlideRight, SlideRight.class);
-            put(EffectsType.Fall, Fall.class);
-            put(EffectsType.NewsPaper, NewsPaper.class);
-            put(EffectsType.FlipH, FlipH.class);
-            put(EffectsType.FlipV, FlipV.class);
-            put(EffectsType.RotateBottom, RotateBottom.class);
-            put(EffectsType.RotateLeft, RotateLeft.class);
-            put(EffectsType.Slit, Slit.class);
-            put(EffectsType.Shake, Shake.class);
-            put(EffectsType.SideFall, SideFall.class);
-        }
-
-
-    };
 
     public BaseEffects getAnimator(int key) {
         BaseEffects bEffects = null;
         try {
-            bEffects = animClass.get(key).newInstance();
+            bEffects = ImpAlert.animClass.get(key).newInstance();
         } catch (ClassCastException e) {
             throw new Error("Can not init animatorClazz instance");
         } catch (InstantiationException e) {
@@ -190,19 +153,16 @@ public class Alert {
 
     public Alert(Builder builder, @Type int type, @DialogType int dialogType) {
         this.builder = builder;
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (!Settings.canDrawOverlays(mContext)) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+                intent.putExtra("permissions", WindowManager.LayoutParams.TYPE_SYSTEM_ALERT );
+                mContext.startActivity(intent);
+                return;
+            }
+
+        }
         screenInfo = new ScreenInfo((Activity) mContext);
-        RxPermissions.getInstance(mContext)
-                // 申请权限
-                .request(Manifest.permission.SYSTEM_ALERT_WINDOW)
-                .subscribe(new Action1<Boolean>() {
-                    @Override
-                    public void call(Boolean granted) {
-                        if (!granted) {
-                            Toast.makeText(mContext, "没有SD卡储存权限,下载失败", Toast.LENGTH_SHORT);
-                            return;
-                        }
-                    }
-                });
         switch (dialogType) {
             case DialogType.Edit:
                 createEditDialog(builder, type);
