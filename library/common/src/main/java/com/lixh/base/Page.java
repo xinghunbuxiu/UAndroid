@@ -218,6 +218,7 @@ public class Page<T> implements OnLoadMoreListener, SpringView.OnRefreshListener
         } else if (rvAdapter != null) {
             adapter = rvAdapter;
         }
+        recyclerView.setAdapter(adapter);
         if (builder.isPullLoadMore()) {
             springView.setOnLoadListener(new SpringView.OnLoadListener() {
                 @Override
@@ -226,10 +227,11 @@ public class Page<T> implements OnLoadMoreListener, SpringView.OnRefreshListener
                 }
             });
         }
-        if (builder.isRefresh() && recyclerView != null) {
+        if (builder.isRefresh() && springView != null) {
             springView.setOnRefreshListener(this);
+        } else {
+            onRefresh();
         }
-        recyclerView.setAdapter(adapter);
 
     }
 
@@ -555,42 +557,46 @@ public class Page<T> implements OnLoadMoreListener, SpringView.OnRefreshListener
 
         }
 
-        public void onBindFooterViewData(View headerView, int position) {
+        public void onBindFooterViewData(BaseViewHolder headerView, int position) {
 
         }
 
-        public void onBindHeaderViewData(View footerView, int position) {
+        public void onBindHeaderViewData(BaseViewHolder headerView, int position) {
 
         }
 
-        public Builder addFooterView(final int footerView) {
+        public Builder addFooterView(@LayoutRes final int footer) {
             if (arrayAdapter != null) {
                 arrayAdapter.addFooter(new RecyclerArrayAdapter.FooterItemView() {
                     @Override
                     public View OnCreateFooterViewHolder(ViewGroup parent) {
-                        return View.inflate(mContext, footerView, parent);
+                        View footerView = LayoutInflater.from(mContext).inflate(footer, parent, false);
+                        return footerView;
                     }
 
                     @Override
                     public void onBindFooterData(View headerView, int position) {
-                        onBindFooterViewData(headerView, position);
+                        BaseViewHolder baseViewHolder = new BaseViewHolder(headerView);
+                        onBindFooterViewData(baseViewHolder, position);
                     }
                 });
             }
             return this;
         }
 
-        public Builder addHeaderView(final int header) {
+        public Builder addHeaderView(@LayoutRes final int header) {
             if (arrayAdapter != null) {
                 arrayAdapter.addHeader(new RecyclerArrayAdapter.HeaderItemView() {
                     @Override
                     public View OnCreateHeaderViewHolder(ViewGroup parent) {
-                        return View.inflate(mContext, header, parent);
+                        View headerView = LayoutInflater.from(mContext).inflate(header, parent, false);
+                        return headerView;
                     }
 
                     @Override
                     public void onBindHeaderData(View headerView, int position) {
-                        onBindFooterViewData(headerView, position);
+                        BaseViewHolder baseViewHolder = new BaseViewHolder(headerView);
+                        onBindHeaderViewData(baseViewHolder, position);
                     }
                 });
             }

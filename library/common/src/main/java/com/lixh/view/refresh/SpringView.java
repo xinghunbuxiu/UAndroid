@@ -1,6 +1,7 @@
 package com.lixh.view.refresh;
 
 import android.content.Context;
+import android.os.Parcelable;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -123,6 +124,16 @@ public class SpringView extends ViewGroup {
         }
     }
 
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        return super.onSaveInstanceState();
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        super.onRestoreInstanceState(state);
+    }
+
     private OverScroller mScroller;
     private void init(Context context, AttributeSet attrs, int defstyleAttr) {
         if (isInEditMode()) {
@@ -149,6 +160,7 @@ public class SpringView extends ViewGroup {
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 scrollState = ScrollState.NONE;
+                isNeedMyMove = false;
                 break;
             case MotionEvent.ACTION_MOVE:
                 isNeedMyMove = isNeedMyMove();
@@ -266,7 +278,7 @@ public class SpringView extends ViewGroup {
     }
 
     boolean autoRefresh = true;
-    boolean autoLoadMore = false;
+
 
     /**
      * 第一次加载时自动下拉刷新

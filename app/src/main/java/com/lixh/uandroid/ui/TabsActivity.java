@@ -43,9 +43,14 @@ public class TabsActivity extends BaseActivity<TabPresenter> implements BottomNa
     public boolean initTitle(UToolBar toolBar) {
         return false;
     }
+
+    @Override
+    public boolean enableSwipeBack() {
+        return false;
+    }
+
     @Override
     protected void init(Bundle savedInstanceState) {
-        setSwipeBackEnable(false);
         initBottomBar();
     }
 
@@ -129,8 +134,4 @@ public class TabsActivity extends BaseActivity<TabPresenter> implements BottomNa
 //       intent.withBoolean("sss",false).withBoolean("dddd",true).go(WelcomeActivity.class);
     }
 
-    @Override
-    public void reload() {
-
-    }
 }

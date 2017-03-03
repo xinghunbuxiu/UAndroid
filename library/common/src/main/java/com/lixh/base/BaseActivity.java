@@ -36,7 +36,7 @@ import rx.subjects.BehaviorSubject;
 /**
  * 基类Activity
  */
-public abstract class BaseActivity<T extends BasePresenter> extends AppCompatActivity implements SwipeBackActivityBase, Observer<Message>,LoadingTip.onReloadListener {
+public abstract class BaseActivity<T extends BasePresenter> extends AppCompatActivity implements SwipeBackActivityBase, Observer<Message> {
     public T mPresenter; //当前类需要的操作类
     public LoadingTip tip;
     public LoadView layout;
@@ -74,6 +74,14 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
     }
 
     /**
+     * 是否允许左划结束
+     *
+     * @return
+     */
+    public boolean enableSwipeBack() {
+        return true;
+    }
+    /**
      * @return 是否双j击退出
      */
     public boolean isDoubleExit() {
@@ -85,13 +93,7 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         return mHelper.getSwipeBackLayout();
     }
 
-    /**
-     * 是否滑动结束
-     */
-    @Override
-    public void setSwipeBackEnable(boolean enable) {
-        getSwipeBackLayout().setEnableGesture(enable);
-    }
+
 
     @Override
     public void scrollToFinishActivity() {
@@ -110,9 +112,7 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         ButterKnife.bind(this);
         intent = new UIntent(this);
         tip = layout.getEmptyView();
-        //重新请求监听
-        tip.setOnReloadListener(this);
-        initSwipe();
+        initSwipe(enableSwipeBack());
         initTitleBar();
         init(savedInstanceState);
         if (mPresenter != null) {
@@ -149,12 +149,21 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         mHelper.onPostCreate();
     }
 
-    public void initSwipe() {
+    /**
+     * 是否滑动结束
+     */
+    @Override
+    public void setSwipeBackEnable(boolean enable) {
+        getSwipeBackLayout().setEnableGesture(enable);
+    }
+
+    public void initSwipe(boolean enable) {
         mHelper = new SwipeBackActivityHelper(this);
         mHelper.onActivityCreate();
         //侧滑
         mSwipeBackLayout = getSwipeBackLayout();
         mSwipeBackLayout.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);
+        setSwipeBackEnable(enable);
     }
 
     private void initTitleBar() {
@@ -168,13 +177,6 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         }
     }
 
-
-
-    //自己新添加的
-    @Override
-    protected void onTitleChanged(CharSequence title, int color) {
-        super.onTitleChanged(title, color);
-    }
     /**
      * 设置layout前配置
      */
@@ -263,10 +265,6 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         }
     }
 
-    @Override
-    public void reload() {
-
-    }
     @Override
     public void update(Observable o, Message arg) {
 

@@ -55,7 +55,6 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment imp
         intent = new UIntent(activity);
         tip = layout.getEmptyView();
         //重新请求监听
-
     }
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

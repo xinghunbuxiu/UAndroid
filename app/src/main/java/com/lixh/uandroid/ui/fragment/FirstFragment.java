@@ -10,6 +10,7 @@ import com.lixh.base.adapter.recycleview.BaseViewHolder;
 import com.lixh.uandroid.R;
 import com.lixh.utils.LoadingTip;
 import com.lixh.utils.ULog;
+import com.lixh.utils.UToast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +36,7 @@ public class FirstFragment extends BaseFragment {
 
             @Override
             public void onItemClick(View view, int position, Integer data) {
-
+                UToast.showShort(""+position);
             }
         }.setAutoLoadMore(true).setRefresh(true).setDivideHeight(R.dimen.space_7).setLoadTip(tip);
         builder.setOnLoadingListener(onLoadingListener);
