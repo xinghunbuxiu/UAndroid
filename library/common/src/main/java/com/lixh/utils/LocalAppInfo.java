@@ -34,7 +34,6 @@ public class LocalAppInfo {
             e.printStackTrace();
         }
     }
-
     public static LocalAppInfo getLocalAppInfo() {
         if (null == localAppInfo) {
             throw new RuntimeException("LocalAppInfo is not init.");

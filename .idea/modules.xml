@@ -8,7 +8,6 @@
       <module fileurl="file://$PROJECT_DIR$/library/common/common.iml" filepath="$PROJECT_DIR$/library/common/common.iml" />
       <module fileurl="file://$PROJECT_DIR$/library/common-dialog-master/common-dialog-master.iml" filepath="$PROJECT_DIR$/library/common-dialog-master/common-dialog-master.iml" />
       <module fileurl="file://$PROJECT_DIR$/library/library.iml" filepath="$PROJECT_DIR$/library/library.iml" />
-      <module fileurl="file://$PROJECT_DIR$/library/urefreshview/urefreshview.iml" filepath="$PROJECT_DIR$/library/urefreshview/urefreshview.iml" />
     </modules>
   </component>
 </project>

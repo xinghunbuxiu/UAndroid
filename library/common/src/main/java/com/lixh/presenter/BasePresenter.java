@@ -4,7 +4,6 @@ import android.os.Bundle;
 
 import com.lixh.base.BaseActivity;
 import com.lixh.base.BaseFragment;
-import com.lixh.rxhttp.ICallBackResult;
 import com.lixh.rxhttp.RxHelper;
 import com.lixh.rxlife.LifeEvent;
 import com.lixh.utils.LoadingTip;
@@ -24,7 +23,7 @@ public abstract class BasePresenter{
     public LoadingTip tip;
     public UIntent intent;
     public RxHelper rxHelper;
-    private BaseActivity activity;
+    public BaseActivity activity;
     private BaseFragment fragment;
 
     public abstract void onCreate(Bundle savedInstanceState);
@@ -57,23 +56,6 @@ public abstract class BasePresenter{
      */
     public <T> T getFragment() {
         return (T) fragment.getFragment();
-    }
-
-    public abstract class Result<M> implements ICallBackResult<M> {
-        @Override
-        public void onLoad() {
-            tip.setLoadingTip(LoadingTip.LoadStatus.LOADING);
-        }
-
-        @Override
-        public void onFail(String msg) {
-
-        }
-
-        @Override
-        public void onLoadFinish() {
-            tip.setLoadingTip(LoadingTip.LoadStatus.FINISH);
-        }
     }
 
 

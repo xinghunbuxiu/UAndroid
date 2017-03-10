@@ -5,16 +5,13 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
-import android.provider.Settings;
 import android.support.annotation.LayoutRes;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -64,8 +61,9 @@ public class Alert {
     WheelTime wheelTime;
     ScreenInfo screenInfo;
 
-    public static void showCustomDialog(Context context, @LayoutRes int layoutId) {
+    public static void showCustomDialog(Context context, @LayoutRes int layoutId, AlertCancelListener listener) {
         Alert.Builder mBuilder = new Builder(context);
+        mBuilder.setAlertCancelListener(listener);
         mBuilder.setLayoutId(layoutId).Build(DialogType.Custom);
     }
 
@@ -76,6 +74,12 @@ public class Alert {
                 .Build(DialogType.Warn);
     }
 
+    public static void displayWheelDialog(Context context, ArrayList<String> options1Items, ArrayList<ArrayList<String>> options2Items, ArrayList<ArrayList<ArrayList<String>>> options3Items, View.OnClickListener onOkClickListener, View.OnClickListener onCancelClickListener) {
+        Alert.Builder mBuilder = new Builder(context);
+        mBuilder.setOptions1Items(options1Items).setOptions2Items(options2Items).setOptions3Items(options3Items)
+                .setOnOkClickListener(onOkClickListener).setOnCancelClickLister(onCancelClickListener)
+                .Build(DialogType.City);
+    }
     /**
      * 关闭加载对话框
      */
@@ -153,15 +157,6 @@ public class Alert {
 
     public Alert(Builder builder, @Type int type, @DialogType int dialogType) {
         this.builder = builder;
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (!Settings.canDrawOverlays(mContext)) {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-                intent.putExtra("permissions", WindowManager.LayoutParams.TYPE_SYSTEM_ALERT );
-                mContext.startActivity(intent);
-                return;
-            }
-
-        }
         screenInfo = new ScreenInfo((Activity) mContext);
         switch (dialogType) {
             case DialogType.Edit:
@@ -415,8 +410,9 @@ public class Alert {
             return options;
         }
 
-        public void setOptions(int[] options) {
+        public Builder setOptions(int[] options) {
             this.options = options;
+            return this;
         }
 
         //是否联动
@@ -425,16 +421,19 @@ public class Alert {
         }
 
 
-        public void setOptions1Items(ArrayList<String> options1Items) {
+        public Builder setOptions1Items(ArrayList<String> options1Items) {
             this.options1Items = options1Items;
+            return this;
         }
 
-        public void setOptions2Items(ArrayList<ArrayList<String>> options2Items) {
+        public Builder setOptions2Items(ArrayList<ArrayList<String>> options2Items) {
             this.options2Items = options2Items;
+            return this;
         }
 
-        public void setOptions3Items(ArrayList<ArrayList<ArrayList<String>>> options3Items) {
+        public Builder setOptions3Items(ArrayList<ArrayList<ArrayList<String>>> options3Items) {
             this.options3Items = options3Items;
+            return this;
         }
 
         public ArrayList<String> getOptions1Items() {
@@ -923,7 +922,6 @@ public class Alert {
         dialog.setContentView(bindView == null ? view : bindView.convert(holder), new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         dialog.setCancelable(true);
         dialog.setCanceledOnTouchOutside(false);
-        dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
         dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {

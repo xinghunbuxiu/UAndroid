@@ -4,6 +4,7 @@ package com.lixh.uandroid.presenter;
 import android.os.Bundle;
 
 import com.lixh.presenter.BasePresenter;
+import com.lixh.rxhttp.RxSubscriber;
 import com.lixh.uandroid.api.Api;
 import com.lixh.uandroid.api.HostType;
 import com.lixh.uandroid.model.MainModel;
@@ -19,20 +20,21 @@ import com.lixh.uandroid.ui.TabsActivity;
  */
 public class TabPresenter extends BasePresenter {
     TabsActivity tabsActivity;
-    Result<MainModel> m = new Result<MainModel>() {
-
-        @Override
-        public void onSuccess(MainModel t) {
-
-        }
-    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         tabsActivity = getActivity();
-        rxHelper.createSubscriber(Api.getDefault(HostType.BASE_URL).login("us", "dd"), m);
+        rxHelper.createSubscriber(Api.getDefault(HostType.BASE_URL).login("us", "dd"), new RxSubscriber<MainModel>(activity, true) {
+            @Override
+            protected void _onNext(MainModel mainModel) {
+
+            }
+
+            @Override
+            protected void _onError(String message) {
+
+            }
+        });
 
     }
-
-
 }

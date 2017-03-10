@@ -3,16 +3,17 @@ package com.lixh.rxhttp;
 import android.content.Context;
 
 import com.common.dialog.Alert;
+import com.common.dialog.ImpAlert;
 import com.lixh.BuildConfig;
 import com.lixh.R;
 import com.lixh.app.BaseApplication;
 import com.lixh.rxhttp.exception.ApiException;
-import com.lixh.rxhttp.view.ProgressCancelListener;
 import com.lixh.utils.UNetWork;
+import com.lixh.utils.UToast;
 
 import rx.Subscriber;
 
-public abstract class RxSubscriber<T> extends Subscriber<T> implements ProgressCancelListener {
+public abstract class RxSubscriber<T> extends Subscriber<T> {
 
     private Context mContext;
     private String msg;
@@ -41,7 +42,6 @@ public abstract class RxSubscriber<T> extends Subscriber<T> implements ProgressC
 
     @Override
     public void onCompleted() {
-        _onFinish();
         if (showDialog)
             Alert.dismiss();
 
@@ -64,7 +64,12 @@ public abstract class RxSubscriber<T> extends Subscriber<T> implements ProgressC
     public void showProgressDialog() {
         if (showDialog) {
             try {
-                Alert.showCustomDialog(mContext,R.layout.alert_proress);
+                Alert.showCustomDialog(mContext, R.layout.alert_proress, new ImpAlert.AlertCancelListener() {
+                    @Override
+                    public void onCancelProgress() {
+                        cancelProgress();
+                    }
+                });
             } catch (Exception e) {
 
                 e.printStackTrace();
@@ -96,17 +101,14 @@ public abstract class RxSubscriber<T> extends Subscriber<T> implements ProgressC
         else {
             _onError(BaseApplication.getAppContext().getString(R.string.net_error));
         }
-
-        _onFinish();
     }
     protected abstract void _onNext(T t);
 
-    protected abstract void _onError(String message);
+    protected void _onError(String message) {
+        UToast.showShort(message);
+    }
 
-    protected abstract void _onFinish();
-
-    @Override
-    public void onCancelProgress() {
+    public void cancelProgress() {
         if (!this.isUnsubscribed()) {
             this.unsubscribe();
         }

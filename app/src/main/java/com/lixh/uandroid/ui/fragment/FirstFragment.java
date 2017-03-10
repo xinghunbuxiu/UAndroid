@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 
+import com.common.dialog.Alert;
 import com.lixh.base.BaseFragment;
 import com.lixh.base.Page;
 import com.lixh.base.adapter.recycleview.BaseViewHolder;
@@ -18,7 +19,20 @@ import java.util.List;
 
 public class FirstFragment extends BaseFragment {
     Page.Builder builder;
+    ArrayList<String> array = new ArrayList<String>() {
+        {
+            add("nihaooo");
+            add("nihaooo");
+            add("nihaooo");
+            add("nihaooo");
+            add("nihaooo");
+            add("nihaooo");
+            add("nihaooo");
+            add("nihaooo");
 
+
+        }
+    };
 
     public FirstFragment() {
 
@@ -27,6 +41,7 @@ public class FirstFragment extends BaseFragment {
     int i = 0;
     @Override
     protected void init(Bundle savedInstanceState) {
+
         builder = new Page.Builder<Integer>(activity) {
             @Override
             public void onBindViewData(BaseViewHolder viewHolder, int position, Integer item) {
@@ -37,6 +52,7 @@ public class FirstFragment extends BaseFragment {
             @Override
             public void onItemClick(View view, int position, Integer data) {
                 UToast.showShort(""+position);
+                Alert.displayWheelDialog(activity, array,null,null,null,null).;
             }
         }.setAutoLoadMore(true).setRefresh(true).setDivideHeight(R.dimen.space_7).setLoadTip(tip);
         builder.setOnLoadingListener(onLoadingListener);
@@ -63,7 +79,8 @@ public class FirstFragment extends BaseFragment {
     };
     @Override
     public boolean initTitle() {
-        toolBar.setTitle("listView");
+        toolBar.setTitle("ddddddddd");
+        toolBar.setLogo(R.mipmap.ic_launcher);
         return true;
     }
 

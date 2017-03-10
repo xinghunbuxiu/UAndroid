@@ -51,7 +51,6 @@ public enum ClientFactory {
         mBuilder.hostnameVerifier(ClientHelper.getHostnameVerifier(hosts));
     }
 
-
     public OkHttpClient getHttpClient() {
         okHttpClient = mBuilder.build();
         return okHttpClient;

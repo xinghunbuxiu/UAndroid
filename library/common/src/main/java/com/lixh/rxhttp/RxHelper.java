@@ -3,15 +3,14 @@ package com.lixh.rxhttp;
 import android.app.Activity;
 
 import com.lixh.base.BaseResPose;
-import com.lixh.presenter.BasePresenter;
 import com.lixh.rxhttp.exception.ApiException;
 import com.lixh.rxlife.LifeEvent;
-import com.lixh.utils.ULog;
 
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
+import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 import rx.subjects.BehaviorSubject;
 
@@ -60,7 +59,6 @@ public class RxHelper {
                 return tObservable.flatMap(new Func1<BaseResPose<T>, Observable<T>>() {
                     @Override
                     public Observable<T> call(BaseResPose<T> result) {
-                        ULog.d("result from api : " + result);
                         return createData(result);
 
                     }
@@ -75,33 +73,28 @@ public class RxHelper {
      * T
      *
      * @param fromNetwork
-     * @param result
      */
-    public <T> void createSubscriber(Observable fromNetwork, final BasePresenter.Result<T> result) {
-        {
+    public <T> void createSubscriber(Observable fromNetwork, final RxSubscriber result) {
             //数据预处理
             Observable observable = fromNetwork.compose(handleResult(getEvent(), lifeEvent));
             RxCache.load(c, caChe, 1000 * 60 * 30, observable, isForceRefresh)
-                    .subscribe(new RxSubscriber<T>(c, isShow()) {
+                    .subscribe(result);
 
-                        @Override
-                        protected void _onNext(T data) {
-                            result.onSuccess(data);
-                        }
-
-                        @Override
-                        protected void _onError(String message) {
-                            result.onFail(message);
-                        }
-
-                        @Override
-                        protected void _onFinish() {
-                            result.onLoadFinish();
-                        }
-                    });
-        }
     }
 
+    public <T> void createSubscriber(Observable fromNetwork1, Observable fromNetwork2, final RxSubscriber result) {
+        Observable observable = fromNetwork1.compose(handleResult(getEvent(), lifeEvent));
+        Observable observable1 = fromNetwork2.compose(handleResult(getEvent(), lifeEvent));
+        ;
+        RxCache.load(c, caChe, 1000 * 60 * 30, observable1, isForceRefresh);
+        Observable.zip(RxCache.load(c, caChe, 1000 * 60 * 30, observable, isForceRefresh), RxCache.load(c, caChe, 1000 * 60 * 30, observable1, isForceRefresh), new Func2<BaseResPose<T>, BaseResPose<T>,Boolean>() {
+
+            @Override
+            public Boolean call(BaseResPose<T> tBaseResPose, BaseResPose<T> tBaseResPose2) {
+                return null;
+            }
+        }) .subscribe(result);;
+    }
 
     /**
      * 创建成功的数据
@@ -109,6 +102,7 @@ public class RxHelper {
      * @param <T>
      * @return
      */
+
     private <T> Observable createData(final BaseResPose<T> result) {
         return Observable.create(new Observable.OnSubscribe<T>() {
             @Override
@@ -135,15 +129,6 @@ public class RxHelper {
 
     public void setEvent(LifeEvent event) {
         this.event = event;
-    }
-
-    public boolean isShow() {
-        return isShow;
-    }
-
-    public RxHelper setShow(boolean show) {
-        isShow = show;
-        return this;
     }
 
     public RxHelper setForceRefresh(boolean forceRefresh) {

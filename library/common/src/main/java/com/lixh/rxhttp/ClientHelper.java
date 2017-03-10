@@ -24,6 +24,7 @@ import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
 import okhttp3.CacheControl;
+import okhttp3.FormBody;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -42,6 +43,13 @@ public class ClientHelper {
             @Override
             public Response intercept(Chain chain) throws IOException {
                 Request originalRequest = chain.request();
+                if (originalRequest.body() instanceof FormBody) {
+                    FormBody.Builder newFormBody = new FormBody.Builder();
+                    FormBody oldFormBody = (FormBody) originalRequest.body();
+                    for (int i = 0; i < oldFormBody.size(); i++) {
+                        newFormBody.addEncoded(oldFormBody.encodedName(i), oldFormBody.encodedValue(i));
+                    }
+                }
                 Request.Builder builder = originalRequest.newBuilder();
                 builder.header("Accept", "application/json");
                 builder.header("Authorization", "auth-token");
@@ -131,6 +139,7 @@ public class ClientHelper {
                 builder.header("Authorization", "auth-token");
                 Request.Builder requestBuilder = builder.method(originalRequest.method(), originalRequest.body());
                 Request request = requestBuilder.build();
+
                 return chain.proceed(request);
             }
         };

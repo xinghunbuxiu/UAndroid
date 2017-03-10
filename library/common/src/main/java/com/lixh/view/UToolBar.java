@@ -309,7 +309,7 @@ public class UToolBar extends Toolbar {
                     android.support.v7.appcompat.R.attr.toolbarNavigationButtonStyle);
             mRightIcon.setId(id);
             mRightIcon.setImageResource(resId);
-//            mRightIcon.setOnClickListener(clickListener);
+            mRightIcon.setOnClickListener(clickListener);
             menu.addView(mRightIcon);
             removeView(menu);
             addView(menu);
@@ -324,7 +324,7 @@ public class UToolBar extends Toolbar {
                 mRightTextView.setSingleLine();
                 mRightTextView.setEllipsize(TextUtils.TruncateAt.END);
                 mRightTextView.setText(str);
-//                mRightTextView.setOnClickListener(clickListener);
+                mRightTextView.setOnClickListener(clickListener);
                 menu.addView(mRightTextView);
                 removeView(menu);
                 addView(menu);
@@ -335,22 +335,28 @@ public class UToolBar extends Toolbar {
 
 
     public void setLogoViewCenter(ImageView logoViewCenter) {
-        float tx = 0;
+
         int deviceWidth = getMeasuredWidth();
+        float tx = deviceWidth;
         if (logoViewCenter == null) {
             return;
         }
+        tx = (tx - logoViewCenter.getMeasuredWidth()) / 2.0f;
         if (mTitleTextView != null) {
             Paint p = mTitleTextView.getPaint();
             float textWidth = p.measureText(mTitleTextView.getText().toString());
-            tx = (deviceWidth - textWidth) / 2.0f - mTitleTextView.getLeft();
+            if (textWidth != 0) {
+                tx = (deviceWidth - textWidth) / 2.0f - mTitleTextView.getLeft();
+            }
         }
         if (mSubtitleTextView != null) {
             Paint p = mSubtitleTextView.getPaint();
             float textWidth = p.measureText(mSubtitleTextView.getText().toString());
+            if (textWidth != 0) {
             tx = Math.min(tx, (deviceWidth - textWidth) / 2.0f - mSubtitleTextView.getLeft());
+            }
         }
-        float left = (tx - logoViewCenter.getLeft()) / 2.0f;
+
         logoViewCenter.setTranslationX(tx);
     }
 

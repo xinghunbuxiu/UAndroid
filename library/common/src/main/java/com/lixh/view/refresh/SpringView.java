@@ -356,7 +356,7 @@ public class SpringView extends ViewGroup {
     @Override
     public void computeScroll() {
         if (mScroller.computeScrollOffset()) {
-            scrollTo(0, mScroller.getCurrY());
+            super.scrollTo(0, mScroller.getCurrY());
             invalidate();
         }
     }
