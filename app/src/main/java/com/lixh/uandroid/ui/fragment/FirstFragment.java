@@ -33,6 +33,19 @@ public class FirstFragment extends BaseFragment {
 
         }
     };
+    ArrayList<ArrayList<String>> array2 = new ArrayList<ArrayList<String>>() {
+        {
+            add(array);
+            add(array);
+            add(array);
+            add(array);
+            add(array);
+            add(array);
+
+
+        }
+    };
+
 
     public FirstFragment() {
 
@@ -52,7 +65,7 @@ public class FirstFragment extends BaseFragment {
             @Override
             public void onItemClick(View view, int position, Integer data) {
                 UToast.showShort(""+position);
-                Alert.displayWheelDialog(activity, array,null,null,null,null).;
+                Alert.displayWheelDialog(activity, array, array2, null, null, null);
             }
         }.setAutoLoadMore(true).setRefresh(true).setDivideHeight(R.dimen.space_7).setLoadTip(tip);
         builder.setOnLoadingListener(onLoadingListener);
