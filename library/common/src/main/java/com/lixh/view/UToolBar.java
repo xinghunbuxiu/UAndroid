@@ -106,7 +106,11 @@ public class UToolBar extends Toolbar {
         return this;
     }
 
-
+    public int getStatusBarHeight() {
+        Rect frame = new Rect();
+        (((AppCompatActivity) getContext())).getWindow().getDecorView().getWindowVisibleDisplayFrame(frame);
+        return frame.top;
+    }
     public UToolBar setCustomView(View view, LayoutParams layoutParams) {
         //显示自定义视图
         ((AppCompatActivity) getContext()).getSupportActionBar().setDisplayShowCustomEnabled(true);

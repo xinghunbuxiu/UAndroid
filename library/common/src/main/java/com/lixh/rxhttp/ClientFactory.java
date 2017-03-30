@@ -21,7 +21,7 @@ public enum ClientFactory {
 
     ClientFactory() {
         mBuilder = new OkHttpClient.Builder();
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.LOG_DEBUG) {
             mBuilder.addInterceptor(ClientHelper.getHttpLoggingInterceptor());
         }
         File cacheFile = new File(BaseApplication.getAppContext().getCacheDir(), "cache");

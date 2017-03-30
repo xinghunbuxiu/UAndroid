@@ -12,7 +12,7 @@ public class UApplication extends BaseApplication {
     @Override
     public void init() {
         //初始化logger
-        ULog.logInit(BuildConfig.DEBUG);
+        ULog.logInit(BuildConfig.LOG_DEBUG);
 
     }
 }

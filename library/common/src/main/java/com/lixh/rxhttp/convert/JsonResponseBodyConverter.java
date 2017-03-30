@@ -30,7 +30,10 @@ public class JsonResponseBodyConverter<T> implements Converter<ResponseBody, T> 
     @Override
     public T convert(ResponseBody value) throws IOException {
         String response = value.string();
-        BaseResPose re = mGson.fromJson(response, BaseResPose.class);
+        BaseResPose result = mGson.fromJson(response, BaseResPose.class);
+        String data = mGson.toJson(result.data);
+        result.data = data;
+        response = mGson.toJson(result);
         MediaType mediaType = value.contentType();
         Charset charset = mediaType != null ? mediaType.charset(UTF_8) : UTF_8;
         ByteArrayInputStream bis = new ByteArrayInputStream(response.getBytes());

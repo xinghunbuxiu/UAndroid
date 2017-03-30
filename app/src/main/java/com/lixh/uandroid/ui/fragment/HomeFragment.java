@@ -22,7 +22,7 @@ public class HomeFragment extends BaseFragment {
     }
     EasyRVAdapter adapter;
     protected void initList() {
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < 2; i++) {
             list.add(R.mipmap.ic_launcher);
         }
         adapter.addAll(list);

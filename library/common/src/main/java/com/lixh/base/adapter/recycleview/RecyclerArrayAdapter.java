@@ -32,7 +32,6 @@
 package com.lixh.base.adapter.recycleview;
 
 import android.content.Context;
-import android.support.v7.appcompat.BuildConfig;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -41,6 +40,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import com.lixh.BuildConfig;
 import com.lixh.utils.ULog;
 
 import java.util.ArrayList;
@@ -650,7 +650,7 @@ abstract public class RecyclerArrayAdapter<T> extends RecyclerView.Adapter<BaseV
     }
 
     private static void log(String content) {
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.LOG_DEBUG) {
             ULog.e(content);
         }
     }

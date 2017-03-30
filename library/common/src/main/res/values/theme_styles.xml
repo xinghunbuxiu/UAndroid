@@ -16,7 +16,7 @@
         <item name="colorPrimary">@color/night_backgroup_color</item>
         <item name="colorPrimaryDark">@color/night_backgroup_color</item>
         <item name="colorAccent">@color/night_backgroup_color</item>
-
+        <item name="dayNightTitleBarColor">@color/colorPrimary</item>
         <item name="dayNightBackground">@color/night_backgroup_color</item>
         <item name="dayNightOneTextColor">@color/night_one_text_color</item>
         <item name="dayNightTwoTextColor">@color/night_two_text_color</item>

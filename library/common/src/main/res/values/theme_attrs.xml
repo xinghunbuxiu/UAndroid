@@ -6,8 +6,9 @@
     <attr name="dayNightTwoTextColor" format="color|reference" />
     <attr name="dayNightThreeTextColor" format="color|reference" />
     <attr name="dayNightBackgroundDrawable" format="color|reference" />
-
+    <attr name="dayNightTitleBarColor" format="color|reference"></attr>
     <declare-styleable name="DayNightMode">
+        <attr name="dayNightTitleBarColorAttr" format="color|reference"></attr>
         <attr name="dayNightBackgroundAttr" format="string|reference" /><!--切换背景属性-->
         <attr name="dayNightOneTextColorAttr" format="string|reference" /><!--切换一级字体颜色属性-->
         <attr name="dayNightTwoTextColorAttr" format="string|reference" /><!--切换二级字体颜色属性-->

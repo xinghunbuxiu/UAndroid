@@ -255,7 +255,7 @@ public class DefaultEventDelegate implements EventDelegate {
     }
 
     private static void log(String content) {
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.LOG_DEBUG) {
             ULog.e(content);
         }
     }

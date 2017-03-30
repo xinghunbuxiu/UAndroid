@@ -108,13 +108,13 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         doBeforeSetContentView();
         layout = new LoadView.Builder(this).setBottomLayout(getLayoutId()).setToolBar(hasToolBar()).build();
         layout.addObserver(this);
-        setContentView(layout.getRootView());
         ButterKnife.bind(this);
+        initSwipe(enableSwipeBack());
         intent = new UIntent(this);
         tip = layout.getEmptyView();
-        initSwipe(enableSwipeBack());
         initTitleBar();
         init(savedInstanceState);
+        StatusBarCompat.setTranslucentStatus(this, true);
         if (mPresenter != null) {
             mPresenter.init(this, savedInstanceState, lifecycleSubject);
         }
@@ -146,7 +146,9 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+        if (mHelper != null) {
         mHelper.onPostCreate();
+        }
     }
 
     /**
@@ -208,7 +210,8 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
      * 着色状态栏（4.4以上系统有效）
      */
     protected void SetStatusBarColor() {
-        StatusBarCompat.setStatusBarColor(this, ContextCompat.getColor(this, R.color.main_color));
+        StatusBarCompat.setStatusBarColor(this, ContextCompat.getColor(this, R.color.colorPrimary));
+
     }
 
     /**

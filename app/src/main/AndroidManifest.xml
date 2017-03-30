@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/DayTheme">
         <activity
-            android:name=".ui.WelcomeActivity"
+            android:name=".ui.Main2Activity"
             android:screenOrientation="portrait"
             android:theme="@style/AppSplash">
             <intent-filter>
@@ -20,7 +20,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.TabsActivity" />
-        <activity android:name=".ui.Main2Activity"></activity>
+        <!--<activity android:name=".ui.Main2Activity"></activity>-->
     </application>
 
 </manifest>

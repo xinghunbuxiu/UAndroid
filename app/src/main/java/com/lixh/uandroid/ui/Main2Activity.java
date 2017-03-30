@@ -1,20 +1,30 @@
 package com.lixh.uandroid.ui;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.NumberPicker;
 
+import com.lixh.base.BaseActivity;
 import com.lixh.uandroid.R;
+import com.lixh.view.UToolBar;
 
-public class Main2Activity extends AppCompatActivity {
+public class Main2Activity extends BaseActivity {
     NumberPicker picker;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.picker);
-        picker = (NumberPicker) findViewById(R.id.numberPicker);
-        picker.setMinValue(0);
-        picker.setMaxValue(23);
+    protected void init(Bundle savedInstanceState) {
+
     }
+
+    @Override
+    public int getLayoutId() {
+        return R.layout.picker;
+    }
+
+    @Override
+    public boolean initTitle(UToolBar toolBar) {
+        toolBar.setTitle("ddddd");
+        return false;
+    }
+
+
 }

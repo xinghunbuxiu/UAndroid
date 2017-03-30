@@ -40,4 +40,9 @@ public class JsonConverterFactory extends Converter.Factory {
         TypeAdapter<?> adapter = gson.getAdapter(TypeToken.get(type));
         return new JsonRequestBodyConverter(gson, adapter);
     }
+
+    @Override
+    public Converter<?, String> stringConverter(Type type, Annotation[] annotations, Retrofit retrofit) {
+        return super.stringConverter(type, annotations, retrofit);
+    }
 }

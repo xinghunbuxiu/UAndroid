@@ -17,7 +17,7 @@
 package com.lixh.uandroid.api;
 
 public class ApiConstants {
-    public static final String BASE_URL = "http://api.p2peye.com/auth/focus/";
+    public static final String BASE_URL = "http://api.p2peye.com";
     /**
      * 获取对应的host
      *

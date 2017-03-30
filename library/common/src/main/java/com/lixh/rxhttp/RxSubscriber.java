@@ -86,7 +86,7 @@ public abstract class RxSubscriber<T> extends Subscriber<T> {
     public void onError(Throwable e) {
         if (showDialog)
             Alert.dismiss();
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.LOG_DEBUG) {
             e.printStackTrace();
         }
         //网络

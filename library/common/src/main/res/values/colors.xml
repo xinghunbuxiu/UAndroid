@@ -6,6 +6,8 @@
     <color name="color_sys_bg">#58BEdf</color>
     <color name="color_view_line">#58BEdf</color>
     <color name="tip">#88303F9F</color>
-
+    <!-- 白色 -->
+    <color name="common_pressed">#20000000</color>  <!--白色背景按下去的颜色-->
+    <color name="line">#e8e8e8</color>
 </resources>
 

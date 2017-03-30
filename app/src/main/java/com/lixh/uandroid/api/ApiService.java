@@ -14,5 +14,6 @@ import rx.Observable;
 public interface ApiService {
     @POST("login")
     Observable<BaseResPose<String>> login(@Query("username") String username, @Query("password") String password);
-
+    @POST("Loan/GetSpeedBorrowedDetail")
+    Observable<BaseResPose<String>> getBanner(@Query("id") int id);
 }

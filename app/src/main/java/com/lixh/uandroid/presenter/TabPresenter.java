@@ -24,7 +24,7 @@ public class TabPresenter extends BasePresenter {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         tabsActivity = getActivity();
-        rxHelper.createSubscriber(Api.getDefault(HostType.BASE_URL).login("us", "dd"), new RxSubscriber<MainModel>(activity, true) {
+        rxHelper.createSubscriber(Api.getDefault(HostType.BASE_URL).getBanner(8), new RxSubscriber<MainModel>(activity, false) {
             @Override
             protected void _onNext(MainModel mainModel) {
 

@@ -5,8 +5,10 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
 
 import com.lixh.R;
 import com.lixh.rxhttp.Observable;
@@ -25,10 +27,11 @@ import com.lixh.utils.LoadingTip;
 public class LoadView  extends Observable {
     public static final String TAG = "LoadView";
     public static Activity mContext;
-    LinearLayout RootView;
+    RelativeLayout RootView;
     LoadingTip tip;
     Builder builder;
     UToolBar toolbar;
+    ViewStub view_Stub;
     FrameLayout bottomView;
     protected SwipeBackLayout layout;
     //定义通用的布局 根布局为Liearlayout +ToolBar + LinearLayout
@@ -51,18 +54,35 @@ public class LoadView  extends Observable {
 
     //通用布局
     public void commonView(Builder builder) {
-        RootView = (LinearLayout) inflate(R.layout.toolbar_layout);
-        bottomView = new FrameLayout(mContext);
-        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        bottomView.setLayoutParams(lp);
-        RootView.addView(getContentView(builder));
-        initLayout();
+        RootView = (RelativeLayout) inflate(R.layout.toolbar_layout);
+        initToolBar();
+        initBottomView();
     }
 
-    private void initLayout() {
-        toolbar = (UToolBar) RootView.findViewById(R.id.toolbar);
-        if (!builder.hasToolbar) {
-            RootView.removeView(toolbar);
+    private void initBottomView() {
+        LayoutParams root = getLayoutParams();
+        root.addRule(RelativeLayout.BELOW, R.id.toolbar);
+        tip = getEmptyView();
+        RootView.addView(tip, root);
+        if (builder.getBottomLayout() > 0) {
+            RootView.addView(inflate(builder.getBottomLayout()), root);
+        }
+        ViewGroup view = (ViewGroup) mContext.getWindow().getDecorView();
+        view.setId(android.R.id.content);
+        view.removeAllViews();
+        view.addView(RootView);
+    }
+
+    public LayoutParams getLayoutParams() {
+        return new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+    }
+
+    private void initToolBar() {
+        view_Stub = (ViewStub) RootView.findViewById(R.id.title_stub);
+        if (builder.hasToolbar) {
+            toolbar = (UToolBar) view_Stub.inflate();
+        } else {
+            RootView.removeView(view_Stub);
         }
     }
 
@@ -73,20 +93,11 @@ public class LoadView  extends Observable {
     }
 
     public void setContentView(View view) {
-        bottomView.addView(view);
+        LayoutParams root = getLayoutParams();
+        root.addRule(RelativeLayout.BELOW, R.id.toolbar);
+        RootView.addView(view, root);
     }
 
-    /**
-     * 创建内容的布局 这里用的事RelativeLayout
-     */
-    public View getContentView(Builder builder) {
-        tip = getEmptyView();
-        bottomView.addView(tip);
-        if (builder.getBottomLayout() > 0) {
-            bottomView.addView(inflate(builder.getBottomLayout()));
-        }
-        return bottomView;
-    }
 
     public LoadingTip getEmptyView() {
         if (tip == null) {

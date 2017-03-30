@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:orientation="vertical">
 
-    <com.lixh.view.UToolBar
-        android:id="@+id/toolbar"
+    <ViewStub
+        android:id="@+id/title_stub"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#0093fe"
-        android:fitsSystemWindows="true"
-        android:minHeight="?attr/actionBarSize"></com.lixh.view.UToolBar>
-</LinearLayout>
+        android:inflatedId="@id/toolbar"
+        android:layout="@layout/toolbar" />
+
+</RelativeLayout>

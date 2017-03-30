@@ -14,15 +14,15 @@ public class TUtil {
                     .getGenericSuperclass())).getActualTypeArguments()[i])
                     .newInstance();
         } catch (InstantiationException e) {
-            if (BuildConfig.DEBUG) {
+            if (BuildConfig.LOG_DEBUG) {
                 e.printStackTrace();
             }
         } catch (IllegalAccessException e) {
-            if (BuildConfig.DEBUG) {
+            if (BuildConfig.LOG_DEBUG) {
                 e.printStackTrace();
             }
         } catch (ClassCastException e) {
-            if (BuildConfig.DEBUG) {
+            if (BuildConfig.LOG_DEBUG) {
                 e.printStackTrace();
             }
         }

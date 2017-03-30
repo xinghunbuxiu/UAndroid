@@ -1,5 +1,6 @@
 package com.lixh.utils;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -21,6 +22,25 @@ public class StatusBarCompat {
 
     public static final int DEFAULT_COLOR_ALPHA = 112;
 
+    /**
+     * 设置状态栏透明
+     *
+     * @param on
+     */
+    @TargetApi(19)
+    public static void setTranslucentStatus(Activity activity, boolean on) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            Window win = activity.getWindow();
+            WindowManager.LayoutParams winParams = win.getAttributes();
+            final int bits = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
+            if (on) {
+                winParams.flags |= bits;
+            } else {
+                winParams.flags &= ~bits;
+            }
+            win.setAttributes(winParams);
+        }
+    }
     /**
      * set statusBarColor
      * @param statusColor color

@@ -5,6 +5,7 @@ import android.app.Activity;
 import com.lixh.base.BaseResPose;
 import com.lixh.rxhttp.exception.ApiException;
 import com.lixh.rxlife.LifeEvent;
+import com.lixh.utils.ULog;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -59,6 +60,7 @@ public class RxHelper {
                 return tObservable.flatMap(new Func1<BaseResPose<T>, Observable<T>>() {
                     @Override
                     public Observable<T> call(BaseResPose<T> result) {
+                        ULog.e(result.toString());
                         return createData(result);
 
                     }
@@ -76,7 +78,7 @@ public class RxHelper {
      */
     public <T> void createSubscriber(Observable fromNetwork, final RxSubscriber result) {
             //数据预处理
-            Observable observable = fromNetwork.compose(handleResult(getEvent(), lifeEvent));
+            Observable observable = fromNetwork.compose(handleResult(getEvent(), lifeEvent)).compose(RxSchedulers.io_main());
             RxCache.load(c, caChe, 1000 * 60 * 30, observable, isForceRefresh)
                     .subscribe(result);
 
