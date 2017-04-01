@@ -107,9 +107,8 @@ public class UToolBar extends Toolbar {
     }
 
     public int getStatusBarHeight() {
-        Rect frame = new Rect();
-        (((AppCompatActivity) getContext())).getWindow().getDecorView().getWindowVisibleDisplayFrame(frame);
-        return frame.top;
+        double statusBarHeight = Math.ceil(25 * getContext().getResources().getDisplayMetrics().density);
+        return (int) statusBarHeight;
     }
     public UToolBar setCustomView(View view, LayoutParams layoutParams) {
         //显示自定义视图
@@ -169,9 +168,12 @@ public class UToolBar extends Toolbar {
         menu.setLayoutParams(lp);
         ViewCompat.setLayoutDirection(menu, ViewCompat.LAYOUT_DIRECTION_RTL);
 
-
     }
 
+    public void setHasBar() {
+        setMinimumHeight(getSuggestedMinimumHeight() + getStatusBarHeight());
+        setPadding(0, getStatusBarHeight(), 0, 0);
+    }
     @Override
     public void setTitle(CharSequence title) {
         super.setTitle(title);
@@ -237,7 +239,6 @@ public class UToolBar extends Toolbar {
             setLogoViewCenter(mLogoView);
         }
     }
-
 
     /**
      * 增加多个按钮

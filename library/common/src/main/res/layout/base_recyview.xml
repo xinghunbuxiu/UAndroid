@@ -2,11 +2,13 @@
 <com.lixh.view.refresh.SpringView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/springView"
     android:layout_width="match_parent"
+    android:clipToPadding="false"
     android:layout_height="match_parent">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycle"
         android:layout_width="match_parent"
         android:fitsSystemWindows="true"
+        android:clipChildren="true"
         android:layout_height="match_parent"></android.support.v7.widget.RecyclerView>
 </com.lixh.view.refresh.SpringView>

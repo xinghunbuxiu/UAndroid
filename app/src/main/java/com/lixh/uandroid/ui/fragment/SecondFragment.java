@@ -35,7 +35,7 @@ public class SecondFragment extends BaseFragment {
         }.setAutoLoadMore(true).setRefresh(true).setDivideHeight(R.dimen.space_7);
         builder.setOnLoadingListener(onLoadingListener);
         builder.setRVAdapter(R.layout.item_ciew, list);
-        layout.setContentView(builder.Build(Page.PageType.List).getRootView());
+        layout.setContentView(builder.Build(Page.PageType.List).getRootView(),false);
     }
 
     Page.OnLoadingListener onLoadingListener = new Page.OnLoadingListener() {
@@ -56,6 +56,8 @@ public class SecondFragment extends BaseFragment {
     @Override
     public boolean initTitle() {
         toolBar.setTitle("recycle_view");
+        setStatusBar(true);
+        toolBar.setHasBar();
         return true;
     }
 

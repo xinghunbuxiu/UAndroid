@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/DayTheme">
         <activity
-            android:name=".ui.Main2Activity"
+            android:name=".ui.WelcomeActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppSplash">
             <intent-filter>
@@ -19,8 +19,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.TabsActivity" />
-        <!--<activity android:name=".ui.Main2Activity"></activity>-->
+        <activity
+            android:name=".ui.TabsActivity"
+            android:configChanges="screenSize|keyboardHidden|orientation"  />
     </application>
 
 </manifest>

@@ -2,13 +2,11 @@ package com.lixh.base;
 
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.view.View;
 import android.view.Window;
 
-import com.lixh.R;
 import com.lixh.app.AppManager;
 import com.lixh.bean.Message;
 import com.lixh.presenter.BasePresenter;
@@ -23,7 +21,7 @@ import com.lixh.swipeback.app.SwipeBackLayout;
 import com.lixh.utils.Exit;
 import com.lixh.utils.LoadingTip;
 import com.lixh.utils.SharedPreferencesUtil;
-import com.lixh.utils.StatusBarCompat;
+import com.lixh.utils.SystemBarTintManager;
 import com.lixh.utils.TUtil;
 import com.lixh.utils.UIntent;
 import com.lixh.utils.UToast;
@@ -106,15 +104,16 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         lifecycleSubject.onNext(LifeEvent.CREATE);
         super.onCreate(savedInstanceState);
         doBeforeSetContentView();
-        layout = new LoadView.Builder(this).setBottomLayout(getLayoutId()).setToolBar(hasToolBar()).build();
+        layout = new LoadView.Builder(this).setBottomLayout(getLayoutId()).setToolBar(hasToolBar()).createActivity();
         layout.addObserver(this);
         ButterKnife.bind(this);
-        initSwipe(enableSwipeBack());
+//        initSwipe(enableSwipeBack());
         intent = new UIntent(this);
         tip = layout.getEmptyView();
         initTitleBar();
         init(savedInstanceState);
-        StatusBarCompat.setTranslucentStatus(this, true);
+        SystemBarTintManager systemBarTintManager=new SystemBarTintManager(this);
+        systemBarTintManager.setTranslucentStatus(this,true);
         if (mPresenter != null) {
             mPresenter.init(this, savedInstanceState, lifecycleSubject);
         }
@@ -188,8 +187,6 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         // 设置竖屏
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        // 默认着色状态栏
-        SetStatusBarColor();
 
     }
 
@@ -206,27 +203,6 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         }
     }
 
-    /**
-     * 着色状态栏（4.4以上系统有效）
-     */
-    protected void SetStatusBarColor() {
-        StatusBarCompat.setStatusBarColor(this, ContextCompat.getColor(this, R.color.colorPrimary));
-
-    }
-
-    /**
-     * 着色状态栏（4.4以上系统有效）
-     */
-    protected void SetStatusBarColor(int color) {
-        StatusBarCompat.setStatusBarColor(this, color);
-    }
-
-    /**
-     * 沉浸状态栏（4.4以上系统有效）
-     */
-    protected void SetTranslanteBar() {
-        StatusBarCompat.translucentStatusBar(this);
-    }
 
 
     @Override

@@ -32,6 +32,17 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment imp
     public UToolBar toolBar;
     public View mContentView;
     public  UIntent intent;
+    public boolean isHasStatusBar;
+
+    /**
+     * 内容延伸到状态栏顶部
+     *
+     * @param hasStatusBar
+     */
+    public void setStatusBar(boolean hasStatusBar) {
+        isHasStatusBar = hasStatusBar;
+    }
+
     protected abstract void init(Bundle savedInstanceState);
 
     public BaseFragment() {
@@ -50,7 +61,7 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment imp
         lifecycleSubject.onNext(LifeEvent.ATTACH);
         super.onAttach(context);
         this.activity = (Activity) context;
-        layout = new LoadView.Builder(activity).setBottomLayout(getLayoutId()).setToolBar(hasToolBar()).build();
+        layout = new LoadView.Builder(activity).setBottomLayout(getLayoutId()).setToolBar(hasToolBar()).createFragment();
         layout.addObserver(this);
         intent = new UIntent(activity);
         tip = layout.getEmptyView();
@@ -129,6 +140,9 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment imp
 
     @Override
     public void onStart() {
+        if (isHasStatusBar) {
+            layout.setLayoutTop();
+        }
         lifecycleSubject.onNext(LifeEvent.START);
         super.onStart();
 
