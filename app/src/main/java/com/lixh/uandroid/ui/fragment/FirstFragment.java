@@ -4,14 +4,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 
-import com.common.dialog.Alert;
 import com.lixh.base.BaseFragment;
 import com.lixh.base.Page;
 import com.lixh.base.adapter.recycleview.BaseViewHolder;
 import com.lixh.uandroid.R;
+import com.lixh.uandroid.ui.LineChartActivity;
 import com.lixh.utils.LoadingTip;
 import com.lixh.utils.ULog;
-import com.lixh.utils.UToast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,8 +73,7 @@ public class FirstFragment extends BaseFragment {
 
             @Override
             public void onItemClick(View view, int position, Integer data) {
-                UToast.showShort(""+position);
-                Alert.displayWheelDialog(activity, array, array2, null, null, null);
+                intent.go(LineChartActivity.class);
             }
         }.setAutoLoadMore(true).setRefresh(true).setDivideHeight(R.dimen.space_7).setLoadTip(tip);
         builder.setOnLoadingListener(onLoadingListener);

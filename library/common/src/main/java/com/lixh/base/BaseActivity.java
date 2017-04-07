@@ -14,10 +14,6 @@ import com.lixh.rxhttp.Observable;
 import com.lixh.rxhttp.Observer;
 import com.lixh.rxlife.LifeEvent;
 import com.lixh.setting.AppConfig;
-import com.lixh.swipeback.SwipeBackActivityBase;
-import com.lixh.swipeback.Utils;
-import com.lixh.swipeback.app.SwipeBackActivityHelper;
-import com.lixh.swipeback.app.SwipeBackLayout;
 import com.lixh.utils.Exit;
 import com.lixh.utils.LoadingTip;
 import com.lixh.utils.SharedPreferencesUtil;
@@ -34,15 +30,13 @@ import rx.subjects.BehaviorSubject;
 /**
  * 基类Activity
  */
-public abstract class BaseActivity<T extends BasePresenter> extends AppCompatActivity implements SwipeBackActivityBase, Observer<Message> {
+public abstract class BaseActivity<T extends BasePresenter> extends AppCompatActivity implements Observer<Message> {
     public T mPresenter; //当前类需要的操作类
     public LoadingTip tip;
     public LoadView layout;
     public final BehaviorSubject<LifeEvent> lifecycleSubject = BehaviorSubject.create();
     public Exit exit = new Exit();// 双击退出 封装
     private boolean mNowMode;
-    private SwipeBackLayout mSwipeBackLayout;
-    private SwipeBackActivityHelper mHelper;
     protected abstract void init(Bundle savedInstanceState);
     public BaseActivity() {
         mPresenter = TUtil.getT(this, 0);
@@ -86,28 +80,23 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         return false;
     }
 
-    @Override
-    public SwipeBackLayout getSwipeBackLayout() {
-        return mHelper.getSwipeBackLayout();
+    public boolean isContentTop() {
+        return true;
     }
 
-
-
-    @Override
-    public void scrollToFinishActivity() {
-        Utils.convertActivityToTranslucent(this);
-        getSwipeBackLayout().scrollToFinishActivity();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         lifecycleSubject.onNext(LifeEvent.CREATE);
         super.onCreate(savedInstanceState);
         doBeforeSetContentView();
-        layout = new LoadView.Builder(this).setBottomLayout(getLayoutId()).setToolBar(hasToolBar()).createActivity();
+        layout = new LoadView.Builder(this)
+                .setBottomLayout(getLayoutId(), isContentTop())
+                .setToolBar(hasToolBar())
+                .setSwipeBack(enableSwipeBack())
+                .createActivity();
         layout.addObserver(this);
         ButterKnife.bind(this);
-//        initSwipe(enableSwipeBack());
         intent = new UIntent(this);
         tip = layout.getEmptyView();
         initTitleBar();
@@ -145,26 +134,7 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        if (mHelper != null) {
-        mHelper.onPostCreate();
-        }
-    }
-
-    /**
-     * 是否滑动结束
-     */
-    @Override
-    public void setSwipeBackEnable(boolean enable) {
-        getSwipeBackLayout().setEnableGesture(enable);
-    }
-
-    public void initSwipe(boolean enable) {
-        mHelper = new SwipeBackActivityHelper(this);
-        mHelper.onActivityCreate();
-        //侧滑
-        mSwipeBackLayout = getSwipeBackLayout();
-        mSwipeBackLayout.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);
-        setSwipeBackEnable(enable);
+        layout.onPostCreate();
     }
 
     private void initTitleBar() {

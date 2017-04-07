@@ -21,7 +21,10 @@
         </activity>
         <activity
             android:name=".ui.TabsActivity"
-            android:configChanges="screenSize|keyboardHidden|orientation"  />
+            android:configChanges="screenSize|keyboardHidden|orientation" />
+        <activity android:name=".ui.PieChartActivity"></activity>
+        <activity android:name=".ui.LineChartActivity"></activity>
+
     </application>
 
 </manifest>

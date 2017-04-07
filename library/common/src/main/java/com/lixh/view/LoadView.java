@@ -13,6 +13,9 @@ import android.widget.RelativeLayout.LayoutParams;
 
 import com.lixh.R;
 import com.lixh.rxhttp.Observable;
+import com.lixh.swipeback.SwipeBackActivityBase;
+import com.lixh.swipeback.Utils;
+import com.lixh.swipeback.app.SwipeBackActivityHelper;
 import com.lixh.swipeback.app.SwipeBackLayout;
 import com.lixh.utils.LoadingTip;
 
@@ -26,7 +29,7 @@ import java.lang.annotation.RetentionPolicy;
  * des
  */
 
-public class LoadView  extends Observable {
+public class LoadView extends Observable implements SwipeBackActivityBase {
     public static final String TAG = "LoadView";
     public static Activity mContext;
     RelativeLayout RootView;
@@ -35,6 +38,8 @@ public class LoadView  extends Observable {
     UToolBar toolbar;
     ViewStub view_Stub;
     int windowType;
+    private SwipeBackLayout mSwipeBackLayout;
+    private SwipeBackActivityHelper mHelper;
     protected SwipeBackLayout layout;
     //定义通用的布局 根布局为Liearlayout +ToolBar + LinearLayout
     public LoadView(Builder builder, int windowType) {
@@ -57,9 +62,10 @@ public class LoadView  extends Observable {
 
     //通用布局
     public void commonView(Builder builder) {
-        RootView = (RelativeLayout) inflate(R.layout.toolbar_layout);
+        RootView = (RelativeLayout) inflate(builder.isContentTop() ? R.layout.status_toolbar_layout : R.layout.toolbar_layout);
         initToolBar();
         initBottomView();
+        initSwipe(builder.isSwipeBack());
     }
 
     private void initBottomView() {
@@ -72,6 +78,9 @@ public class LoadView  extends Observable {
         }
         if (windowType == WindowType.ACTIVITY) {
             createActivity();
+        }
+        if (toolbar != null) {
+            toolbar.bringToFront();
         }
     }
 
@@ -92,6 +101,9 @@ public class LoadView  extends Observable {
         view_Stub = (ViewStub) RootView.findViewById(R.id.title_stub);
         if (builder.hasToolbar) {
             toolbar = (UToolBar) view_Stub.inflate();
+            if (builder.isContentTop()) {
+                toolbar.setHasBar();
+            }
         } else {
             RootView.removeView(view_Stub);
         }
@@ -112,17 +124,18 @@ public class LoadView  extends Observable {
             root.addRule(RelativeLayout.BELOW, R.id.toolbar);
         }
         RootView.addView(view, root);
-        toolbar.bringToFront();
+        if (toolbar != null) {
+            toolbar.bringToFront();
+        }
     }
 
-    public void setLayoutTop() {
-        Window window = mContext.getWindow();
-        ViewGroup decorView = (ViewGroup) window.getDecorView();
-        if (decorView.getChildAt(0) != null) {
-            View view = decorView.getChildAt(0);
-            view.setPadding(0, 0, 0, 0);
-            view.invalidate();
-        }
+    public void initSwipe(boolean enable) {
+        mHelper = new SwipeBackActivityHelper(mContext);
+        mHelper.onActivityCreate();
+        //侧滑
+        mSwipeBackLayout = getSwipeBackLayout();
+        mSwipeBackLayout.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);
+        setSwipeBackEnable(enable);
     }
     public LoadingTip getEmptyView() {
         if (tip == null) {
@@ -136,6 +149,32 @@ public class LoadView  extends Observable {
         LayoutInflater layoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(layoutResID, null);
         return view;
+    }
+
+    @Override
+    public SwipeBackLayout getSwipeBackLayout() {
+        return mHelper.getSwipeBackLayout();
+    }
+
+
+    @Override
+    public void scrollToFinishActivity() {
+        Utils.convertActivityToTranslucent(mContext);
+        getSwipeBackLayout().scrollToFinishActivity();
+    }
+
+    public void onPostCreate() {
+        if (mHelper != null) {
+            mHelper.onPostCreate();
+        }
+    }
+
+    /**
+     * 是否滑动结束
+     */
+    @Override
+    public void setSwipeBackEnable(boolean enable) {
+        getSwipeBackLayout().setEnableGesture(enable);
     }
 
     @IntDef({
@@ -152,19 +191,28 @@ public class LoadView  extends Observable {
         int mBottomLayout;
         boolean hasToolbar;
         View mBottomView;
+        private boolean contentTop;
+        private boolean swipeBack;
+
+        public boolean isSwipeBack() {
+            return swipeBack;
+        }
+
         public Builder(Activity context) {
             mContext = context;
             mBottomLayout = -1;
             mBottomView = null;
             hasToolbar=true;
+            contentTop = false;
         }
 
         public int getBottomLayout() {
             return mBottomLayout;
         }
 
-        public Builder setBottomLayout(int mBottomLayout) {
+        public Builder setBottomLayout(int mBottomLayout, boolean contentTop) {
             this.mBottomLayout = mBottomLayout;
+            this.contentTop = contentTop;
             return this;
         }
 
@@ -181,6 +229,14 @@ public class LoadView  extends Observable {
             return this;
         }
 
+        public boolean isContentTop() {
+            return contentTop;
+        }
+
+        public Builder setSwipeBack(boolean swipeBack) {
+            this.swipeBack = swipeBack;
+            return this;
+        }
     }
 
     ;

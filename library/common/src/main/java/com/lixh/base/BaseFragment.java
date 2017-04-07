@@ -23,7 +23,6 @@ import com.lixh.view.UToolBar;
 
 import butterknife.ButterKnife;
 import rx.subjects.BehaviorSubject;
-
 public abstract class BaseFragment<T extends BasePresenter> extends Fragment implements Observer<Message> {
     T mPresenter; //当前类需要的操作类
     public Activity activity;
@@ -32,16 +31,6 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment imp
     public UToolBar toolBar;
     public View mContentView;
     public  UIntent intent;
-    public boolean isHasStatusBar;
-
-    /**
-     * 内容延伸到状态栏顶部
-     *
-     * @param hasStatusBar
-     */
-    public void setStatusBar(boolean hasStatusBar) {
-        isHasStatusBar = hasStatusBar;
-    }
 
     protected abstract void init(Bundle savedInstanceState);
 
@@ -55,13 +44,15 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment imp
         return (T) this;
     }
 
-
+    public boolean isContentTop() {
+        return true;
+    }
     @Override
     public void onAttach(Context context) {
         lifecycleSubject.onNext(LifeEvent.ATTACH);
         super.onAttach(context);
         this.activity = (Activity) context;
-        layout = new LoadView.Builder(activity).setBottomLayout(getLayoutId()).setToolBar(hasToolBar()).createFragment();
+        layout = new LoadView.Builder(activity).setBottomLayout(getLayoutId(), isContentTop()).setToolBar(hasToolBar()).createFragment();
         layout.addObserver(this);
         intent = new UIntent(activity);
         tip = layout.getEmptyView();
@@ -140,20 +131,14 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment imp
 
     @Override
     public void onStart() {
-        if (isHasStatusBar) {
-            layout.setLayoutTop();
-        }
         lifecycleSubject.onNext(LifeEvent.START);
         super.onStart();
-
-
     }
 
     @Override
     public void onResume() {
         lifecycleSubject.onNext(LifeEvent.RESUME);
         super.onResume();
-
 
     }
 

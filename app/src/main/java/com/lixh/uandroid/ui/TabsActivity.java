@@ -27,7 +27,6 @@ import butterknife.Bind;
  * email lixhVip9@163.com
  * des
  */
-
 public class TabsActivity extends BaseActivity<TabPresenter> implements BottomNavigationBar.OnTabSelectedListener {
     @Bind(R.id.layFrame)
     FrameLayout layFrame;
@@ -41,7 +40,7 @@ public class TabsActivity extends BaseActivity<TabPresenter> implements BottomNa
     }
     @Override
     public boolean initTitle(UToolBar toolBar) {
-        return false;
+        return true;
     }
 
     @Override
