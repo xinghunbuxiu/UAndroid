@@ -90,6 +90,7 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
         ViewGroup decorView = (ViewGroup) window.getDecorView();
         decorView.setId(Window.ID_ANDROID_CONTENT);
         decorView.removeAllViews();
+        RootView.setPadding(0,0,0,0);
         decorView.addView(RootView);
         return this;
     }

@@ -35,7 +35,7 @@ public class UToolBar extends Toolbar {
     private ImageButton mRightIcon = null;
     private TextView mRightTextView = null;
     private ImageView mLogoView;
-
+    ImageButton mNavButtonView = null;
 
     private ActionMenuView menu;
 
@@ -90,8 +90,9 @@ public class UToolBar extends Toolbar {
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void setElevation(float elevation) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            setElevation(elevation);
+            super.setElevation(elevation);
         }
+
     }
     /**
      * tittle的显示必须为 false 不然次不管用
@@ -188,7 +189,7 @@ public class UToolBar extends Toolbar {
 
     public void setNavigationIcon(@DrawableRes int resId, String backStr) {
         try {
-            ImageButton mNavButtonView = (ImageButton) get("mNavButtonView");
+            mNavButtonView = (ImageButton) get("mNavButtonView");
             Bitmap bitmap = drawTextToBitmap(resId, backStr);
             mNavButtonView.setImageBitmap(bitmap);
         } catch (NoSuchFieldException e) {
@@ -238,8 +239,13 @@ public class UToolBar extends Toolbar {
             setCenter(mSubtitleTextView);
             setLogoViewCenter(mLogoView);
         }
+//        setNavCenterVertical();
     }
 
+    private void setNavCenterVertical() {
+        final int paddingTop = getPaddingTop();
+        mNavButtonView.layout(mNavButtonView.getLeft(), mNavButtonView.getTop() - paddingTop, mNavButtonView.getRight(), mNavButtonView.getBottom());
+    }
     /**
      * 增加多个按钮
      *

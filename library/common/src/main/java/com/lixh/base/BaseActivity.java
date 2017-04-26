@@ -47,7 +47,9 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
     public UToolBar toolBar;
     public UIntent intent;
     public abstract int getLayoutId();
-    public abstract boolean initTitle(UToolBar toolBar);
+
+
+    public abstract void initTitle(UToolBar toolBar);
     public <T> T getActivity() {
         return (T) this;
     }
@@ -64,7 +66,9 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
     public boolean hasToolBar() {
         return true;
     }
-
+    public boolean isBack() {
+        return true;
+    }
     /**
      * 是否允许左划结束
      *
@@ -141,7 +145,8 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         toolBar = layout.getToolbar();
         if (toolBar != null) {
             toolBar.setDisplayShowTitleEnabled(false);
-            toolBar.setDisplayHomeAsUpEnabled(!initTitle(toolBar));
+            toolBar.setDisplayHomeAsUpEnabled(!isBack());
+            initTitle(toolBar);
             if (mPresenter != null) {
                 mPresenter.setToolBar(toolBar);
         }

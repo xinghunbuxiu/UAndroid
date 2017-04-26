@@ -74,7 +74,7 @@ public class LineEntry extends Entry {
      * @return
      */
     public LineEntry copy() {
-        LineEntry e = new LineEntry(getX(), getY(), drawCircle, getData());
+        LineEntry e = new LineEntry(getX(), getY(),getIcon(), getData(), drawCircle);
         return e;
     }
 }

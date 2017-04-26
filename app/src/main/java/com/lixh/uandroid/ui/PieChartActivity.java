@@ -131,9 +131,8 @@ public class PieChartActivity extends BaseActivity {
     }
 
     @Override
-    public boolean initTitle(UToolBar toolBar) {
+    public void initTitle(UToolBar toolBar) {
         toolBar.setTitle("chart");
-        return false;
     }
 
 }

@@ -29,6 +29,7 @@ public class JsonResponseBodyConverter<T> implements Converter<ResponseBody, T> 
 
     @Override
     public T convert(ResponseBody value) throws IOException {
+
         String response = value.string();
         BaseResPose result = mGson.fromJson(response, BaseResPose.class);
         String data = mGson.toJson(result.data);

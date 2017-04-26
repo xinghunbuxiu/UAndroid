@@ -39,7 +39,7 @@ public class TabsActivity extends BaseActivity<TabPresenter> implements BottomNa
         return false;
     }
     @Override
-    public boolean initTitle(UToolBar toolBar) {
+    public boolean isBack( ) {
         return true;
     }
 
@@ -56,6 +56,11 @@ public class TabsActivity extends BaseActivity<TabPresenter> implements BottomNa
     @Override
     public int getLayoutId() {
         return R.layout.activity_tab;
+    }
+
+    @Override
+    public void initTitle(UToolBar toolBar) {
+
     }
 
 

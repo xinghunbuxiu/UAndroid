@@ -4,7 +4,6 @@ import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.os.Bundle;
 
-import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
@@ -15,9 +14,11 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.lixh.base.BaseActivity;
 import com.lixh.uandroid.R;
+import com.lixh.uandroid.view.DayAxisValueFormatter;
 import com.lixh.uandroid.view.MyMarkerView;
 import com.lixh.view.UToolBar;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,46 +37,50 @@ public class LineChartActivity extends BaseActivity implements OnChartValueSelec
     public void initLineChart() {
         mChart.setOnChartValueSelectedListener(this);
         mChart.setDrawGridBackground(false);
-        // no description text
         mChart.getDescription().setEnabled(false);
         mChart.setAutoScaleMinMaxEnabled(true);
-        // enable touch gestures
         mChart.setTouchEnabled(true);
-        mChart.setDoubleTapToZoomEnabled(false);
-        // enable scaling and dragging
         mChart.setDragEnabled(true);
-        mChart.setScaleEnabled(false);
-        mChart.setScaleXEnabled(true);
+        mChart.setScaleEnabled(true);
         mChart.setScaleYEnabled(false);
-        mChart.setDoubleTapToZoomEnabled(false);
-        // if disabled, scaling can be done on x- and y-axis separately
+        mChart.setExtraBottomOffset(18);
         mChart.setPinchZoom(false);
-        mChart.setBackgroundColor(Color.WHITE);
+        mChart.setBackgroundColor(-1);
         MyMarkerView mv = new MyMarkerView(this, R.layout.custom_marker_view);
         mv.setChartView(mChart); // For bounds control
         mChart.setMarker(mv); // Set the marker to the chart
         XAxis xAxis = mChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setGranularity(1);
-        xAxis.setLabelCount(7, true);
+        xAxis.setGranularity(1);//放大的时候X值不增多
+        xAxis.setLabelCount(7);
+        xAxis.setTextColor(Color.BLACK);
+        xAxis.setValueFormatter(new DayAxisValueFormatter(mChart));
         YAxis leftAxis = mChart.getAxisLeft();
-        leftAxis.removeAllLimitLines(); // reset all limit lines to avoid overlapping lines
-        leftAxis.resetAxisMaximum();
+        setDrawBottomYLabelEntry(leftAxis, false);
+        leftAxis.removeAllLimitLines();
         leftAxis.setAxisMinimum(0);
-        leftAxis.setDrawZeroLine(false);
-        // limit lines are drawn behind data (and not on top)
+        leftAxis.setLabelCount(7, true);
         leftAxis.setDrawLimitLinesBehindData(true);
         mChart.getAxisRight().setEnabled(false);
-        // add data
-        setData(15, 100);
+        setData(15, 100.0F);
         mChart.setVisibleXRangeMinimum(7);
         mChart.setVisibleXRangeMaximum(7);
 
-        mChart.animateX(2500);
-        Legend l = mChart.getLegend();
-        l.setEnabled(false);
+        this.mChart.animateX(2500);
+        this.mChart.getLegend().setEnabled(false);
     }
 
+    public void setDrawBottomYLabelEntry(YAxis yAxis, boolean enabled) {
+        try {
+            Field field = yAxis.getClass().getDeclaredField("mDrawBottomYLabelEntry");
+            field.setAccessible(true);
+            field.setBoolean(yAxis, enabled);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+    }
     private void setData(int count, float range) {
 
         List<Entry> values = new ArrayList<Entry>();
@@ -102,9 +107,10 @@ public class LineChartActivity extends BaseActivity implements OnChartValueSelec
             set1.setLineWidth(2.5f);
             set1.setDrawCircles(true);
             set1.setCircleColor(Color.RED);
-            set1.setCircleRadius(0f);
+            set1.setCircleRadius(4f);
             set1.setFillColor(Color.BLUE);
             set1.setDrawValues(true);
+            set1.setDrawIcons(false);
             set1.setValueTextSize(10f);
             set1.setDrawFilled(true);
             set1.setHighlightEnabled(true);
@@ -130,10 +136,12 @@ public class LineChartActivity extends BaseActivity implements OnChartValueSelec
     }
 
     @Override
-    public boolean initTitle(UToolBar toolBar) {
+    public void initTitle(UToolBar toolBar) {
         toolBar.setTitle("chart");
-        return false;
+        toolBar.setNavigationIcon(R.mipmap.back_normal, "dddd");
+        toolBar.setElevation(5);
     }
+
 
     float oldFloat;
 
@@ -156,7 +164,6 @@ public class LineChartActivity extends BaseActivity implements OnChartValueSelec
                 }
             }
         }
-
         mChart.invalidate();
     }
 
@@ -172,7 +179,6 @@ public class LineChartActivity extends BaseActivity implements OnChartValueSelec
                 }
             }
         }
-
         mChart.invalidate();
     }
 

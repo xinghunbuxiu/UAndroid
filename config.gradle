@@ -3,7 +3,7 @@ ext {
             compileSdkVersion: 25,
             buildToolsVersion: "25.0.2",
             minSdkVersion    : 15,
-            targetSdkVersion : 25,
+            targetSdkVersion : 19,
     ]
     dependencies = [
             appcompatV7  : 'com.android.support:appcompat-v7:25.+',
