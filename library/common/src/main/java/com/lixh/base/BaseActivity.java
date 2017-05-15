@@ -22,6 +22,7 @@ import com.lixh.utils.TUtil;
 import com.lixh.utils.UIntent;
 import com.lixh.utils.UToast;
 import com.lixh.view.LoadView;
+import com.lixh.view.SlideMenu.Slide;
 import com.lixh.view.UToolBar;
 
 import butterknife.ButterKnife;
@@ -37,6 +38,7 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
     public final BehaviorSubject<LifeEvent> lifecycleSubject = BehaviorSubject.create();
     public Exit exit = new Exit();// 双击退出 封装
     private boolean mNowMode;
+
     protected abstract void init(Bundle savedInstanceState);
     public BaseActivity() {
         mPresenter = TUtil.getT(this, 0);
@@ -67,7 +69,7 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         return true;
     }
     public boolean isBack() {
-        return true;
+        return false;
     }
     /**
      * 是否允许左划结束
@@ -98,6 +100,7 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
                 .setBottomLayout(getLayoutId(), isContentTop())
                 .setToolBar(hasToolBar())
                 .setSwipeBack(enableSwipeBack())
+                .setSlideMenu(getSlideLayout(), getSlide())
                 .createActivity();
         layout.addObserver(this);
         ButterKnife.bind(this);
@@ -105,8 +108,8 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         tip = layout.getEmptyView();
         initTitleBar();
         init(savedInstanceState);
-        SystemBarTintManager systemBarTintManager=new SystemBarTintManager(this);
-        systemBarTintManager.setTranslucentStatus(this,true);
+        SystemBarTintManager systemBarTintManager = new SystemBarTintManager(this);
+        systemBarTintManager.setTranslucentStatus(this, true);
         if (mPresenter != null) {
             mPresenter.init(this, savedInstanceState, lifecycleSubject);
         }
@@ -222,5 +225,13 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
     @Override
     public void update(Observable o, Message arg) {
 
+    }
+
+    public View getSlideLayout() {
+        return null;
+    }
+
+    public Slide getSlide() {
+        return Slide.LEFT;
     }
 }

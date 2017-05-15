@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.Window;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 
@@ -18,9 +19,12 @@ import com.lixh.swipeback.Utils;
 import com.lixh.swipeback.app.SwipeBackActivityHelper;
 import com.lixh.swipeback.app.SwipeBackLayout;
 import com.lixh.utils.LoadingTip;
+import com.lixh.view.SlideMenu.Slide;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+
+import static com.lixh.view.SlideMenu.Slide.LEFT;
 
 
 /**
@@ -41,6 +45,7 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
     private SwipeBackLayout mSwipeBackLayout;
     private SwipeBackActivityHelper mHelper;
     protected SwipeBackLayout layout;
+    SlideMenu slideMenu1;
     //定义通用的布局 根布局为Liearlayout +ToolBar + LinearLayout
     public LoadView(Builder builder, int windowType) {
         this.builder = builder;
@@ -66,6 +71,17 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
         initToolBar();
         initBottomView();
         initSwipe(builder.isSwipeBack());
+        initSlideMenu(builder.isSlideMenu());
+    }
+
+    private void initSlideMenu(boolean slideMenu) {
+        if (slideMenu) {
+            slideMenu1 = new SlideMenu(mContext);
+            slideMenu1.setId(View.NO_ID);
+            slideMenu1.setLayoutParams(new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT));
+        }
     }
 
     private void initBottomView() {
@@ -131,12 +147,14 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
     }
 
     public void initSwipe(boolean enable) {
-        mHelper = new SwipeBackActivityHelper(mContext);
-        mHelper.onActivityCreate();
-        //侧滑
-        mSwipeBackLayout = getSwipeBackLayout();
-        mSwipeBackLayout.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);
-        setSwipeBackEnable(enable);
+        if (enable) {
+            mHelper = new SwipeBackActivityHelper(mContext);
+            mHelper.onActivityCreate();
+            //侧滑
+            mSwipeBackLayout = getSwipeBackLayout();
+            mSwipeBackLayout.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);
+            setSwipeBackEnable(enable);
+        }
     }
     public LoadingTip getEmptyView() {
         if (tip == null) {
@@ -154,19 +172,33 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
 
     @Override
     public SwipeBackLayout getSwipeBackLayout() {
-        return mHelper.getSwipeBackLayout();
+        if (mHelper != null) {
+            return mHelper.getSwipeBackLayout();
+        } else return null;
     }
 
 
     @Override
     public void scrollToFinishActivity() {
         Utils.convertActivityToTranslucent(mContext);
-        getSwipeBackLayout().scrollToFinishActivity();
+        SwipeBackLayout swipeBackLayout = getSwipeBackLayout();
+        if (swipeBackLayout != null) {
+            swipeBackLayout.scrollToFinishActivity();
+        }
     }
 
     public void onPostCreate() {
         if (mHelper != null) {
             mHelper.onPostCreate();
+        }
+        if (slideMenu1 != null) {
+            slideMenu1.attachToActivity(mContext);
+            Slide slide = builder.getSlide();
+            View view = builder.getSlideView();
+            if (view != null) {
+                slideMenu1.setView(view, slide);
+
+            }
         }
     }
 
@@ -189,12 +221,14 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
     }
     public static class Builder {
 
-        int mBottomLayout;
-        boolean hasToolbar;
-        View mBottomView;
+        private int mBottomLayout;
+        private boolean hasToolbar;
+        private View mBottomView;
         private boolean contentTop;
         private boolean swipeBack;
-
+        private boolean slideMenu;
+        private Slide slide;
+        private View slideView;
         public boolean isSwipeBack() {
             return swipeBack;
         }
@@ -204,9 +238,35 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
             mBottomLayout = -1;
             mBottomView = null;
             hasToolbar=true;
+            slideView = null;
             contentTop = false;
+            slideMenu = false;
+            slide = LEFT;
         }
 
+        public View getSlideView() {
+            if (slideView == null) {
+                throw new RuntimeException("slideView is not null");
+            }
+            return slideView;
+        }
+
+        public Slide getSlide() {
+            return slide;
+        }
+
+        public boolean isSlideMenu() {
+            return slideMenu;
+        }
+
+        public Builder setSlideMenu(View slideView, Slide slide) {
+            if (slideView != null) {
+                slideMenu = true;
+            }
+            this.slide = slide;
+            this.slideView = slideView;
+            return this;
+        }
         public int getBottomLayout() {
             return mBottomLayout;
         }
@@ -238,6 +298,8 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
             this.swipeBack = swipeBack;
             return this;
         }
+
+
     }
 
     ;

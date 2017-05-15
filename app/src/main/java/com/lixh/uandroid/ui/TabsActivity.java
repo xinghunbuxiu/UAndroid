@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.view.View;
 import android.widget.FrameLayout;
 
 import com.ashokvarma.bottomnavigation.BottomNavigationBar;
@@ -80,6 +81,12 @@ public class TabsActivity extends BaseActivity<TabPresenter> implements BottomNa
         fragments = getFragments();
         setDefaultFragment();
         bottomNavigationBar.setTabSelectedListener(this);
+    }
+
+    @Override
+    public View getSlideLayout() {
+        View leftView = View.inflate(this, R.layout.slide_menu_layout, null);
+        return leftView;
     }
 
     /**
