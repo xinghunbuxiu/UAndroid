@@ -30,7 +30,7 @@ public class LineChartActivity extends BaseActivity implements OnChartValueSelec
 
 
     @Override
-    protected void init(Bundle savedInstanceState) {
+    public void init(Bundle savedInstanceState) {
         initLineChart();
     }
 

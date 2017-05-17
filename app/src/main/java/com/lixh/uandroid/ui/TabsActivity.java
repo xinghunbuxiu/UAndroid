@@ -52,7 +52,7 @@ public class TabsActivity extends BaseActivity<TabPresenter> implements BottomNa
     }
 
     @Override
-    public Slide getSlide() {
+    public int getSlide() {
         return Slide.LEFT;
     }
 
@@ -62,7 +62,7 @@ public class TabsActivity extends BaseActivity<TabPresenter> implements BottomNa
     }
 
     @Override
-    protected void init(Bundle savedInstanceState) {
+    public void init(Bundle savedInstanceState) {
         initBottomBar();
 
     }

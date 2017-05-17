@@ -37,7 +37,7 @@ public class PieChartActivity extends BaseActivity {
     ArrayList<PieEntry> entries = new ArrayList<PieEntry>();
 
     @Override
-    protected void init(Bundle savedInstanceState) {
+    public void init(Bundle savedInstanceState) {
         initPieChart();
     }
 

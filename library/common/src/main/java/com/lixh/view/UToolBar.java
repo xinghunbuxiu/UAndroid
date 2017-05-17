@@ -239,13 +239,8 @@ public class UToolBar extends Toolbar {
             setCenter(mSubtitleTextView);
             setLogoViewCenter(mLogoView);
         }
-//        setNavCenterVertical();
     }
 
-    private void setNavCenterVertical() {
-        final int paddingTop = getPaddingTop();
-        mNavButtonView.layout(mNavButtonView.getLeft(), mNavButtonView.getTop() - paddingTop, mNavButtonView.getRight(), mNavButtonView.getBottom());
-    }
     /**
      * 增加多个按钮
      *

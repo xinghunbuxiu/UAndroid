@@ -14,6 +14,7 @@ import android.view.View;
 public abstract class BaseSlideView implements ISlideMenu {
     public View slideView;
     Activity activity;
+    private boolean following;
 
     public <T> T getActivity() {
         return (T) activity;
@@ -38,5 +39,9 @@ public abstract class BaseSlideView implements ISlideMenu {
     public int getMeasuredWidth() {
         slideView.measure(0, 0);
         return slideView.getMeasuredWidth();
+    }
+
+    public boolean isFollowing() {
+        return following;
     }
 }

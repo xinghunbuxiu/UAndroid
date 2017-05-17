@@ -13,7 +13,7 @@ import com.lixh.view.UToolBar;
 
 public class CalendarActivity extends BaseActivity {
     @Override
-    protected void init(Bundle savedInstanceState) {
+    public void init(Bundle savedInstanceState) {
 
     }
 

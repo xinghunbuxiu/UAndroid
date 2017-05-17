@@ -22,6 +22,7 @@ import com.lixh.utils.TUtil;
 import com.lixh.utils.UIntent;
 import com.lixh.utils.UToast;
 import com.lixh.view.BaseSlideView;
+import com.lixh.view.ILayout;
 import com.lixh.view.LoadView;
 import com.lixh.view.SlideMenu.Slide;
 import com.lixh.view.UToolBar;
@@ -32,27 +33,21 @@ import rx.subjects.BehaviorSubject;
 /**
  * 基类Activity
  */
-public abstract class BaseActivity<T extends BasePresenter> extends AppCompatActivity implements Observer<Message> {
+public abstract class BaseActivity<T extends BasePresenter> extends AppCompatActivity implements Observer<Message>, ILayout {
     public T mPresenter; //当前类需要的操作类
     public LoadingTip tip;
     public LoadView layout;
     public final BehaviorSubject<LifeEvent> lifecycleSubject = BehaviorSubject.create();
     public Exit exit = new Exit();// 双击退出 封装
     private boolean mNowMode;
-
-    protected abstract void init(Bundle savedInstanceState);
     public BaseActivity() {
         mPresenter = TUtil.getT(this, 0);
+        mNowMode = SharedPreferencesUtil.getInstance().getBoolean(AppConfig.ISNIGHT);
         // 把actvity放到application栈中管理
         AppManager.getAppManager().addActivity(this);
     }
-
     public UToolBar toolBar;
     public UIntent intent;
-    public abstract int getLayoutId();
-
-
-    public abstract void initTitle(UToolBar toolBar);
     public <T> T getActivity() {
         return (T) this;
     }
@@ -60,7 +55,6 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
     public T getPresenter() {
         return (T) mPresenter.getPresenter();
     }
-
     /**
      * 是否有标题栏
      *
@@ -96,8 +90,8 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
     protected void onCreate(Bundle savedInstanceState) {
         lifecycleSubject.onNext(LifeEvent.CREATE);
         super.onCreate(savedInstanceState);
-        doBeforeSetContentView();
-        layout = new LoadView.Builder(this)
+        layout = new LoadView.Builder(this).requestWindowFeature(Window.FEATURE_NO_TITLE)// 无标题
+                .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)// 设置竖屏
                 .setBottomLayout(getLayoutId(), isContentTop())
                 .setToolBar(hasToolBar())
                 .setSwipeBack(enableSwipeBack())
@@ -157,17 +151,6 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         }
     }
 
-    /**
-     * 设置layout前配置
-     */
-    private void doBeforeSetContentView() {
-        mNowMode = SharedPreferencesUtil.getInstance().getBoolean(AppConfig.ISNIGHT);
-        // 无标题
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        // 设置竖屏
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
-    }
 
     @Override
     protected void onResume() {
@@ -232,7 +215,8 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         return null;
     }
 
-    public Slide getSlide() {
+    @Slide
+    public int getSlide() {
         return Slide.NONE;
     }
 }

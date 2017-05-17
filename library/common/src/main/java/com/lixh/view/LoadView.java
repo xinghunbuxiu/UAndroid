@@ -192,7 +192,7 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
         }
         if (slideMenu1 != null) {
             slideMenu1.attachToActivity(mContext);
-            Slide slide = builder.getSlide();
+            int slide = builder.getSlide();
             BaseSlideView view = builder.getSlideView();
             if (view != null && slide != Slide.NONE) {
                 slideMenu1.addSlideView(view, slide);
@@ -221,11 +221,11 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
 
         private int mBottomLayout;
         private boolean hasToolbar;
-        private View mBottomView;
         private boolean contentTop;
         private boolean swipeBack;
         private boolean slideMenu;
-        private Slide slide;
+        @Slide
+        private int slide;
         private BaseSlideView slideView;
         public boolean isSwipeBack() {
             return swipeBack;
@@ -234,7 +234,6 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
         public Builder(Activity context) {
             mContext = context;
             mBottomLayout = -1;
-            mBottomView = null;
             hasToolbar=true;
             slideView = null;
             contentTop = false;
@@ -246,7 +245,8 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
             return slideView;
         }
 
-        public Slide getSlide() {
+        @Slide
+        public int getSlide() {
             return slide;
         }
 
@@ -254,7 +254,7 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
             return slideMenu;
         }
 
-        public Builder setSlideMenu(Slide slide, BaseSlideView slideView) {
+        public Builder setSlideMenu(@Slide int slide, BaseSlideView slideView) {
             this.slide = slide;
             if (slide != Slide.NONE) {
                 slideMenu = true;
@@ -295,6 +295,15 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
         }
 
 
+        public Builder requestWindowFeature(int featureNoTitle) {
+            mContext.requestWindowFeature(featureNoTitle);
+            return this;
+        }
+
+        public Builder setRequestedOrientation(int requestedOrientation) {
+            mContext.requestWindowFeature(requestedOrientation);
+            return this;
+        }
     }
 
     ;
