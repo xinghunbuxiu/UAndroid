@@ -103,7 +103,7 @@ public class SlideMenu extends FrameLayout {
         return this;
     }
 
-    private int mTrackingEdges = EDGE_LEFT;
+    private int mTrackingEdges = EDGE_RIGHT;
 
     /**
      * Enable edge tracking for the selected edges of the parent view.
