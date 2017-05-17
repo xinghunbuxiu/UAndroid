@@ -33,7 +33,7 @@ public class MyRelativeLayout extends RelativeLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        setPadding(0, 0, 0, 0);
+        setPadding(getPaddingLeft(), 0, getPaddingRight(), getPaddingBottom());
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 

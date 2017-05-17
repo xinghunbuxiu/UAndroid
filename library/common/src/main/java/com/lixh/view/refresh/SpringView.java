@@ -428,7 +428,7 @@ public class SpringView extends ViewGroup {
             mChildView.layout(0, 0, r, mChildView.getMeasuredHeight());
         }
         if (mFooter != null && onLoadListener != null) {
-            mFooter.getView().layout(0, b, r, mFooter.getHeight() + b);
+            mFooter.getView().layout(0, mChildView.getMeasuredHeight(), r, mFooter.getHeight() + mChildView.getMeasuredHeight());
         }
     }
 

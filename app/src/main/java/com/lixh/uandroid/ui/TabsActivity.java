@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.view.View;
 import android.widget.FrameLayout;
 
 import com.ashokvarma.bottomnavigation.BottomNavigationBar;
@@ -17,6 +16,9 @@ import com.lixh.uandroid.ui.fragment.FourFragment;
 import com.lixh.uandroid.ui.fragment.HomeFragment;
 import com.lixh.uandroid.ui.fragment.SecondFragment;
 import com.lixh.uandroid.ui.fragment.ThreeFragment;
+import com.lixh.uandroid.view.SlideLeftView;
+import com.lixh.view.BaseSlideView;
+import com.lixh.view.SlideMenu.Slide;
 import com.lixh.view.UToolBar;
 
 import java.util.ArrayList;
@@ -34,7 +36,7 @@ public class TabsActivity extends BaseActivity<TabPresenter> implements BottomNa
     @Bind(R.id.bottom_navigation_bar)
     BottomNavigationBar bottomNavigationBar;
     private ArrayList<Fragment> fragments;
-
+    SlideLeftView slideLeftView;
     @Override
     public boolean hasToolBar() {
         return false;
@@ -50,8 +52,19 @@ public class TabsActivity extends BaseActivity<TabPresenter> implements BottomNa
     }
 
     @Override
+    public Slide getSlide() {
+        return Slide.LEFT;
+    }
+
+    @Override
+    public boolean isDoubleExit() {
+        return true;
+    }
+
+    @Override
     protected void init(Bundle savedInstanceState) {
         initBottomBar();
+
     }
 
     @Override
@@ -81,12 +94,6 @@ public class TabsActivity extends BaseActivity<TabPresenter> implements BottomNa
         fragments = getFragments();
         setDefaultFragment();
         bottomNavigationBar.setTabSelectedListener(this);
-    }
-
-    @Override
-    public View getSlideLayout() {
-        View leftView = View.inflate(this, R.layout.slide_menu_layout, null);
-        return leftView;
     }
 
     /**
@@ -127,6 +134,10 @@ public class TabsActivity extends BaseActivity<TabPresenter> implements BottomNa
 
     }
 
+    public BaseSlideView getSlideView() {
+        slideLeftView = new SlideLeftView(this);
+        return slideLeftView;
+    }
     @Override
     public void onTabUnselected(int position) {
         if (fragments != null) {

@@ -21,6 +21,7 @@ import com.lixh.utils.SystemBarTintManager;
 import com.lixh.utils.TUtil;
 import com.lixh.utils.UIntent;
 import com.lixh.utils.UToast;
+import com.lixh.view.BaseSlideView;
 import com.lixh.view.LoadView;
 import com.lixh.view.SlideMenu.Slide;
 import com.lixh.view.UToolBar;
@@ -100,7 +101,7 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
                 .setBottomLayout(getLayoutId(), isContentTop())
                 .setToolBar(hasToolBar())
                 .setSwipeBack(enableSwipeBack())
-                .setSlideMenu(getSlideLayout(), getSlide())
+                .setSlideMenu(getSlide(),getSlideView())
                 .createActivity();
         layout.addObserver(this);
         ButterKnife.bind(this);
@@ -227,11 +228,11 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
 
     }
 
-    public View getSlideLayout() {
+    public BaseSlideView getSlideView() {
         return null;
     }
 
     public Slide getSlide() {
-        return Slide.LEFT;
+        return Slide.NONE;
     }
 }

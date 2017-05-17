@@ -106,7 +106,6 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
         ViewGroup decorView = (ViewGroup) window.getDecorView();
         decorView.setId(Window.ID_ANDROID_CONTENT);
         decorView.removeAllViews();
-        RootView.setPadding(0,0,0,0);
         decorView.addView(RootView);
         return this;
     }
@@ -194,10 +193,9 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
         if (slideMenu1 != null) {
             slideMenu1.attachToActivity(mContext);
             Slide slide = builder.getSlide();
-            View view = builder.getSlideView();
-            if (view != null) {
-                slideMenu1.setView(view, slide);
-
+            BaseSlideView view = builder.getSlideView();
+            if (view != null && slide != Slide.NONE) {
+                slideMenu1.addSlideView(view, slide);
             }
         }
     }
@@ -228,7 +226,7 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
         private boolean swipeBack;
         private boolean slideMenu;
         private Slide slide;
-        private View slideView;
+        private BaseSlideView slideView;
         public boolean isSwipeBack() {
             return swipeBack;
         }
@@ -244,10 +242,7 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
             slide = LEFT;
         }
 
-        public View getSlideView() {
-            if (slideView == null) {
-                throw new RuntimeException("slideView is not null");
-            }
+        public BaseSlideView getSlideView() {
             return slideView;
         }
 
@@ -259,11 +254,11 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
             return slideMenu;
         }
 
-        public Builder setSlideMenu(View slideView, Slide slide) {
-            if (slideView != null) {
+        public Builder setSlideMenu(Slide slide, BaseSlideView slideView) {
+            this.slide = slide;
+            if (slide != Slide.NONE) {
                 slideMenu = true;
             }
-            this.slide = slide;
             this.slideView = slideView;
             return this;
         }
