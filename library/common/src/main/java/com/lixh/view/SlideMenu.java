@@ -2,7 +2,10 @@ package com.lixh.view;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.SystemClock;
+import android.support.annotation.IntDef;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
@@ -13,6 +16,8 @@ import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.OverScroller;
 
+import com.nineoldandroids.view.ViewHelper;
+
 import java.util.Arrays;
 
 /**
@@ -22,34 +27,42 @@ import java.util.Arrays;
  */
 
 public class SlideMenu extends FrameLayout {
-    BaseSlideView mSlideView;
-    View contentView;
-    OverScroller scroller;
-    private boolean isNeedMyMove;
-    private float dy;
-    private float dx;
-    private float mLastX;
-    private float mLastY;
-    Slide slide = Slide.LEFT;
-    private int mEdgeSize;
     private static final int EDGE_SIZE = 20; // dp
-    private int mPointersDown;
-
     /**
-     * Edge flag indicating that the left edge should be affected.
+     * default foreground color
      */
-    public static final int EDGE_LEFT = 1 << 0;
-    private int[] mInitialEdgesTouched;
+    private static String DEFAULT_COLOR = "#1f1f1f";
     /**
      * 处理多点触控的情况，准确地计算Y坐标和移动距离dy
      * 同时兼容单点触控的情况
      */
     private int mActivePointerId = MotionEvent.INVALID_POINTER_ID;
     /**
+     * Edge flag indicating that the left edge should be affected.
+     */
+    public static final int EDGE_LEFT = 1 << 0;
+    /**
      * Edge flag indicating that the right edge should be affected.
      */
     public static final int EDGE_RIGHT = 1 << 1;
-
+    @Slide
+    int slide = Slide.LEFT;
+    @State
+    int slideState = State.CLOSE;
+    View contentView;
+    private float dy;
+    private float dx;
+    boolean isFollowing;
+    private float mLastX;
+    private float mLastY;
+    OverScroller scroller;
+    private int mEdgeSize;
+    private int mPointersDown;
+    BaseSlideView mSlideView;
+    private boolean isNeedMyMove;
+    private boolean mEnable = true;//是否需要边缘触控    跟随移动时为false
+    boolean canDrag;//边缘触控未唤醒时是否允许拖拽
+    private int[] mInitialEdgesTouched;
     public void attachToActivity(Activity activity) {
         ViewGroup decor = (ViewGroup) activity.getWindow().getDecorView().findViewById(Window.ID_ANDROID_CONTENT);
         ViewGroup decorChild = (ViewGroup) decor.getChildAt(0);
@@ -60,8 +73,60 @@ public class SlideMenu extends FrameLayout {
 
     }
 
-    public enum Slide {
-        NONE, LEFT, RIGHT
+    public void setEdgeEnable(boolean enable) {
+        mEnable = enable;
+    }
+
+    private onSlideListener slideListener;
+
+    public interface onSlideListener {
+        void SlideState(@State int state);
+    }
+
+    public void setonSlideListener(onSlideListener slideListener) {
+        this.slideListener = slideListener;
+    }
+
+    public int getSlideState() {
+        return slideState;
+    }
+
+    public void setSlideState(int slideState) {
+        this.slideState = slideState;
+        if (slideListener != null) {
+            slideListener.SlideState(slideState);
+        }
+    }
+
+    @IntDef({
+            Slide.NONE,
+            Slide.LEFT,
+            Slide.RIGHT
+    }
+    )
+    public @interface Slide {
+        int NONE = 0;
+        int LEFT = 1;
+        int RIGHT = 2;
+    }
+
+    @IntDef({
+            State.OPEN,
+            State.CLOSE,
+    }
+    )
+    public @interface State {
+        int OPEN = 0;
+        int CLOSE = 1;
+    }
+
+    /**
+     * 跟随移动时
+     *
+     * @param isFollowing
+     */
+    public void setFollowing(boolean isFollowing) {
+        this.isFollowing = isFollowing;
     }
 
     public SlideMenu(Context context) {
@@ -77,8 +142,9 @@ public class SlideMenu extends FrameLayout {
         scroller = new OverScroller(context);
         final float density = context.getResources().getDisplayMetrics().density;
         mEdgeSize = (int) (EDGE_SIZE * density + 0.5f);
+        setForeground(new ColorDrawable(Color.parseColor(DEFAULT_COLOR)));
+        getForeground().setAlpha(0);
     }
-
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         // 计算出所有的childView的宽和高
@@ -86,9 +152,10 @@ public class SlideMenu extends FrameLayout {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
-    public void addSlideView(BaseSlideView mSlideView, Slide slide) {
+    public void addSlideView(BaseSlideView mSlideView, @Slide int slide) {
         this.mSlideView = mSlideView;
         this.slide = slide;
+        isFollowing = mSlideView.isFollowing();
         addView(mSlideView.getView());
     }
 
@@ -103,7 +170,7 @@ public class SlideMenu extends FrameLayout {
         return this;
     }
 
-    private int mTrackingEdges = EDGE_RIGHT;
+    private int mTrackingEdges = EDGE_LEFT;
 
     /**
      * Enable edge tracking for the selected edges of the parent view.
@@ -126,6 +193,7 @@ public class SlideMenu extends FrameLayout {
         final int pointerIndex = MotionEventCompat.getActionIndex(ev);
         switch (action) {
             case MotionEvent.ACTION_DOWN: {
+                isNeedMyMove = false;
                 mChildrenCanceledTouch = false;
                 final int pointerId = ev.getPointerId(0);
                 final float x = ev.getX(pointerIndex);
@@ -137,7 +205,7 @@ public class SlideMenu extends FrameLayout {
                     mActivePointerId = pointerId;
                 }
                 final int edgesTouched = mInitialEdgesTouched[pointerId];
-                if ((edgesTouched & mTrackingEdges) != 0) {
+                if ((edgesTouched & mTrackingEdges) != 0 && mEnable) {
                     onEdgeTouched();
                 }
                 break;
@@ -151,7 +219,13 @@ public class SlideMenu extends FrameLayout {
                 mLastY = y;
                 mLastX = x;
                 if (Math.abs(dx) > Math.abs(dy)) {
-                    isNeedMyMove = true;
+                    if (mEnable) {//是否允许边缘触控
+                        if (canDrag || slideState == State.OPEN || isFollowing) {
+                            isNeedMyMove = true;
+                        }
+                    } else {
+                        isNeedMyMove = true;
+                    }
                 }
                 break;
             }
@@ -169,7 +243,7 @@ public class SlideMenu extends FrameLayout {
                     mActivePointerId = pointerId;
                 }
                 final int edgesTouched = mInitialEdgesTouched[pointerId];
-                if ((edgesTouched & mTrackingEdges) != 0) {
+                if ((edgesTouched & mTrackingEdges) != 0 && mEnable) {
                     onEdgeTouched();
                 }
 
@@ -206,7 +280,7 @@ public class SlideMenu extends FrameLayout {
 
     public void cancel() {
         mActivePointerId = MotionEvent.INVALID_POINTER_ID;
-        isNeedMyMove = false;
+        canDrag = false;
         if (mInitialEdgesTouched != null) {
             Arrays.fill(mInitialEdgesTouched, 0);
             mLastY = 0;
@@ -238,6 +312,7 @@ public class SlideMenu extends FrameLayout {
             return;
         }
         scroller.startScroll(0, 0, childLeft, 0, 400);
+        canDrag = true;
         invalidate();
         cancelChildViewTouch();
     }
@@ -259,7 +334,6 @@ public class SlideMenu extends FrameLayout {
         }
     }
 
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
@@ -276,50 +350,70 @@ public class SlideMenu extends FrameLayout {
         return true;
     }
 
+    @SuppressWarnings("Range")
     @Override
     public void scrollTo(int x, int y) {
         super.scrollTo(x, y);
         if (slide == Slide.LEFT) {
-            if (x > 0) {
+            if (x >= 0) {
                 x = 0;
+                setSlideState(State.CLOSE);
+
             }
-            if (x < -mSlideView.getMeasuredWidth()) {
+            if (x <= -mSlideView.getMeasuredWidth()) {
                 x = -mSlideView.getMeasuredWidth();
+                setSlideState(State.OPEN);
             }
         } else {
-            if (x < 0) {
+            if (x <= 0) {
                 x = 0;
+                setSlideState(State.CLOSE);
             }
-            if (x > mSlideView.getMeasuredWidth()) {
+            if (x >= mSlideView.getMeasuredWidth()) {
                 x = mSlideView.getMeasuredWidth();
+                setSlideState(State.OPEN);
             }
         }
+        getForeground().setAlpha(Math.abs(x) / 3);
+        ViewHelper.setTranslationX(contentView, !isFollowing ? x * 1f : x * 0.3f);
         if (getScrollX() != x) {
             super.scrollTo(x, y);
         }
     }
-
     private void eventUp() {
         int scrollX = getScrollX();
+        if (slideState == State.OPEN && !isNeedMyMove) {
+            cancelChildViewTouch();
+            scrollBy((int) -dx, 0);
+            close();
+            return;
+        }
         if (slide == Slide.LEFT) {
             if (scrollX < -mSlideView.getMeasuredWidth() / 2) {//打开
-                scroller.startScroll(scrollX, 0, -(scrollX + mSlideView.getMeasuredWidth()), 0, 400);
-                invalidate();
+                open();
             } else {
-                scroller.startScroll(scrollX, 0, -scrollX, 0, 400);
-                invalidate();
+                close();
             }
         } else if (slide == Slide.RIGHT) {
             if (scrollX > mSlideView.getMeasuredWidth() / 2) {//打开
-                scroller.startScroll(scrollX, 0, mSlideView.getMeasuredWidth() - scrollX, 0, 400);
-                invalidate();
+                open();
             } else {
-                scroller.startScroll(scrollX, 0, -scrollX, 0, 400);
-                invalidate();
+                close();
             }
         }
     }
 
+    public void open() {
+        int scrollX = getScrollX();
+        if (slide == Slide.LEFT) {
+            scroller.startScroll(scrollX, 0, -(scrollX + mSlideView.getMeasuredWidth()), 0, 400);
+            invalidate();
+        } else if (slide == Slide.RIGHT) {
+            scroller.startScroll(scrollX, 0, mSlideView.getMeasuredWidth() - scrollX, 0, 400);
+            invalidate();
+        }
+
+    }
     public void close() {
         int scrollX = getScrollX();
         scroller.startScroll(scrollX, 0, -scrollX, 0, 400);
@@ -345,17 +439,7 @@ public class SlideMenu extends FrameLayout {
         return result;
     }
 
-    public void open() {
-        int scrollX = getScrollX();
-        if (slide == Slide.LEFT) {
-            scroller.startScroll(scrollX, 0, scrollX + mSlideView.getMeasuredWidth(), 0, 400);
-            invalidate();
-        } else if (slide == Slide.RIGHT) {
-            scroller.startScroll(scrollX, 0, mSlideView.getMeasuredWidth() - scrollX, 0, 400);
-            invalidate();
-        }
 
-    }
 
     @Override
     public void computeScroll() {
