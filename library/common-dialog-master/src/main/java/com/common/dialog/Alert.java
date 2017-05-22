@@ -384,8 +384,8 @@ public class Alert {
         private int layoutId;
         private String title;
         private String message;
-        private String okBtnStr;
-        private String cancelStr;
+        private String okBtnStr = "ok";
+        private String cancelStr = "cancel";
         boolean cyclic = false;//时间dialog 是否滚动
         private Date date;
         private ArrayList<String> options1Items;
@@ -479,6 +479,7 @@ public class Alert {
             return cyclic;
         }
 
+        //是否循环
         public void setCyclic(boolean cyclic) {
             this.cyclic = cyclic;
         }
@@ -919,7 +920,7 @@ public class Alert {
         }
         final View view = LayoutInflater.from(mContext).inflate(layoutId, null);
         final ViewHolder holder = new ViewHolder(view);
-        dialog.setContentView(bindView == null ? view : bindView.convert(holder), new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+        dialog.setContentView(bindView == null ? view : bindView.convert(holder),new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         dialog.setCancelable(true);
         dialog.setCanceledOnTouchOutside(false);
         dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
