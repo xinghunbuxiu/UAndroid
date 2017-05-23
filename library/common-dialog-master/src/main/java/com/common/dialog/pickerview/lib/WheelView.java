@@ -140,7 +140,7 @@ public class WheelView extends View {
     private StaticLayout valueLayout;
 
     // Label & background
-    private String label;
+    private CharSequence label;
     private Drawable centerDrawable;
 
     // Shadows drawables
@@ -255,7 +255,7 @@ public class WheelView extends View {
      *
      * @return the label
      */
-    public String getLabel() {
+    public CharSequence getLabel() {
         return label;
     }
 
@@ -264,7 +264,7 @@ public class WheelView extends View {
      *
      * @param newLabel the label to set
      */
-    public void setLabel(String newLabel) {
+    public void setLabel(CharSequence newLabel) {
         if (label == null || !label.equals(newLabel)) {
             label = newLabel;
             labelLayout = null;

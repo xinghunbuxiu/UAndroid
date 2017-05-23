@@ -24,51 +24,6 @@ public interface ILayout {
      */
     int getLayoutId();
 
-    /**
-     * 是否有标题栏
-     *
-     * @return
-     */
-    boolean hasToolBar();
-
-    /**
-     * 是否有返回按钮
-     *
-     * @return
-     */
-    public boolean isBack();
-
-    /**
-     * 是否允许左划结束
-     *
-     * @return
-     */
-    public boolean enableSwipeBack();
-
-    /**
-     * @return 是否双j击退出
-     */
-    public boolean isDoubleExit();
-
-    /**
-     * 标题栏是否置顶
-     *
-     * @return
-     */
-    public boolean isContentTop();
-
-    /**
-     * 侧滑
-     */
-    int getSlide();
-
-    /**
-     * 侧滑View
-     * SlideView extends BaseSlideView
-     *
-     * @return
-     */
-    BaseSlideView getSlideView();
-
-    
+    boolean isBack();
+    boolean isDoubleExit();
 }

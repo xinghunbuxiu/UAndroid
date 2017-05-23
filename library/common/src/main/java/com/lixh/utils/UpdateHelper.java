@@ -1,5 +1,6 @@
 package com.lixh.utils;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -19,7 +20,7 @@ import com.lixh.R;
  */
 @SuppressWarnings("unused")
 public class UpdateHelper {
-    static Context context;
+    static Activity context;
     BroadcastReceiver broadcastReceiver;
     boolean isRegisterBR;
     Builder builder;
@@ -175,7 +176,7 @@ public class UpdateHelper {
             return delay;
         }
 
-        public Builder(Context mContext) {
+        public Builder(Activity mContext) {
             context = mContext;
         }
 

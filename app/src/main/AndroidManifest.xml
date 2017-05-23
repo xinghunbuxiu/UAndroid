@@ -23,6 +23,7 @@
             android:name=".ui.TabsActivity"
             android:configChanges="screenSize|keyboardHidden|orientation" />
         <activity android:name=".ui.PieChartActivity"></activity>
+        <activity android:name=".ui.DialogActivity"></activity>
         <activity android:name=".ui.LineChartActivity"></activity>
 
     </application>

@@ -25,7 +25,7 @@ public class SlideLeftView extends BaseSlideView {
 
     @Override
     public void initView() {
-
+        following = true;
     }
 
 

@@ -2,31 +2,29 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/btn_pane"
     android:layout_width="match_parent"
-    android:background="@drawable/dialog_shape_bottom_line"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@drawable/dialog_shape_bottom_line">
 
 
     <TextView
         android:id="@+id/okBtn"
         android:layout_width="fill_parent"
         android:layout_height="40dip"
-        android:layout_marginRight="2.5dip"
         android:layout_weight="1.0"
-        android:background="@android:color/holo_blue_light"
+        android:background="@drawable/blue_white_bg"
         android:gravity="center"
         android:text="@string/ok"
-        android:textColor="@android:color/white"
+        android:textColor="@color/white_blue_selector"
         android:textSize="15sp" />
 
     <TextView
         android:id="@+id/cancelBtn"
         android:layout_width="match_parent"
         android:layout_height="40dip"
-        android:layout_marginLeft="2.5dip"
         android:layout_weight="1.0"
-        android:background="@android:color/white"
+        android:background="@drawable/white_blue_bg"
         android:gravity="center"
         android:text="@string/cancel"
-        android:textColor="@android:color/holo_blue_light"
+        android:textColor="@color/blue_white_selector"
         android:textSize="15sp" />
 </LinearLayout>

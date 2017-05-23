@@ -67,7 +67,7 @@ public class ViewHolder {
      * @param onClickListener
      * @return
      */
-    public ViewHolder setBtnText(int viewId, String text, View.OnClickListener onClickListener) {
+    public ViewHolder setBtnText(int viewId, CharSequence text, View.OnClickListener onClickListener) {
         Button tv = $(viewId);
         tv.setText(text);
         tv.setOnClickListener(onClickListener);

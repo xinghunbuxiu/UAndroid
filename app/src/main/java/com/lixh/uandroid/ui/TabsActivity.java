@@ -17,8 +17,8 @@ import com.lixh.uandroid.ui.fragment.HomeFragment;
 import com.lixh.uandroid.ui.fragment.SecondFragment;
 import com.lixh.uandroid.ui.fragment.ThreeFragment;
 import com.lixh.uandroid.view.SlideLeftView;
-import com.lixh.view.BaseSlideView;
-import com.lixh.view.SlideMenu.Slide;
+import com.lixh.view.LoadView;
+import com.lixh.view.SlideMenu;
 import com.lixh.view.UToolBar;
 
 import java.util.ArrayList;
@@ -37,25 +37,11 @@ public class TabsActivity extends BaseActivity<TabPresenter> implements BottomNa
     BottomNavigationBar bottomNavigationBar;
     private ArrayList<Fragment> fragments;
     SlideLeftView slideLeftView;
-    @Override
-    public boolean hasToolBar() {
-        return false;
-    }
+
     @Override
     public boolean isBack( ) {
-        return true;
-    }
-
-    @Override
-    public boolean enableSwipeBack() {
         return false;
     }
-
-    @Override
-    public int getSlide() {
-        return Slide.LEFT;
-    }
-
     @Override
     public boolean isDoubleExit() {
         return true;
@@ -64,7 +50,6 @@ public class TabsActivity extends BaseActivity<TabPresenter> implements BottomNa
     @Override
     public void init(Bundle savedInstanceState) {
         initBottomBar();
-
     }
 
     @Override
@@ -134,10 +119,14 @@ public class TabsActivity extends BaseActivity<TabPresenter> implements BottomNa
 
     }
 
-    public BaseSlideView getSlideView() {
+    @Override
+    public void initLoad(LoadView.Builder builder) {
         slideLeftView = new SlideLeftView(this);
-        return slideLeftView;
+        builder.setSlideMenu(SlideMenu.Slide.LEFT, slideLeftView);
+        builder.swipeBack = false;
+        builder.hasToolbar = false;
     }
+
     @Override
     public void onTabUnselected(int position) {
         if (fragments != null) {

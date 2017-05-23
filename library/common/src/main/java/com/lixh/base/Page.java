@@ -332,7 +332,7 @@ public class Page<T> implements OnLoadMoreListener, SpringView.OnRefreshListener
          * @return
          */
         public Builder setError(@LayoutRes int layout) {
-            this.error = layout;
+            error = layout;
             return this;
         }
 
@@ -343,7 +343,7 @@ public class Page<T> implements OnLoadMoreListener, SpringView.OnRefreshListener
          * @return
          */
         public Builder setMore(@LayoutRes int layout) {
-            this.more = layout;
+            more = layout;
             return this;
         }
 
@@ -354,7 +354,7 @@ public class Page<T> implements OnLoadMoreListener, SpringView.OnRefreshListener
          * @return
          */
         public Builder setNoMore(@LayoutRes int layout) {
-            this.noMore = layout;
+            noMore = layout;
             return this;
         }
 
@@ -424,9 +424,10 @@ public class Page<T> implements OnLoadMoreListener, SpringView.OnRefreshListener
 
         public Builder setDivideHeight(@DimenRes int divideHeight, @ColorRes int color) {
             this.divideHeight = divideHeight;
-            this.divideColor = color;
+            divideColor = color;
             return this;
         }
+
         @ColorRes
         public int getDivideColor() {
             return divideColor;
@@ -451,7 +452,7 @@ public class Page<T> implements OnLoadMoreListener, SpringView.OnRefreshListener
         }
 
         public Builder setRVAdapter(@LayoutRes int layoutRes, List<T> list) {
-            this.adapter = this.rvAdapter = new EasyRVAdapter<T>(mContext, list, layoutRes) {
+            adapter = rvAdapter = new EasyRVAdapter<T>(mContext, list, layoutRes) {
                 @Override
                 protected void onBindData(final EasyRVHolder viewHolder, final int position, final T item) {
                     onBindRVHolderData(viewHolder, position, item);
@@ -468,7 +469,7 @@ public class Page<T> implements OnLoadMoreListener, SpringView.OnRefreshListener
         }
 
         public Builder setArrayAdapter(@LayoutRes int layoutRes) {
-            this.adapter = this.arrayAdapter = new RecyclerArrayAdapter<T>(mContext, layoutRes) {
+            adapter = arrayAdapter = new RecyclerArrayAdapter<T>(mContext, layoutRes) {
 
                 @Override
                 protected void onBindData(final BaseViewHolder viewHolder, final int position, final T item) {
@@ -485,7 +486,7 @@ public class Page<T> implements OnLoadMoreListener, SpringView.OnRefreshListener
         }
 
         public Builder setArrayAdapter(@LayoutRes int layoutRes, List<T> objects) {
-            this.adapter = this.arrayAdapter = new RecyclerArrayAdapter<T>(mContext, objects, layoutRes) {
+            adapter = arrayAdapter = new RecyclerArrayAdapter<T>(mContext, objects, layoutRes) {
 
                 @Override
                 protected void onBindData(final BaseViewHolder viewHolder, final int position, final T item) {
@@ -503,7 +504,7 @@ public class Page<T> implements OnLoadMoreListener, SpringView.OnRefreshListener
         }
 
         public Builder setArrayAdapter(@LayoutRes int layoutRes, T[] objects) {
-            this.adapter = this.arrayAdapter = new RecyclerArrayAdapter<T>(mContext, objects, layoutRes) {
+            adapter = arrayAdapter = new RecyclerArrayAdapter<T>(mContext, objects, layoutRes) {
 
                 @Override
                 protected void onBindData(final BaseViewHolder viewHolder, final int position, final T item) {
@@ -533,6 +534,7 @@ public class Page<T> implements OnLoadMoreListener, SpringView.OnRefreshListener
             this.onScrollListener = onScrollListener;
             return this;
         }
+
         public Page<T> Build(@PageType int type) {
             return new Page<T>(this, type);
         }

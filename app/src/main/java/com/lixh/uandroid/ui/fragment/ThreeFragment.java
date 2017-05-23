@@ -5,6 +5,7 @@ import android.widget.ScrollView;
 
 import com.lixh.base.BaseFragment;
 import com.lixh.uandroid.R;
+import com.lixh.view.UToolBar;
 import com.lixh.view.refresh.SpringView;
 
 import butterknife.Bind;
@@ -19,6 +20,11 @@ public class ThreeFragment extends BaseFragment {
 
     public ThreeFragment() {
 
+    }
+
+    @Override
+    public void initTitle(UToolBar toolBar) {
+        toolBar.setTitle("ScrollView");
     }
 
     @Override
@@ -50,11 +56,6 @@ public class ThreeFragment extends BaseFragment {
         });
     }
 
-    @Override
-    public boolean initTitle() {
-        toolBar.setTitle("ScrollView");
-        return true;
-    }
 
     @Override
     public int getLayoutId() {

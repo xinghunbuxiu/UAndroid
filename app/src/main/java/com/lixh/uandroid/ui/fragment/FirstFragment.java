@@ -8,9 +8,10 @@ import com.lixh.base.BaseFragment;
 import com.lixh.base.Page;
 import com.lixh.base.adapter.recycleview.BaseViewHolder;
 import com.lixh.uandroid.R;
-import com.lixh.uandroid.ui.LineChartActivity;
+import com.lixh.uandroid.ui.DialogActivity;
 import com.lixh.utils.LoadingTip;
 import com.lixh.utils.ULog;
+import com.lixh.view.UToolBar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,42 +19,6 @@ import java.util.List;
 
 public class FirstFragment extends BaseFragment {
     Page.Builder builder;
-    ArrayList<String> array = new ArrayList<String>() {
-        {
-            add("nihaooo");
-            add("nihaooo");
-            add("nihaooo");
-            add("nihaooo");
-            add("nihaooo");
-            add("nihaooo");
-            add("nihaooo");
-            add("nihaooo");
-
-
-        }
-    };
-    ArrayList<ArrayList<String>> array2 = new ArrayList<ArrayList<String>>() {
-        {
-            add(array);
-            add(array);
-            add(array);
-            add(array);
-            add(array);
-            add(array);
-            add(array);
-            add(array);
-            add(array);
-            add(array);
-            add(array);
-            add(array);
-            add(array);
-            add(array);
-            add(array);
-            add(array);
-            add(array);
-            add(array);
-        }
-    };
 
 
     public FirstFragment() {
@@ -73,7 +38,8 @@ public class FirstFragment extends BaseFragment {
 
             @Override
             public void onItemClick(View view, int position, Integer data) {
-                intent.go(LineChartActivity.class);
+
+                intent.go(DialogActivity.class);
             }
         }.setAutoLoadMore(true).setRefresh(true).setDivideHeight(R.dimen.space_7).setLoadTip(tip);
         builder.setOnLoadingListener(onLoadingListener);
@@ -99,10 +65,9 @@ public class FirstFragment extends BaseFragment {
         }
     };
     @Override
-    public boolean initTitle() {
+    public void initTitle(UToolBar toolBar) {
         toolBar.setTitle("ddddddddd");
         toolBar.setLogo(R.mipmap.ic_launcher);
-        return true;
     }
 
     @Override

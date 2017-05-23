@@ -14,7 +14,7 @@ import android.view.View;
 public abstract class BaseSlideView implements ISlideMenu {
     public View slideView;
     Activity activity;
-    private boolean following;
+    public boolean following;
 
     public <T> T getActivity() {
         return (T) activity;

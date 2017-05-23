@@ -32,6 +32,10 @@ import java.util.Date;
  */
 
 public class ImpAlert {
+    public interface ICreate {
+        void bind(Alert.Builder mBuilder, int type);
+    }
+
     @IntDef({
             TimeType.All,
             TimeType.Year_Month_Day,
@@ -136,7 +140,11 @@ public class ImpAlert {
     };
 
     public interface AlertCancelListener {
-        void onCancelProgress();
+        void OnDismissListener();
+    }
+    public interface OnOKDialogClickListener {
+
+        void okOnClick(String name);
     }
 
     public interface IBindView {

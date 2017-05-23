@@ -125,7 +125,7 @@ public class WheelOptions {
 	 * @param label2
 	 * @param label3
 	 */
-	public void setLabels(String label1, String label2, String label3) {
+	public void setLabels(CharSequence label1, CharSequence label2, CharSequence label3) {
 		if (label1 != null)
 			wv_option1.setLabel(label1);
 		if (label2 != null)

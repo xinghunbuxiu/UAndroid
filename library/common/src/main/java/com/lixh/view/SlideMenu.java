@@ -186,7 +186,6 @@ public class SlideMenu extends FrameLayout {
         mTrackingEdges = edgeFlags;
     }
 
-
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         final int action = MotionEventCompat.getActionMasked(ev);
@@ -219,12 +218,15 @@ public class SlideMenu extends FrameLayout {
                 mLastY = y;
                 mLastX = x;
                 if (Math.abs(dx) > Math.abs(dy)) {
+                    removeCallbacks(mPeekRunnable);
                     if (mEnable) {//是否允许边缘触控
                         if (canDrag || slideState == State.OPEN || isFollowing) {
                             isNeedMyMove = true;
+                            scrollBy((int) -dx, 0);
                         }
                     } else {
                         isNeedMyMove = true;
+                        scrollBy((int) -dx, 0);
                     }
                 }
                 break;
@@ -280,6 +282,7 @@ public class SlideMenu extends FrameLayout {
 
     public void cancel() {
         mActivePointerId = MotionEvent.INVALID_POINTER_ID;
+        removeCallbacks(mPeekRunnable);
         canDrag = false;
         if (mInitialEdgesTouched != null) {
             Arrays.fill(mInitialEdgesTouched, 0);
@@ -292,15 +295,14 @@ public class SlideMenu extends FrameLayout {
     }
 
     private void onEdgeTouched() {
+        canDrag = true;
         postDelayed(mPeekRunnable, 160);
     }
 
     private final Runnable mPeekRunnable = new Runnable() {
         @Override
         public synchronized void run() {
-            if (mActivePointerId != MotionEvent.INVALID_POINTER_ID) {
                 peekDrawer();
-            }
         }
     };
 
@@ -311,8 +313,7 @@ public class SlideMenu extends FrameLayout {
             scroller.abortAnimation();
             return;
         }
-        scroller.startScroll(0, 0, childLeft, 0, 400);
-        canDrag = true;
+        scroller.startScroll(0, 0, scrollX + childLeft, 0, 400);
         invalidate();
         cancelChildViewTouch();
     }
@@ -332,22 +333,6 @@ public class SlideMenu extends FrameLayout {
             cancelEvent.recycle();
             mChildrenCanceledTouch = true;
         }
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                break;
-            case MotionEvent.ACTION_MOVE:
-                if (isNeedMyMove) {
-                    scrollBy((int) -dx, 0);
-                }
-                break;
-
-        }
-
-        return true;
     }
 
     @SuppressWarnings("Range")
@@ -374,8 +359,12 @@ public class SlideMenu extends FrameLayout {
                 setSlideState(State.OPEN);
             }
         }
-        getForeground().setAlpha(Math.abs(x) / 3);
-        ViewHelper.setTranslationX(contentView, !isFollowing ? x * 1f : x * 0.3f);
+        getForeground().setAlpha(Math.abs(x) / 10);
+        if (!isFollowing) {
+            ViewHelper.setTranslationX(contentView, x * 1f);
+        } else {
+            ViewHelper.setTranslationX(contentView, x * 0.3f);
+        }
         if (getScrollX() != x) {
             super.scrollTo(x, y);
         }

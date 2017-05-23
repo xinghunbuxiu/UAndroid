@@ -5,6 +5,7 @@ import android.webkit.WebView;
 
 import com.lixh.base.BaseFragment;
 import com.lixh.uandroid.R;
+import com.lixh.view.UToolBar;
 import com.lixh.view.refresh.SpringView;
 
 import butterknife.Bind;
@@ -51,9 +52,8 @@ public class FourFragment extends BaseFragment {
     }
 
     @Override
-    public boolean initTitle() {
+    public void initTitle(UToolBar toolBar) {
         toolBar.setTitle("webView");
-        return true;
     }
 
     @Override

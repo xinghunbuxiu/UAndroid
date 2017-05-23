@@ -21,10 +21,9 @@ import com.lixh.utils.SystemBarTintManager;
 import com.lixh.utils.TUtil;
 import com.lixh.utils.UIntent;
 import com.lixh.utils.UToast;
-import com.lixh.view.BaseSlideView;
 import com.lixh.view.ILayout;
 import com.lixh.view.LoadView;
-import com.lixh.view.SlideMenu.Slide;
+import com.lixh.view.LoadView.Builder;
 import com.lixh.view.UToolBar;
 
 import butterknife.ButterKnife;
@@ -55,47 +54,31 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
     public T getPresenter() {
         return (T) mPresenter.getPresenter();
     }
-    /**
-     * 是否有标题栏
-     *
-     * @return
-     */
-    public boolean hasToolBar() {
-        return true;
+
+    public void initLoad(Builder builder) {
+
     }
+
+    @Override
     public boolean isBack() {
         return false;
     }
-    /**
-     * 是否允许左划结束
-     *
-     * @return
-     */
-    public boolean enableSwipeBack() {
-        return true;
-    }
-    /**
-     * @return 是否双j击退出
-     */
+
+    @Override
     public boolean isDoubleExit() {
         return false;
     }
-
-    public boolean isContentTop() {
-        return true;
-    }
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         lifecycleSubject.onNext(LifeEvent.CREATE);
         super.onCreate(savedInstanceState);
-        layout = new LoadView.Builder(this).requestWindowFeature(Window.FEATURE_NO_TITLE)// 无标题
+        layout = new LoadView.Builder(this) {
+            {
+                mBottomLayout = getLayoutId();
+                initLoad(this);
+            }
+        }.requestWindowFeature(Window.FEATURE_NO_TITLE)// 无标题
                 .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)// 设置竖屏
-                .setBottomLayout(getLayoutId(), isContentTop())
-                .setToolBar(hasToolBar())
-                .setSwipeBack(enableSwipeBack())
-                .setSlideMenu(getSlide(),getSlideView())
                 .createActivity();
         layout.addObserver(this);
         ButterKnife.bind(this);
@@ -209,14 +192,5 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
     @Override
     public void update(Observable o, Message arg) {
 
-    }
-
-    public BaseSlideView getSlideView() {
-        return null;
-    }
-
-    @Slide
-    public int getSlide() {
-        return Slide.NONE;
     }
 }

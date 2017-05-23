@@ -19,12 +19,11 @@ import com.lixh.swipeback.Utils;
 import com.lixh.swipeback.app.SwipeBackActivityHelper;
 import com.lixh.swipeback.app.SwipeBackLayout;
 import com.lixh.utils.LoadingTip;
+import com.lixh.utils.UIntent;
 import com.lixh.view.SlideMenu.Slide;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-
-import static com.lixh.view.SlideMenu.Slide.LEFT;
 
 
 /**
@@ -36,16 +35,18 @@ import static com.lixh.view.SlideMenu.Slide.LEFT;
 public class LoadView extends Observable implements SwipeBackActivityBase {
     public static final String TAG = "LoadView";
     public static Activity mContext;
-    RelativeLayout RootView;
-    LoadingTip tip;
-    Builder builder;
-    UToolBar toolbar;
-    ViewStub view_Stub;
+    private RelativeLayout RootView;
+    private LoadingTip tip;
+    private Builder builder;
+    private UToolBar toolbar;
+    private ViewStub view_Stub;
     int windowType;
     private SwipeBackLayout mSwipeBackLayout;
     private SwipeBackActivityHelper mHelper;
-    protected SwipeBackLayout layout;
+    private SwipeBackLayout layout;
     SlideMenu slideMenu1;
+    private UIntent intent;
+
     //定义通用的布局 根布局为Liearlayout +ToolBar + LinearLayout
     public LoadView(Builder builder, int windowType) {
         this.builder = builder;
@@ -58,7 +59,9 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
         return toolbar;
     }
 
-
+    public UIntent getIntent() {
+        return this.intent;
+    }
 
     //返回布局View
     public View getRootView() {
@@ -67,11 +70,12 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
 
     //通用布局
     public void commonView(Builder builder) {
-        RootView = (RelativeLayout) inflate(builder.isContentTop() ? R.layout.status_toolbar_layout : R.layout.toolbar_layout);
+        RootView = (RelativeLayout) inflate(builder.contentTop ? R.layout.status_toolbar_layout : R.layout.toolbar_layout);
         initToolBar();
         initBottomView();
-        initSwipe(builder.isSwipeBack());
-        initSlideMenu(builder.isSlideMenu());
+        initSwipe(builder.swipeBack);
+        initSlideMenu(builder.slideMenu);
+        intent = new UIntent(mContext);
     }
 
     private void initSlideMenu(boolean slideMenu) {
@@ -89,8 +93,8 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
         root.addRule(RelativeLayout.BELOW, R.id.toolbar);
         tip = getEmptyView();
         RootView.addView(tip, root);
-        if (builder.getBottomLayout() > 0) {
-            RootView.addView(inflate(builder.getBottomLayout()), root);
+        if (builder.mBottomLayout > 0) {
+            RootView.addView(inflate(builder.mBottomLayout), root);
         }
         if (windowType == WindowType.ACTIVITY) {
             createActivity();
@@ -117,7 +121,7 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
         view_Stub = (ViewStub) RootView.findViewById(R.id.title_stub);
         if (builder.hasToolbar) {
             toolbar = (UToolBar) view_Stub.inflate();
-            if (builder.isContentTop()) {
+            if (builder.contentTop) {
                 toolbar.setHasBar();
             }
         } else {
@@ -192,8 +196,8 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
         }
         if (slideMenu1 != null) {
             slideMenu1.attachToActivity(mContext);
-            int slide = builder.getSlide();
-            BaseSlideView view = builder.getSlideView();
+            int slide = builder.slide;
+            BaseSlideView view = builder.slideView;
             if (view != null && slide != Slide.NONE) {
                 slideMenu1.addSlideView(view, slide);
             }
@@ -219,40 +223,26 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
     }
     public static class Builder {
 
-        private int mBottomLayout;
-        private boolean hasToolbar;
-        private boolean contentTop;
-        private boolean swipeBack;
-        private boolean slideMenu;
+        public int mBottomLayout;
+        public boolean hasToolbar;
+        public boolean contentTop;
+        public boolean swipeBack;
+        public boolean slideMenu;
         @Slide
-        private int slide;
-        private BaseSlideView slideView;
-        public boolean isSwipeBack() {
-            return swipeBack;
-        }
+        public int slide;
+        public BaseSlideView slideView;
 
         public Builder(Activity context) {
             mContext = context;
             mBottomLayout = -1;
             hasToolbar=true;
             slideView = null;
-            contentTop = false;
+            contentTop = true;
             slideMenu = false;
-            slide = LEFT;
+            swipeBack=true;
+            slide = Slide.NONE;
         }
 
-        public BaseSlideView getSlideView() {
-            return slideView;
-        }
-
-        @Slide
-        public int getSlide() {
-            return slide;
-        }
-
-        public boolean isSlideMenu() {
-            return slideMenu;
-        }
 
         public Builder setSlideMenu(@Slide int slide, BaseSlideView slideView) {
             this.slide = slide;
@@ -262,16 +252,6 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
             this.slideView = slideView;
             return this;
         }
-        public int getBottomLayout() {
-            return mBottomLayout;
-        }
-
-        public Builder setBottomLayout(int mBottomLayout, boolean contentTop) {
-            this.mBottomLayout = mBottomLayout;
-            this.contentTop = contentTop;
-            return this;
-        }
-
         public LoadView createActivity() {
             return new LoadView(this, WindowType.ACTIVITY);
         }
@@ -280,26 +260,10 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
             return new LoadView(this, WindowType.FRAGMENT);
         }
 
-        public Builder setToolBar(boolean hasToolbar) {
-            this.hasToolbar = hasToolbar;
-            return this;
-        }
-
-        public boolean isContentTop() {
-            return contentTop;
-        }
-
-        public Builder setSwipeBack(boolean swipeBack) {
-            this.swipeBack = swipeBack;
-            return this;
-        }
-
-
         public Builder requestWindowFeature(int featureNoTitle) {
             mContext.requestWindowFeature(featureNoTitle);
             return this;
         }
-
         public Builder setRequestedOrientation(int requestedOrientation) {
             mContext.requestWindowFeature(requestedOrientation);
             return this;

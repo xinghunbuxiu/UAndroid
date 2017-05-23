@@ -13,7 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -21,6 +21,8 @@ import android.widget.TextView;
 import com.common.dialog.ImpAlert.ChoiceModelItemClickListener;
 import com.common.dialog.ImpAlert.DialogType;
 import com.common.dialog.ImpAlert.IBindView;
+import com.common.dialog.ImpAlert.ICreate;
+import com.common.dialog.ImpAlert.OnOKDialogClickListener;
 import com.common.dialog.ImpAlert.OnOptionsSelectListener;
 import com.common.dialog.ImpAlert.OnSelectedItemListener;
 import com.common.dialog.ImpAlert.Type;
@@ -61,25 +63,120 @@ public class Alert {
     WheelTime wheelTime;
     ScreenInfo screenInfo;
 
-    public static void showCustomDialog(Context context, @LayoutRes int layoutId, AlertCancelListener listener) {
-        Alert.Builder mBuilder = new Builder(context);
-        mBuilder.setAlertCancelListener(listener);
-        mBuilder.setLayoutId(layoutId).Build(DialogType.Custom);
+    public static void showCustomDialog(Activity context, @LayoutRes final int layoutId, final AlertCancelListener listener) {
+        showDialog(context, new ICreate() {
+            @Override
+            public void bind(Builder mBuilder, int type) {
+                mBuilder.layoutId = layoutId;
+                mBuilder.alertCancelListener = listener;
+            }
+        }, DialogType.Custom);
     }
 
-    public static void displayAlertDialog(Context context, String title, String msg, String okStr, String cancelStr, View.OnClickListener onOkClickListener, View.OnClickListener onCancelClickListener) {
-        Alert.Builder mBuilder = new Builder(context);
-        mBuilder.setTitle(title).setMessage(msg).setOkBtnStr(okStr).setCancelStr(cancelStr)
-                .setOnOkClickListener(onOkClickListener).setOnCancelClickLister(onCancelClickListener)
-                .Build(DialogType.Warn);
+    /**
+     * @param context
+     * @param title
+     * @param msg
+     * @param onOkClickListener
+     */
+    public static void displayAlertDialog(Activity context, final String title, final String msg, final View.OnClickListener onOkClickListener) {
+        displayAlertDialog(context, title, msg, null, null, onOkClickListener, null);
     }
 
-    public static void displayWheelDialog(Context context, ArrayList<String> options1Items, ArrayList<ArrayList<String>> options2Items, ArrayList<ArrayList<ArrayList<String>>> options3Items, View.OnClickListener onOkClickListener, View.OnClickListener onCancelClickListener) {
-        Alert.Builder mBuilder = new Builder(context);
-        mBuilder.setOptions1Items(options1Items).setOptions2Items(options2Items).setOptions3Items(options3Items)
-                .setOnOkClickListener(onOkClickListener).setOnCancelClickLister(onCancelClickListener)
-                .Build(DialogType.City);
+    /**
+     * @param context
+     * @param title
+     * @param msg
+     * @param onOkClickListener
+     */
+    public static void displayEditDialog(Activity context, final String hint, final String title, final String msg, final OnOKDialogClickListener onOkClickListener) {
+        displayEditDialog(context, hint, title, msg, null, null, onOkClickListener, null);
     }
+
+    /**
+     * @param context
+     * @param title
+     * @param msg
+     * @param okStr
+     * @param cancelStr
+     * @param onOkClickListener
+     * @param onCancelClickListener
+     */
+    public static void displayAlertDialog(Activity context, final String title, final String msg, final String okStr, final String cancelStr, final View.OnClickListener onOkClickListener, final View.OnClickListener onCancelClickListener) {
+        showDialog(context, new ICreate() {
+            @Override
+            public void bind(Builder mBuilder, int type) {
+                if (title != null) {
+                    mBuilder.title = title;
+                }
+                if (okStr != null) {
+                    mBuilder.okBtnStr = okStr;
+                }
+                if (cancelStr != null) {
+                    mBuilder.cancelStr = cancelStr;
+                }
+                mBuilder.message = msg;
+                mBuilder.onCancelClickLister = onCancelClickListener;
+                mBuilder.onOkClickListener = onOkClickListener;
+            }
+        }, DialogType.Warn);
+    }
+
+    /**
+     * @param context
+     * @param title
+     * @param msg
+     * @param okStr
+     * @param cancelStr
+     * @param onOkClickListener
+     * @param onCancelClickListener
+     */
+    public static void displayEditDialog(Activity context, final String hint, final String title, final String msg, final String okStr, final String cancelStr, final OnOKDialogClickListener onOkClickListener, final View.OnClickListener onCancelClickListener) {
+        showDialog(context, new ICreate() {
+            @Override
+            public void bind(Builder mBuilder, int type) {
+                if (title != null) {
+                    mBuilder.title = title;
+                }
+                if (okStr != null) {
+                    mBuilder.okBtnStr = okStr;
+                }
+                if (cancelStr != null) {
+                    mBuilder.cancelStr = cancelStr;
+                }
+                if (hint != null) {
+                    mBuilder.hint = hint;
+                }
+                mBuilder.message = msg;
+                mBuilder.onCancelClickLister = onCancelClickListener;
+                mBuilder.onOKDialogClickListener = onOkClickListener;
+            }
+        }, DialogType.Edit);
+    }
+
+    public static void displaySelectDialog(Activity context, final OnSelectedItemListener itemListener, final CharSequence char1, final CharSequence char2, final CharSequence char3) {
+
+        showDialog(context, new ICreate() {
+            @Override
+            public void bind(Builder mBuilder, int type) {
+                mBuilder.setLabels(char1, char2, char3);
+                mBuilder.onSelectedItemListener = itemListener;
+            }
+        }, DialogType.Edit);
+    }
+
+    public static void showDialog(Activity context, final ICreate create, final @DialogType int Type) {
+        Alert.Builder mBuilder = new Builder(context) {
+            {
+                if (create != null) {
+                    create.bind(this, Type);
+                    Build(Type);
+                }
+            }
+        };
+    }
+
+
     /**
      * 关闭加载对话框
      */
@@ -180,9 +277,9 @@ public class Alert {
                 break;
             case DialogType.Custom:
                 if (Type.Dialog == type) {
-                    showDialog(builder.getLayoutId(), builder.getBindView(), builder.getAlertCancelListener(), builder.getAnimation());
+                    showDialog(builder.layoutId, builder.bindView, builder.alertCancelListener, builder.animation);
                 } else {
-                    showPop(builder.getLayoutId(), builder.getBindView(), 0);
+                    showPop(builder.layoutId, builder.bindView, 0);
                 }
                 break;
             default:
@@ -200,19 +297,19 @@ public class Alert {
                 View optionsPicker = holder.$(R.id.optionspicker);
                 wheelOptions = new WheelOptions(optionsPicker);
                 wheelOptions.screenheight = screenInfo.getHeight();
-                wheelOptions.setPicker(builder.getOptions1Items(),
-                        builder.getOptions2Items(), builder.getOptions3Items(),
-                        builder.getLinkage());
-                int options[] = builder.getOptions();
+                wheelOptions.setPicker(builder.options1Items,
+                        builder.options2Items, builder.options3Items,
+                        builder.linkage);
+                int options[] = builder.options;
                 wheelOptions.setCurrentItems(options[0], options[1], options[2]);
-                String labels[] = builder.getLabels();
+                CharSequence labels[] = builder.labels;
                 wheelOptions.setLabels(labels[0], labels[1], labels[2]);
                 holder.setOnClickListener(R.id.btnSubmit, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (builder.getOptionsSelectListener() != null) {
+                        if (builder.optionsSelectListener != null) {
                             int[] optionsCurrentItems = wheelOptions.getCurrentItems();
-                            builder.getOptionsSelectListener().onOptionsSelect(optionsCurrentItems[0], optionsCurrentItems[1], optionsCurrentItems[2]);
+                            builder.optionsSelectListener.onOptionsSelect(optionsCurrentItems[0], optionsCurrentItems[1], optionsCurrentItems[2]);
                         }
                         dismiss();
                     }
@@ -238,17 +335,17 @@ public class Alert {
                 // ----时间转轮
                 final View timePickerView = holder.$(R.id.timepicker);
 
-                wheelTime = new WheelTime(timePickerView, builder.getTimeType());
+                wheelTime = new WheelTime(timePickerView, builder.timeType);
                 wheelTime.screenheight = screenInfo.getHeight();
-                setTime(builder.getDate());
-                wheelTime.setCyclic(builder.isCyclic());
+                setTime(builder.date);
+                wheelTime.setCyclic(builder.cyclic);
                 holder.setOnClickListener(R.id.btnSubmit, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (builder.getOnTimeSelectListener() != null) {
+                        if (builder.onTimeSelectListener != null) {
                             try {
                                 Date date = WheelTime.dateFormat.parse(wheelTime.getTime());
-                                builder.getOnTimeSelectListener().onTimeSelect(date);
+                                builder.onTimeSelectListener.onTimeSelect(date);
                             } catch (ParseException e) {
                                 e.printStackTrace();
                             }
@@ -267,7 +364,7 @@ public class Alert {
 
         };
         if (Type.Dialog == type) {
-            showDialog(R.layout.pw_time, bindView, builder.getAlertCancelListener(), builder.getAnimation());
+            showDialog(R.layout.pw_time, bindView, builder.alertCancelListener, builder.animation);
         } else {
             showPop(R.layout.pw_time, bindView, R.style.timepopwindow_anim_style);
         }
@@ -335,12 +432,11 @@ public class Alert {
 
             @Override
             public View convert(final ViewHolder holder) {
-                for (int i = 0; i < builder.getOnSelectedItem().size(); i++) {
-                    final MenuItem menu = builder.getOnSelectedItem().get(i);
-                    holder.setBtnText(ids[i], menu.getText(), new View.OnClickListener() {
+                for (int i = 0; i < builder.labels.length; i++) {
+                    holder.setBtnText(ids[i], builder.labels[i], new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            menu.getOnSelectedItemListener().onItemClick(menu.getPosition());
+                            builder.onSelectedItemListener.onItemClick(v.getId());
                         }
                     });
                     holder.setVisible(ids[i], View.VISIBLE);
@@ -357,7 +453,7 @@ public class Alert {
             }
         };
         if (Type.Dialog == type) {
-            showDialog(R.layout.dialog_get_model, bindView, builder.getAlertCancelListener(), EffectsType.SlideBottom);
+            showDialog(R.layout.dialog_get_model, bindView, builder.alertCancelListener, EffectsType.SlideBottom);
         } else {
             showPop(R.layout.dialog_get_model, bindView, 0);
         }
@@ -365,95 +461,52 @@ public class Alert {
 
 
     public static class Builder {
-        private View.OnClickListener onOkClickListener;
-        private int[] selectedPosition;
-        private View.OnClickListener onCancelClickLister;
-        private ChoiceModelItemClickListener choiceModelItemClickListener;
-        private AlertCancelListener alertCancelListener;
-        private ArrayList<MenuItem> onSelectedItem;
-        private OnSelectedItemListener onSelectedItemListener;
-        private OnOptionsSelectListener optionsSelectListener;
-        private IBindView bindView;
+        public View.OnClickListener onOkClickListener;
+        public OnOKDialogClickListener onOKDialogClickListener;
+        public int[] selectedPosition;
+        public View.OnClickListener onCancelClickLister;
+        public ChoiceModelItemClickListener choiceModelItemClickListener;
+        public AlertCancelListener alertCancelListener;
+        public ArrayList<MenuItem> onSelectedItem;
+        public OnSelectedItemListener onSelectedItemListener;
+        public OnOptionsSelectListener optionsSelectListener;
+        public IBindView bindView;
         @DialogType
-        private int dialogType = DialogType.Warn;
+        public int dialogType = DialogType.Warn;
         @TimeType
-        private int timeType = TimeType.Year_Month_Day;
+        public int timeType = TimeType.Year_Month_Day;
         @EffectsType
-        private int animation = EffectsType.SlideBottom;
+        public int animation = EffectsType.SlideBottom;
         public OnTimeSelectListener onTimeSelectListener;
-        private int layoutId;
-        private String title;
-        private String message;
-        private String okBtnStr = "ok";
-        private String cancelStr = "cancel";
-        boolean cyclic = false;//时间dialog 是否滚动
-        private Date date;
-        private ArrayList<String> options1Items;
-        private ArrayList<ArrayList<String>> options2Items;
-        private ArrayList<ArrayList<ArrayList<String>>> options3Items;
-        private boolean linkage;
-        int options[] = {0, 0, 0};
-        String labels[] = {null, null, null};
+        public int layoutId;
+        public String title;
+        public String message;
+        public String hint;
+        public String okBtnStr = "ok";
+        public String cancelStr = "cancel";
+        public boolean cyclic = false;//时间dialog 是否滚动
+        public Date date;
+        public String messAges[];
+        public ArrayList<String> options1Items;
+        public ArrayList<ArrayList<String>> options2Items;
+        public ArrayList<ArrayList<ArrayList<String>>> options3Items;
+        /**
+         * 是否联动
+         */
+        public boolean linkage;
+        /**
+         * 选择按钮
+         */
+        public int options[] = {0, 0, 0};
+        /**
+         * 选择按钮Lable
+         */
+        public CharSequence labels[] = {null, null, null};
 
-        public String[] getLabels() {
-            return labels;
-        }
-
-        public void setLabels(String label1, String label2, String label3) {
+        public void setLabels(CharSequence label1, CharSequence label2, CharSequence label3) {
             labels[0] = label1;
             labels[1] = label2;
             labels[2] = label3;
-        }
-
-
-        public int[] getOptions() {
-            return options;
-        }
-
-        public Builder setOptions(int[] options) {
-            this.options = options;
-            return this;
-        }
-
-        //是否联动
-        public void setLinkage(boolean linkage) {
-            this.linkage = linkage;
-        }
-
-
-        public Builder setOptions1Items(ArrayList<String> options1Items) {
-            this.options1Items = options1Items;
-            return this;
-        }
-
-        public Builder setOptions2Items(ArrayList<ArrayList<String>> options2Items) {
-            this.options2Items = options2Items;
-            return this;
-        }
-
-        public Builder setOptions3Items(ArrayList<ArrayList<ArrayList<String>>> options3Items) {
-            this.options3Items = options3Items;
-            return this;
-        }
-
-        public ArrayList<String> getOptions1Items() {
-            return options1Items;
-        }
-
-        public ArrayList<ArrayList<String>> getOptions2Items() {
-            return options2Items;
-        }
-
-        public ArrayList<ArrayList<ArrayList<String>>> getOptions3Items() {
-            return options3Items;
-        }
-
-        public void setDate(Date date) {
-            this.date = date;
-        }
-
-        public Date getDate() {
-            return date;
         }
 
         /**
@@ -467,263 +520,7 @@ public class Alert {
             WheelTime.setEND_YEAR(END_YEAR);
         }
 
-        public OnTimeSelectListener getOnTimeSelectListener() {
-            return onTimeSelectListener;
-        }
-
-        public void setOnTimeSelectListener(OnTimeSelectListener onTimeSelectListener) {
-            this.onTimeSelectListener = onTimeSelectListener;
-        }
-
-        public boolean isCyclic() {
-            return cyclic;
-        }
-
-        //是否循环
-        public void setCyclic(boolean cyclic) {
-            this.cyclic = cyclic;
-        }
-
-        @TimeType
-        public int getTimeType() {
-            return timeType;
-        }
-
-        public void setTimeType(@TimeType int timeType) {
-            this.timeType = timeType;
-        }
-
-        public Builder setOnOptionsSelectListener(
-                OnOptionsSelectListener optionsSelectListener) {
-            this.optionsSelectListener = optionsSelectListener;
-            return this;
-        }
-
-        public OnOptionsSelectListener getOptionsSelectListener() {
-            return optionsSelectListener;
-        }
-
-
-        public Builder setAnimation(@EffectsType int animation) {
-            this.animation = animation;
-            return this;
-        }
-
-        public ArrayList<MenuItem> getOnSelectedItem() {
-            return onSelectedItem;
-        }
-
-        public OnSelectedItemListener getOnSelectedItemListener() {
-            return onSelectedItemListener;
-        }
-
-        public Builder setOnSelectedItem(MenuItem onSelectedItem) {
-            this.onSelectedItem.add(onSelectedItem);
-            return this;
-        }
-
-        /**
-         * 选择性弹出框的监听
-         *
-         * @param onSelectedItemListener
-         */
-        public Builder setOnSelectedItemListener(OnSelectedItemListener onSelectedItemListener) {
-            this.onSelectedItemListener = onSelectedItemListener;
-            return this;
-        }
-
-
-        public View.OnClickListener getOnCancelClickLister() {
-            return onCancelClickLister;
-        }
-
-        /**
-         * 取消按钮的监听
-         *
-         * @param onCancelClickLister
-         * @return
-         */
-        public Builder setOnCancelClickLister(View.OnClickListener onCancelClickLister) {
-            this.onCancelClickLister = onCancelClickLister;
-            return this;
-        }
-
-        public View.OnClickListener getOnOkClickListener() {
-            return onOkClickListener;
-        }
-
-        /**
-         * 确认按钮的监听
-         *
-         * @param onOkClickListener
-         * @return
-         */
-        public Builder setOnOkClickListener(View.OnClickListener onOkClickListener) {
-            this.onOkClickListener = onOkClickListener;
-            return this;
-        }
-
-
-        public IBindView getBindView() {
-            return bindView;
-        }
-
-        /**
-         * 自定义的dialog绑定数据
-         *
-         * @param bindView
-         */
-        public Builder setBindView(IBindView bindView) {
-            this.bindView = bindView;
-            return this;
-        }
-
-        public int[] getSelectedPosition() {
-            return selectedPosition;
-        }
-
-        public AlertCancelListener getAlertCancelListener() {
-            return alertCancelListener;
-        }
-
-        /**
-         * dialog消失的监听
-         *
-         * @param alertCancelListener
-         * @return
-         */
-        public Builder setAlertCancelListener(AlertCancelListener alertCancelListener) {
-            this.alertCancelListener = alertCancelListener;
-            return this;
-        }
-
-        public String[] getMessAges() {
-            return messAges;
-        }
-
-        /**
-         * 多选的id
-         *
-         * @param selectedPosition
-         * @return
-         */
-        public Builder setSelectedPosition(int[] selectedPosition) {
-            this.selectedPosition = selectedPosition;
-            return this;
-        }
-
-        /**
-         * 多选框的监听
-         * i
-         *
-         * @param messAges
-         * @return
-         */
-        public Builder setMessAges(String[] messAges) {
-            this.messAges = messAges;
-            return this;
-        }
-
-        String messAges[];
-
-
-        /**
-         * 标题
-         *
-         * @param title
-         * @return
-         */
-        public Builder setTitle(String title) {
-            this.title = title;
-            return this;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public String getCancelStr() {
-            return cancelStr;
-        }
-
-        /**
-         * 取消按钮
-         *
-         * @param cancelStr
-         * @return
-         */
-        public Builder setCancelStr(String cancelStr) {
-            this.cancelStr = cancelStr;
-            return this;
-        }
-
-        public ChoiceModelItemClickListener getChoiceModelItemClickListener() {
-            return choiceModelItemClickListener;
-        }
-
-        /**
-         * 多选或者单选列表的弹框
-         *
-         * @param choiceModelItemClickListener
-         * @return
-         */
-        public Builder setChoiceModelItemClickListener(ChoiceModelItemClickListener choiceModelItemClickListener) {
-            this.choiceModelItemClickListener = choiceModelItemClickListener;
-            return this;
-        }
-
-        public int getLayoutId() {
-            return layoutId;
-        }
-
-        @EffectsType
-        public int getAnimation() {
-            return animation;
-        }
-
-        /**
-         * 自定义布局id
-         *
-         * @param layoutId
-         * @return
-         */
-        public Builder setLayoutId(int layoutId) {
-            this.layoutId = layoutId;
-            return this;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        /**
-         * 提示弹出框的信息
-         *
-         * @param message
-         * @return
-         */
-        public Builder setMessage(String message) {
-            this.message = message;
-            return this;
-        }
-
-        public String getOkBtnStr() {
-            return okBtnStr;
-        }
-
-        /**
-         * 确认按钮的文字
-         *
-         * @param okBtnStr
-         * @return
-         */
-        public Builder setOkBtnStr(String okBtnStr) {
-            this.okBtnStr = okBtnStr;
-            return this;
-        }
-
-
-        public Builder(Context context) {
+        public Builder(Activity context) {
             mContext = context;
         }
 
@@ -735,10 +532,6 @@ public class Alert {
             return new Alert(this, Type.PopWindow, dialogType);
         }
 
-
-        public boolean getLinkage() {
-            return linkage;
-        }
     }
 
 
@@ -772,12 +565,12 @@ public class Alert {
         IBindView bindView = new IBindView() {
             @Override
             public View convert(ViewHolder holder) {
-                holder.setText(R.id.titleView, builder.getTitle());
-                holder.setText(R.id.messageView, builder.getMessage());
-                holder.setText(R.id.okBtn, builder.getOkBtnStr());
-                holder.setText(R.id.cancelBtn, builder.getCancelStr());
-                holder.setOnClickListener(R.id.okBtn, builder.getOnOkClickListener());
-                if (builder.getOnCancelClickLister() == null) {
+                holder.setText(R.id.titleView, builder.title);
+                holder.setText(R.id.messageView, builder.message);
+                holder.setText(R.id.okBtn, builder.okBtnStr);
+                holder.setText(R.id.cancelBtn, builder.cancelStr);
+                holder.setOnClickListener(R.id.okBtn, builder.onOkClickListener);
+                if (builder.onCancelClickLister == null) {
                     holder.setOnClickListener(R.id.cancelBtn, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -785,14 +578,14 @@ public class Alert {
                         }
                     });
                 } else {
-                    holder.setOnClickListener(R.id.cancelBtn, builder.getOnCancelClickLister());
+                    holder.setOnClickListener(R.id.cancelBtn, builder.onCancelClickLister);
                 }
 
                 return holder.getView();
             }
         };
         if (Type.Dialog == type) {
-            showDialog(R.layout.dialog_interactive, bindView, builder.getAlertCancelListener(), EffectsType.SlideBottom);
+            showDialog(R.layout.dialog_interactive, bindView, builder.alertCancelListener, EffectsType.SlideBottom);
         } else {
             showPop(R.layout.dialog_interactive, bindView, 0);
         }
@@ -802,12 +595,19 @@ public class Alert {
         IBindView bindView = new IBindView() {
             @Override
             public View convert(ViewHolder holder) {
-                holder.setText(R.id.titleView, builder.getTitle());
-                holder.setEditText(R.id.messageView, builder.getMessage());
-                holder.setText(R.id.okBtn, builder.getOkBtnStr());
-                holder.setText(R.id.cancelBtn, builder.getCancelStr());
-                holder.setOnClickListener(R.id.okBtn, builder.getOnOkClickListener());
-                if (builder.getOnCancelClickLister() == null) {
+                final EditText message = holder.$(R.id.messageView);
+                holder.setText(R.id.titleView, builder.title);
+                message.setText(builder.message);
+                message.setHint(builder.hint);
+                holder.setText(R.id.okBtn, builder.okBtnStr);
+                holder.setText(R.id.cancelBtn, builder.cancelStr);
+                holder.setOnClickListener(R.id.okBtn, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        builder.onOKDialogClickListener.okOnClick(message.getText().toString());
+                    }
+                });
+                if (builder.onCancelClickLister == null) {
                     holder.setOnClickListener(R.id.cancelBtn, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -815,14 +615,14 @@ public class Alert {
                         }
                     });
                 } else {
-                    holder.setOnClickListener(R.id.cancelBtn, builder.getOnOkClickListener());
+                    holder.setOnClickListener(R.id.cancelBtn, builder.onOkClickListener);
                 }
 
                 return holder.getView();
             }
         };
         if (Type.Dialog == type) {
-            showDialog(R.layout.dialog_edittext, bindView, builder.getAlertCancelListener(), builder.getAnimation());
+            showDialog(R.layout.dialog_edittext, bindView, builder.alertCancelListener, builder.animation);
         } else {
             showPop(R.layout.dialog_edittext, bindView, 0);
         }
@@ -831,14 +631,14 @@ public class Alert {
 
     public void createListDialog(final Builder builder, @Type int type, @DialogType final int dialogType) {// 点击
         final SparseArray<SparseArray<String>> item = new SparseArray<>();
-        final SparseArray<String> array = new SparseArray(builder.getMessAges().length);
+        final SparseArray<String> array = new SparseArray(builder.messAges.length);
         IBindView bindView = new IBindView() {
             @Override
             public View convert(ViewHolder holder) {
                 ListView list = holder.$(R.id.dlist);
-                holder.setText(R.id.titleView, builder.getTitle());
-                holder.setText(R.id.okBtn, builder.getOkBtnStr());
-                holder.setText(R.id.cancelBtn, builder.getCancelStr());
+                holder.setText(R.id.titleView, builder.title);
+                holder.setText(R.id.okBtn, builder.okBtnStr);
+                holder.setText(R.id.cancelBtn, builder.cancelStr);
                 if (dialogType == DialogType.SingleList) {
                     holder.setVisible(R.id.btn_pane, View.GONE);
                 }
@@ -846,7 +646,7 @@ public class Alert {
                 holder.setOnClickListener(R.id.okBtn, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        builder.getChoiceModelItemClickListener().onItemClick(item);
+                        builder.choiceModelItemClickListener.onItemClick(item);
                     }
                 });
                 holder.setOnClickListener(R.id.cancelBtn, new View.OnClickListener() {
@@ -859,24 +659,24 @@ public class Alert {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int which, long id) {
                         if (item.get(which) == null) {
-                            array.put(which, builder.getMessAges()[which]);
+                            array.put(which, builder.messAges[which]);
                             item.put(which, array);
                         } else {
                             item.removeAt(which);
                         }
                         if (dialogType == DialogType.SingleList) {
                             dismiss();
-                            builder.getChoiceModelItemClickListener().onItemClick(item);
+                            builder.choiceModelItemClickListener.onItemClick(item);
                         }
                     }
                 });
-                list.setAdapter(new listItemAdapter(builder.getMessAges(), builder.getSelectedPosition()));
+                list.setAdapter(new listItemAdapter(builder.messAges, builder.selectedPosition));
                 return holder.getView();
             }
 
         };
         if (Type.Dialog == type) {
-            showDialog(R.layout.dialog_singlelist, bindView, builder.getAlertCancelListener(), builder.getAnimation());
+            showDialog(R.layout.dialog_singlelist, bindView, builder.alertCancelListener, builder.animation);
         } else {
             showPop(R.layout.dialog_singlelist, bindView, 0);
         }
@@ -920,14 +720,15 @@ public class Alert {
         }
         final View view = LayoutInflater.from(mContext).inflate(layoutId, null);
         final ViewHolder holder = new ViewHolder(view);
-        dialog.setContentView(bindView == null ? view : bindView.convert(holder),new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+        dialog.setContentView(bindView == null ? view : bindView.convert(holder));
+        dialog.getWindow().setLayout(screenInfo.getWidth() * 8 / 10, ViewGroup.LayoutParams.WRAP_CONTENT);
         dialog.setCancelable(true);
         dialog.setCanceledOnTouchOutside(false);
         dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
                 if (alertCancelListener != null) {
-                    alertCancelListener.onCancelProgress();
+                    alertCancelListener.OnDismissListener();
                 }
             }
         });
@@ -944,7 +745,5 @@ public class Alert {
         dialog.show();
         return dialog;
     }
-
-
 
 }
