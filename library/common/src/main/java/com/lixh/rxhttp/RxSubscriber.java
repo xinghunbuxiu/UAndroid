@@ -1,13 +1,13 @@
 package com.lixh.rxhttp;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 
-import com.common.dialog.Alert;
-import com.common.dialog.ImpAlert;
 import com.lixh.BuildConfig;
 import com.lixh.R;
 import com.lixh.app.BaseApplication;
 import com.lixh.rxhttp.exception.ApiException;
+import com.lixh.utils.Alert;
 import com.lixh.utils.UNetWork;
 import com.lixh.utils.UToast;
 
@@ -64,10 +64,9 @@ public abstract class RxSubscriber<T> extends Subscriber<T> {
     public void showProgressDialog() {
         if (showDialog) {
             try {
-                Alert.showCustomDialog(mContext, R.layout.alert_proress, new ImpAlert.AlertCancelListener() {
-
+                Alert.displayLoading(mContext, R.layout.alert_proress, new DialogInterface.OnDismissListener() {
                     @Override
-                    public void OnDismissListener() {
+                    public void onDismiss(DialogInterface dialog) {
                         cancelProgress();
                     }
                 });

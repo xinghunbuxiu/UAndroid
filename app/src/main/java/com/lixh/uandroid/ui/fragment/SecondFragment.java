@@ -8,7 +8,6 @@ import com.lixh.base.BaseFragment;
 import com.lixh.base.Page;
 import com.lixh.base.adapter.recycleview.BaseViewHolder;
 import com.lixh.uandroid.R;
-import com.lixh.uandroid.ui.PieChartActivity;
 import com.lixh.utils.LoadingTip;
 import com.lixh.view.UToolBar;
 

@@ -1,14 +1,15 @@
 package com.lixh.uandroid.ui;
 
 import android.os.Bundle;
+import android.support.v4.widget.MaterialProgressDrawable;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 
-import com.common.dialog.Alert;
-import com.common.dialog.ImpAlert;
+import com.flyco.dialog.listener.OnBtnClickL;
+import com.flyco.dialog.listener.OnOperItemClickL;
 import com.lixh.base.BaseActivity;
-import com.lixh.uandroid.R;
-import com.lixh.utils.UToast;
+import com.lixh.utils.Alert;
 import com.lixh.view.UToolBar;
 
 import java.util.ArrayList;
@@ -96,33 +97,36 @@ public class DialogActivity extends BaseActivity {
     @OnClick({R.id.b_1, R.id.b_2, R.id.b_3, R.id.b_4, R.id.b_5, R.id.b_6, R.id.b_7, R.id.b_8})
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.b_1:
-                Alert.displayAlertDialog(this, "nihao", "nidaye", null, null, new View.OnClickListener() {
+            case R.id.b_1://Edit
+                break;
+            case R.id.b_2://warn
+                Alert.displayAlertDialog(this, "warn", "nihao", "cancel", "ok", new OnBtnClickL() {
                     @Override
-                    public void onClick(View v) {
+                    public void onBtnClick() {
 
                     }
                 }, null);
                 break;
-            case R.id.b_2:
-                Alert.displayEditDialog(this, "nihao", "nihao", "nidaye", new ImpAlert.OnOKDialogClickListener() {
+            case R.id.b_3://Selected
+                final String[] stringItems = {"版本更新", "帮助与反馈", "退出QQ"};
+                Alert.displayAlertSelectedDialog(this, stringItems, new OnOperItemClickL() {
                     @Override
-                    public void okOnClick(String name) {
-                        UToast.showShort(name);
+                    public void onOperItemClick(AdapterView<?> parent, View view, int position, long id) {
+
                     }
                 });
                 break;
-            case R.id.b_3:
+            case R.id.b_4://SingleList
+
                 break;
-            case R.id.b_4:
+            case R.id.b_5://MultipleList
+
                 break;
-            case R.id.b_5:
+            case R.id.b_6://Time
                 break;
-            case R.id.b_6:
+            case R.id.b_7://City
                 break;
-            case R.id.b_7:
-                break;
-            case R.id.b_8:
+            case R.id.b_8://Custom
                 break;
         }
     }

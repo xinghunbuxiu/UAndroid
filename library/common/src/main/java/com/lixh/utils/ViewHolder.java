@@ -1,5 +1,6 @@
-package com.common.dialog.pickerview;
+package com.lixh.utils;
 
+import android.util.SparseArray;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,6 +23,8 @@ public class ViewHolder {
     public View getView() {
         return mViews;
     }
+
+    SparseArray<View> views = new SparseArray<>();
     /**
      * 通过viewId获取控件
      *
@@ -29,7 +32,13 @@ public class ViewHolder {
      * @return
      */
     public <T extends View> T $(int viewId) {
-        return (T) mViews.findViewById(viewId);
+        View view = null;
+        if (views.get(viewId) == null) {
+            views.put(viewId, mViews.findViewById(viewId));
+        }
+        view = views.get(viewId);
+
+        return (T)view;
     }
 
     /**
@@ -70,6 +79,22 @@ public class ViewHolder {
     public ViewHolder setBtnText(int viewId, CharSequence text, View.OnClickListener onClickListener) {
         Button tv = $(viewId);
         tv.setText(text);
+        tv.setOnClickListener(onClickListener);
+        return this;
+    }
+
+    /**
+     * 设置TextView的值
+     *
+     * @param viewId
+     * @param text
+     * @param onClickListener
+     * @return
+     */
+    public ViewHolder setBtnText(int viewId, int tag, CharSequence text, View.OnClickListener onClickListener) {
+        Button tv = $(viewId);
+        tv.setText(text);
+        tv.setTag(tag);
         tv.setOnClickListener(onClickListener);
         return this;
     }

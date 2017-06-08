@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 
-import com.common.dialog.pickerview.ViewHolder;
 import com.lixh.app.BaseApplication;
 
 /**

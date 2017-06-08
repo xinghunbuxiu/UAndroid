@@ -12,7 +12,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 
-import com.common.dialog.Alert;
 import com.lixh.R;
 
 /**

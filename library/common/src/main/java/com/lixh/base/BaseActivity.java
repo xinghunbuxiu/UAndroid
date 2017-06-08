@@ -75,14 +75,14 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         layout = new LoadView.Builder(this) {
             {
                 mBottomLayout = getLayoutId();
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);// 设置竖屏
+                requestWindowFeature(Window.FEATURE_NO_TITLE);//无标题
                 initLoad(this);
             }
-        }.requestWindowFeature(Window.FEATURE_NO_TITLE)// 无标题
-                .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)// 设置竖屏
-                .createActivity();
+        }.createActivity();
         layout.addObserver(this);
         ButterKnife.bind(this);
-        intent = new UIntent(this);
+        intent = layout.getIntent();
         tip = layout.getEmptyView();
         initTitleBar();
         init(savedInstanceState);
