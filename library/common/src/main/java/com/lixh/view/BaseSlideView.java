@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.support.annotation.IdRes;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 /**
  * Created by LIXH on 2017/5/8.
@@ -22,10 +23,12 @@ public abstract class BaseSlideView implements ISlideMenu {
 
     public BaseSlideView(Activity activity) {
         this.activity = activity;
-        slideView = LayoutInflater.from(activity).inflate(getLayoutId(), null);
         initView();
     }
 
+    public void createView(ViewGroup viewGroup) {
+        slideView = LayoutInflater.from(activity).inflate(getLayoutId(), viewGroup, false);
+    }
     @Override
     public View getView() {
         return slideView;

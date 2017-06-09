@@ -10,12 +10,14 @@ import android.support.v4.view.MotionEventCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.OverScroller;
 
+import com.lixh.utils.ULog;
 import com.nineoldandroids.view.ViewHelper;
 
 import java.util.Arrays;
@@ -45,6 +47,8 @@ public class SlideMenu extends FrameLayout {
      * Edge flag indicating that the right edge should be affected.
      */
     public static final int EDGE_RIGHT = 1 << 1;
+    private VelocityTracker mVelocityTracker;
+    private int collapseOffset = 100;
     @Slide
     int slide = Slide.LEFT;
     @State
@@ -147,14 +151,23 @@ public class SlideMenu extends FrameLayout {
     }
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int widthSize = MeasureSpec.getSize(widthMeasureSpec);
         // 计算出所有的childView的宽和高
         measureChildren(widthMeasureSpec, heightMeasureSpec);
+        resetSlideViewWidth(mSlideView.getView(), widthSize);
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    private void resetSlideViewWidth(View view, int widthSize) {
+        ViewGroup.LayoutParams lp = view.getLayoutParams();
+        lp.width = widthSize - collapseOffset;
+        view.setLayoutParams(lp);
     }
 
     public void addSlideView(BaseSlideView mSlideView, @Slide int slide) {
         this.mSlideView = mSlideView;
         this.slide = slide;
+        mSlideView.createView(this);
         isFollowing = mSlideView.isFollowing();
         addView(mSlideView.getView());
     }
@@ -194,6 +207,7 @@ public class SlideMenu extends FrameLayout {
             case MotionEvent.ACTION_DOWN: {
                 isNeedMyMove = false;
                 mChildrenCanceledTouch = false;
+                initVelocityTracker(ev);
                 final int pointerId = ev.getPointerId(0);
                 final float x = ev.getX(pointerIndex);
                 final float y = ev.getY(pointerIndex);
@@ -210,6 +224,7 @@ public class SlideMenu extends FrameLayout {
                 break;
             }
             case MotionEvent.ACTION_MOVE: {
+
                 final int index = ev.findPointerIndex(mActivePointerId);
                 final float x = ev.getX(index);
                 final float y = ev.getY(index);
@@ -219,6 +234,10 @@ public class SlideMenu extends FrameLayout {
                 mLastX = x;
                 if (Math.abs(dx) > Math.abs(dy)) {
                     removeCallbacks(mPeekRunnable);
+                    if (mVelocityTracker != null) {
+                        // Add a user's movement to the tracker.
+                        mVelocityTracker.addMovement(ev);
+                    }
                     if (mEnable) {//是否允许边缘触控
                         if (canDrag || slideState == State.OPEN || isFollowing) {
                             isNeedMyMove = true;
@@ -228,13 +247,14 @@ public class SlideMenu extends FrameLayout {
                         isNeedMyMove = true;
                         scrollBy((int) -dx, 0);
                     }
+
                 }
                 break;
             }
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
-                cancel();
                 eventUp();
+                cancel();
                 break;
             case MotionEventCompat.ACTION_POINTER_DOWN: {
                 final int pointerId = ev.getPointerId(pointerIndex);
@@ -268,6 +288,20 @@ public class SlideMenu extends FrameLayout {
                 dispatchTouchEvent(ev);
     }
 
+    private void initVelocityTracker(MotionEvent motionEvent) {
+        if (mVelocityTracker == null) {
+            // Retrieve a new VelocityTracker object to watch the velocity of a motion.
+            mVelocityTracker = VelocityTracker.obtain();
+        } else {
+            // Reset the velocity tracker back to its initial state.
+            mVelocityTracker.clear();
+        }
+        // Add a user's movement to the tracker.
+        mVelocityTracker.addMovement(motionEvent);
+    }
+
+    private static final int SNAP_VELOCITY = 600;
+
     private void clearMotionHistory(int pointerId) {
         if (mInitialEdgesTouched == null || !isPointerDown(pointerId)) {
             return;
@@ -291,6 +325,10 @@ public class SlideMenu extends FrameLayout {
             dx = 0;
             dy = 0;
             mPointersDown = 0;
+        }
+        if (mVelocityTracker != null) {
+            mVelocityTracker.recycle();
+            mVelocityTracker = null;
         }
     }
 
@@ -339,14 +377,15 @@ public class SlideMenu extends FrameLayout {
     @Override
     public void scrollTo(int x, int y) {
         super.scrollTo(x, y);
+        ULog.e(x + "");
         if (slide == Slide.LEFT) {
             if (x >= 0) {
                 x = 0;
                 setSlideState(State.CLOSE);
 
             }
-            if (x <= -mSlideView.getMeasuredWidth()) {
-                x = -mSlideView.getMeasuredWidth();
+            if (x <= -mSlideView.getMeasuredWidth() + collapseOffset) {
+                x = -mSlideView.getMeasuredWidth() + collapseOffset;
                 setSlideState(State.OPEN);
             }
         } else {
@@ -354,8 +393,8 @@ public class SlideMenu extends FrameLayout {
                 x = 0;
                 setSlideState(State.CLOSE);
             }
-            if (x >= mSlideView.getMeasuredWidth()) {
-                x = mSlideView.getMeasuredWidth();
+            if (x >= mSlideView.getMeasuredWidth() - collapseOffset) {
+                x = mSlideView.getMeasuredWidth() - collapseOffset;
                 setSlideState(State.OPEN);
             }
         }
@@ -363,7 +402,7 @@ public class SlideMenu extends FrameLayout {
         if (!isFollowing) {
             ViewHelper.setTranslationX(contentView, x * 1f);
         } else {
-            ViewHelper.setTranslationX(contentView, x * 0.3f);
+            ViewHelper.setTranslationX(mSlideView.getView(), x * 0.3f);
         }
         if (getScrollX() != x) {
             super.scrollTo(x, y);
@@ -371,6 +410,10 @@ public class SlideMenu extends FrameLayout {
     }
     private void eventUp() {
         int scrollX = getScrollX();
+        final VelocityTracker velocityTracker = mVelocityTracker;
+        velocityTracker.computeCurrentVelocity(1000);
+        int velocityX = (int) velocityTracker.getXVelocity();
+
         if (slideState == State.OPEN && !isNeedMyMove) {
             cancelChildViewTouch();
             scrollBy((int) -dx, 0);
@@ -378,17 +421,30 @@ public class SlideMenu extends FrameLayout {
             return;
         }
         if (slide == Slide.LEFT) {
-            if (scrollX < -mSlideView.getMeasuredWidth() / 2) {//打开
+            if (velocityX > SNAP_VELOCITY) {
                 open();
-            } else {
+            } else if (velocityX < -SNAP_VELOCITY) {
                 close();
+            } else {
+                if (scrollX < -mSlideView.getMeasuredWidth() / 2) {//打开
+                    open();
+                } else {
+                    close();
+                }
             }
         } else if (slide == Slide.RIGHT) {
-            if (scrollX > mSlideView.getMeasuredWidth() / 2) {//打开
+            if (velocityX > SNAP_VELOCITY) {
                 open();
-            } else {
+            } else if (velocityX < -SNAP_VELOCITY) {
                 close();
+            } else {
+                if (scrollX > mSlideView.getMeasuredWidth() / 2) {//打开
+                    open();
+                } else {
+                    close();
+                }
             }
+
         }
     }
 
@@ -421,6 +477,7 @@ public class SlideMenu extends FrameLayout {
         mInitialEdgesTouched[pointerId] = getEdgesTouched((int) x, (int) y);
     }
 
+    //边缘检测
     private int getEdgesTouched(int x, int y) {
         int result = 0;
         if (x < getLeft() + mEdgeSize) result |= EDGE_LEFT;
@@ -446,10 +503,11 @@ public class SlideMenu extends FrameLayout {
         View child = mSlideView.getView();
         if (child != null) {
             if (slide == Slide.LEFT) {
-                child.layout(-mSlideView.getMeasuredWidth(), top, 0, bottom);
+                child.layout(-mSlideView.getMeasuredWidth() + collapseOffset, top, collapseOffset, bottom);
             } else {
                 child.layout(right, top, right + mSlideView.getMeasuredWidth(), bottom);
             }
         }
+        contentView.bringToFront();
     }
 }

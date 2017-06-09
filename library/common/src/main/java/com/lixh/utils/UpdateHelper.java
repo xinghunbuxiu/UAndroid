@@ -10,8 +10,8 @@ import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.os.Handler;
 import android.os.Message;
-import android.view.View;
 
+import com.flyco.dialog.listener.OnBtnClickL;
 import com.lixh.R;
 
 /**
@@ -130,9 +130,9 @@ public class UpdateHelper {
         public void run() {
             // 更新
             Alert.displayAlertDialog(context, "发现新版本", "最新版本:" + "\n"
-                    + versionName, "立即更新", "以后再说", new View.OnClickListener() {
+                    + versionName, "立即更新", "以后再说", new OnBtnClickL() {
                 @Override
-                public void onClick(View v) {
+                public void onBtnClick() {
                     if (UFile.isExistsSdcard()) {// 判断sdcard是否存在
                         Intent updateIntent = new Intent(context,
                                 UpdateService.class);

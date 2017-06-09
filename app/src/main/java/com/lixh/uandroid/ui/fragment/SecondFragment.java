@@ -37,7 +37,6 @@ public class SecondFragment extends BaseFragment {
 
             @Override
             public void onItemClick(View view, int position, Integer data) {
-                intent.go(PieChartActivity.class);
             }
         }.setAutoLoadMore(true).setRefresh(true).setDivideHeight(R.dimen.space_7);
         builder.setOnLoadingListener(onLoadingListener);

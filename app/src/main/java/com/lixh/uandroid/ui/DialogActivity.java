@@ -1,7 +1,6 @@
 package com.lixh.uandroid.ui;
 
 import android.os.Bundle;
-import android.support.v4.widget.MaterialProgressDrawable;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -9,6 +8,7 @@ import android.widget.Button;
 import com.flyco.dialog.listener.OnBtnClickL;
 import com.flyco.dialog.listener.OnOperItemClickL;
 import com.lixh.base.BaseActivity;
+import com.lixh.uandroid.R;
 import com.lixh.utils.Alert;
 import com.lixh.view.UToolBar;
 
