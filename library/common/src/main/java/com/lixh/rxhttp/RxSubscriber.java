@@ -1,13 +1,13 @@
 package com.lixh.rxhttp;
 
-import android.content.Context;
+import android.app.Activity;
+import android.content.DialogInterface;
 
-import com.common.dialog.Alert;
-import com.common.dialog.ImpAlert;
 import com.lixh.BuildConfig;
 import com.lixh.R;
 import com.lixh.app.BaseApplication;
 import com.lixh.rxhttp.exception.ApiException;
+import com.lixh.utils.Alert;
 import com.lixh.utils.UNetWork;
 import com.lixh.utils.UToast;
 
@@ -15,7 +15,7 @@ import rx.Subscriber;
 
 public abstract class RxSubscriber<T> extends Subscriber<T> {
 
-    private Context mContext;
+    private Activity mContext;
     private String msg;
     private boolean showDialog=true;
     /**
@@ -28,15 +28,15 @@ public abstract class RxSubscriber<T> extends Subscriber<T> {
         this.showDialog= true;
     }
 
-    public RxSubscriber(Context context, String msg,boolean showDialog) {
+    public RxSubscriber(Activity context, String msg, boolean showDialog) {
         this.mContext = context;
         this.msg = msg;
         this.showDialog=showDialog;
     }
-    public RxSubscriber(Context context) {
+    public RxSubscriber(Activity context) {
         this(context, BaseApplication.getAppContext().getString(R.string.loading),true);
     }
-    public RxSubscriber(Context context,boolean showDialog) {
+    public RxSubscriber(Activity context,boolean showDialog) {
         this(context, BaseApplication.getAppContext().getString(R.string.loading),showDialog);
     }
 
@@ -64,9 +64,9 @@ public abstract class RxSubscriber<T> extends Subscriber<T> {
     public void showProgressDialog() {
         if (showDialog) {
             try {
-                Alert.showCustomDialog(mContext, R.layout.alert_proress, new ImpAlert.AlertCancelListener() {
+                Alert.displayLoading(mContext, R.layout.alert_proress, new DialogInterface.OnDismissListener() {
                     @Override
-                    public void onCancelProgress() {
+                    public void onDismiss(DialogInterface dialog) {
                         cancelProgress();
                     }
                 });

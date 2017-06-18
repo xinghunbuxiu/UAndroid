@@ -1,5 +1,6 @@
 package com.lixh.utils;
 
+import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -77,7 +78,7 @@ public enum UpdateFactory {
 
     }
 
-    public void init(Context context) {
+    public void init(Activity context) {
         this.context = context;
         LocalAppInfo.init(context);
         apkUrl = LocalAppInfo.getLocalAppInfo().getPackageName() + ".apk";

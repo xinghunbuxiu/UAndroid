@@ -8,8 +8,8 @@ import com.lixh.base.BaseFragment;
 import com.lixh.base.Page;
 import com.lixh.base.adapter.recycleview.BaseViewHolder;
 import com.lixh.uandroid.R;
-import com.lixh.uandroid.ui.PieChartActivity;
 import com.lixh.utils.LoadingTip;
+import com.lixh.view.UToolBar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +21,12 @@ public class SecondFragment extends BaseFragment {
     public SecondFragment() {
 
     }
+
+    @Override
+    public void initTitle(UToolBar toolBar) {
+        toolBar.setTitle("recycle_view");
+    }
+
     @Override
     protected void init(Bundle savedInstanceState) {
         builder = new Page.Builder<Integer>(activity) {
@@ -31,7 +37,6 @@ public class SecondFragment extends BaseFragment {
 
             @Override
             public void onItemClick(View view, int position, Integer data) {
-                intent.go(PieChartActivity.class);
             }
         }.setAutoLoadMore(true).setRefresh(true).setDivideHeight(R.dimen.space_7);
         builder.setOnLoadingListener(onLoadingListener);
@@ -54,11 +59,6 @@ public class SecondFragment extends BaseFragment {
             }, 100);
         }
     };
-    @Override
-    public boolean initTitle() {
-        toolBar.setTitle("recycle_view");
-        return true;
-    }
 
     @Override
     public int getLayoutId() {

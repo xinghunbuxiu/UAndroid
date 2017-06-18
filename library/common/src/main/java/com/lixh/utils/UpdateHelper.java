@@ -1,5 +1,6 @@
 package com.lixh.utils;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -9,9 +10,8 @@ import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.os.Handler;
 import android.os.Message;
-import android.view.View;
 
-import com.common.dialog.Alert;
+import com.flyco.dialog.listener.OnBtnClickL;
 import com.lixh.R;
 
 /**
@@ -19,7 +19,7 @@ import com.lixh.R;
  */
 @SuppressWarnings("unused")
 public class UpdateHelper {
-    static Context context;
+    static Activity context;
     BroadcastReceiver broadcastReceiver;
     boolean isRegisterBR;
     Builder builder;
@@ -130,9 +130,9 @@ public class UpdateHelper {
         public void run() {
             // 更新
             Alert.displayAlertDialog(context, "发现新版本", "最新版本:" + "\n"
-                    + versionName, "立即更新", "以后再说", new View.OnClickListener() {
+                    + versionName, "立即更新", "以后再说", new OnBtnClickL() {
                 @Override
-                public void onClick(View v) {
+                public void onBtnClick() {
                     if (UFile.isExistsSdcard()) {// 判断sdcard是否存在
                         Intent updateIntent = new Intent(context,
                                 UpdateService.class);
@@ -175,7 +175,7 @@ public class UpdateHelper {
             return delay;
         }
 
-        public Builder(Context mContext) {
+        public Builder(Activity mContext) {
             context = mContext;
         }
 

@@ -30,7 +30,7 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment imp
     public LoadView layout;
     public UToolBar toolBar;
     public View mContentView;
-    public  UIntent intent;
+    public UIntent intent;
 
     protected abstract void init(Bundle savedInstanceState);
 
@@ -44,6 +44,9 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment imp
         return (T) this;
     }
 
+    public void initLoad(LoadView.Builder builder) {
+
+    }
     public boolean isContentTop() {
         return true;
     }
@@ -51,12 +54,16 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment imp
     public void onAttach(Context context) {
         lifecycleSubject.onNext(LifeEvent.ATTACH);
         super.onAttach(context);
-        this.activity = (Activity) context;
-        layout = new LoadView.Builder(activity).setBottomLayout(getLayoutId(), isContentTop()).setToolBar(hasToolBar()).createFragment();
+        activity = (Activity) context;
+        layout = new LoadView.Builder(activity) {
+            {
+                mBottomLayout = getLayoutId();
+                initLoad(this);
+            }
+        }.createFragment();
         layout.addObserver(this);
-        intent = new UIntent(activity);
+        intent = layout.getIntent();
         tip = layout.getEmptyView();
-        //重新请求监听
     }
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,10 +71,12 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment imp
         super.onCreate(savedInstanceState);
 
     }
-    public boolean hasToolBar() {
-        return true;
+
+    public boolean isBack() {
+        return false;
     }
-    public abstract boolean initTitle();
+
+    public abstract void initTitle(UToolBar toolBar);
 
     public abstract int getLayoutId();
 
@@ -75,7 +84,8 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment imp
         toolBar = layout.getToolbar();
         if (toolBar != null) {
             toolBar.setDisplayShowTitleEnabled(false);
-            toolBar.setDisplayHomeAsUpEnabled(!initTitle());
+            toolBar.setDisplayHomeAsUpEnabled(isBack());
+            initTitle(toolBar);
             if (mPresenter != null) {
                 mPresenter.setToolBar(layout.getToolbar());
             }

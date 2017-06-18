@@ -28,11 +28,8 @@ dependencies {
     //retrofit和rxjava
     //json解析封装框架
     //注解绑定
-
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':library:bottom-navigation-bar')
-    //基本东西
-    compile project(':library:common-dialog-master')
     //基本东西
     compile rootProject.ext.dependencies.butterknife
     compile rootProject.ext.dependencies.appcompatV7
@@ -50,5 +47,9 @@ dependencies {
     testCompile 'junit:junit:4.12'
     //二级标题
     compile 'com.github.hackware1993:MagicIndicator:1.5.0'
-
+    //dialog
+    compile 'com.flyco.dialog:FlycoDialog_Lib:1.3.2@aar'
+    compile 'com.afollestad.material-dialogs:core:0.9.4.5'
+    compile 'com.nineoldandroids:library:2.4.0'
+    compile 'com.youth.banner:banner:1.4.9'  //最新版本
 }

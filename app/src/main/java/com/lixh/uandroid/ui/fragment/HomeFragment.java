@@ -10,6 +10,7 @@ import com.lixh.base.adapter.recycleview.DividerDecoration;
 import com.lixh.base.adapter.recycleview.EasyRVAdapter;
 import com.lixh.base.adapter.recycleview.EasyRVHolder;
 import com.lixh.uandroid.R;
+import com.lixh.view.UToolBar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,12 @@ public class HomeFragment extends BaseFragment {
     public HomeFragment(){
 
     }
+
+    @Override
+    public void initTitle(UToolBar toolBar) {
+        toolBar.setTitle("home");
+    }
+
     EasyRVAdapter adapter;
     protected void initList() {
         for (int i = 0; i < 2; i++) {
@@ -45,11 +52,6 @@ public class HomeFragment extends BaseFragment {
         initList();
     }
 
-    @Override
-    public boolean initTitle() {
-        toolBar.setTitle("home");
-        return true;
-    }
 
     @Override
     public int getLayoutId() {
