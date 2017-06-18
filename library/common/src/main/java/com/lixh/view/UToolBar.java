@@ -9,8 +9,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.Nullable;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ActionMenuView;
@@ -27,6 +30,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.lang.reflect.Field;
+
+import static android.support.v7.appcompat.R.attr.listMenuViewStyle;
+import static android.support.v7.appcompat.R.attr.toolbarNavigationButtonStyle;
+import static android.support.v7.appcompat.R.attr.toolbarStyle;
 
 public class UToolBar extends Toolbar {
 
@@ -67,7 +74,7 @@ public class UToolBar extends Toolbar {
     }
 
     public UToolBar(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+        this(context, attrs, toolbarStyle);
 
     }
 
@@ -94,16 +101,16 @@ public class UToolBar extends Toolbar {
         }
 
     }
+
     /**
      * tittle的显示必须为 false 不然次不管用
-     *
      *
      * @param isEnabled
      * @return
      */
     public UToolBar setDisplayShowTitleEnabled(boolean isEnabled) {
         ((AppCompatActivity) getContext()).setSupportActionBar(this);
-        (((AppCompatActivity)getContext())).getSupportActionBar().setDisplayShowTitleEnabled(isEnabled);
+        (((AppCompatActivity) getContext())).getSupportActionBar().setDisplayShowTitleEnabled(isEnabled);
         return this;
     }
 
@@ -111,6 +118,7 @@ public class UToolBar extends Toolbar {
         double statusBarHeight = Math.ceil(25 * getContext().getResources().getDisplayMetrics().density);
         return (int) statusBarHeight;
     }
+
     public UToolBar setCustomView(View view, LayoutParams layoutParams) {
         //显示自定义视图
         ((AppCompatActivity) getContext()).getSupportActionBar().setDisplayShowCustomEnabled(true);
@@ -134,6 +142,7 @@ public class UToolBar extends Toolbar {
         ((AppCompatActivity) getContext()).getSupportActionBar().setCustomView(resId);
         return this;
     }
+
     /**
      * 是否显示返回 默认带返回按钮 子类如果为true
      * 将不显示返回按钮
@@ -162,12 +171,24 @@ public class UToolBar extends Toolbar {
         setNavigationIcon(id);
         setNavigationOnClickListener(onClickListener);
     }
+
     public UToolBar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         menu = new ActionMenuView(getContext());
-        Toolbar.LayoutParams lp = new Toolbar.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.RIGHT);
-        menu.setLayoutParams(lp);
+        menu.setLayoutParams(getLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.RIGHT));
         ViewCompat.setLayoutDirection(menu, ViewCompat.LAYOUT_DIRECTION_RTL);
+        set("mButtonGravity", Gravity.CENTER_VERTICAL);
+
+    }
+
+    /**
+     * @param width
+     * @param height
+     * @param gravity
+     * @return
+     */
+    public Toolbar.LayoutParams getLayoutParams(int width, int height, int gravity) {
+        return new LayoutParams(width, height, gravity);
 
     }
 
@@ -175,6 +196,7 @@ public class UToolBar extends Toolbar {
         setMinimumHeight(getSuggestedMinimumHeight() + getStatusBarHeight());
         setPadding(0, getStatusBarHeight(), 0, 0);
     }
+
     @Override
     public void setTitle(CharSequence title) {
         super.setTitle(title);
@@ -185,6 +207,11 @@ public class UToolBar extends Toolbar {
     public void setSubtitle(CharSequence subtitle) {
         super.setSubtitle(subtitle);
         mSubtitleTextView = getTitleValue(subtitle, "mSubtitleTextView");
+    }
+
+    @Override
+    public void setNavigationIcon(@Nullable Drawable icon) {
+        super.setNavigationIcon(icon);
     }
 
     public void setNavigationIcon(@DrawableRes int resId, String backStr) {
@@ -231,6 +258,7 @@ public class UToolBar extends Toolbar {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
     }
+
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
@@ -239,13 +267,8 @@ public class UToolBar extends Toolbar {
             setCenter(mSubtitleTextView);
             setLogoViewCenter(mLogoView);
         }
-//        setNavCenterVertical();
     }
 
-    private void setNavCenterVertical() {
-        final int paddingTop = getPaddingTop();
-        mNavButtonView.layout(mNavButtonView.getLeft(), mNavButtonView.getTop() - paddingTop, mNavButtonView.getRight(), mNavButtonView.getBottom());
-    }
     /**
      * 增加多个按钮
      *
@@ -257,6 +280,18 @@ public class UToolBar extends Toolbar {
         addView(menu);
     }
 
+    /**
+     * 增加多个按钮
+     *
+     * @param view
+     */
+    public void addActionMenu(View... view) {
+        removeView(menu);
+        for (View v : view) {
+            menu.addView(v);
+        }
+        addView(menu);
+    }
 
     /**
      * 右边图片
@@ -317,7 +352,7 @@ public class UToolBar extends Toolbar {
         if (resId == 0) return;
         if (mRightIcon == null) {
             mRightIcon = new AppCompatImageButton(getContext(), null,
-                    android.support.v7.appcompat.R.attr.toolbarNavigationButtonStyle);
+                    toolbarNavigationButtonStyle);
             mRightIcon.setId(id);
             mRightIcon.setImageResource(resId);
             mRightIcon.setOnClickListener(clickListener);
@@ -335,6 +370,7 @@ public class UToolBar extends Toolbar {
                 mRightTextView.setSingleLine();
                 mRightTextView.setEllipsize(TextUtils.TruncateAt.END);
                 mRightTextView.setText(str);
+                mRightTextView.setPadding(0,0,16,0);
                 mRightTextView.setOnClickListener(clickListener);
                 menu.addView(mRightTextView);
                 removeView(menu);
@@ -364,7 +400,7 @@ public class UToolBar extends Toolbar {
             Paint p = mSubtitleTextView.getPaint();
             float textWidth = p.measureText(mSubtitleTextView.getText().toString());
             if (textWidth != 0) {
-            tx = Math.min(tx, (deviceWidth - textWidth) / 2.0f - mSubtitleTextView.getLeft());
+                tx = Math.min(tx, (deviceWidth - textWidth) / 2.0f - mSubtitleTextView.getLeft());
             }
         }
 
@@ -380,6 +416,19 @@ public class UToolBar extends Toolbar {
         float textWidth = p.measureText(childTitle.getText().toString());
         float tx = (deviceWidth - textWidth) / 2.0f - childTitle.getLeft();
         childTitle.setTranslationX(tx);
+    }
+
+    public void set(String variableName, Object value) {
+        Class targetClass = getClass().getSuperclass();
+        try {
+            Field field = targetClass.getDeclaredField(variableName);
+            field.setAccessible(true);
+            field.set(this, value);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
     }
 
     public Object get(String variableName) throws NoSuchFieldException {
@@ -398,7 +447,7 @@ public class UToolBar extends Toolbar {
     }
 
     public void setOnMenuItemClickListener(OnClickListener onClickListener) {
-        for (int i=0;i<menu.getChildCount();i++){
+        for (int i = 0; i < menu.getChildCount(); i++) {
             menu.getChildAt(i).setOnClickListener(onClickListener);
         }
     }
