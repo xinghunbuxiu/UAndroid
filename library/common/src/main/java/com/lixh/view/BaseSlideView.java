@@ -2,9 +2,8 @@ package com.lixh.view;
 
 import android.app.Activity;
 import android.support.annotation.IdRes;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+
 
 /**
  * Created by LIXH on 2017/5/8.
@@ -26,9 +25,11 @@ public abstract class BaseSlideView implements ISlideMenu {
         initView();
     }
 
-    public void createView(ViewGroup viewGroup) {
-        slideView = LayoutInflater.from(activity).inflate(getLayoutId(), viewGroup, false);
+    public void createView(View slideView) {
+        this.slideView =slideView;
+
     }
+
     @Override
     public View getView() {
         return slideView;
@@ -41,7 +42,7 @@ public abstract class BaseSlideView implements ISlideMenu {
     @Override
     public int getMeasuredWidth() {
         slideView.measure(0, 0);
-        return slideView.getMeasuredWidth();
+        return slideView.getWidth();
     }
 
     public boolean isFollowing() {

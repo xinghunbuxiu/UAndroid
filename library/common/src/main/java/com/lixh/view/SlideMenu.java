@@ -9,6 +9,7 @@ import android.support.annotation.IntDef;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -48,25 +49,45 @@ public class SlideMenu extends FrameLayout {
      */
     public static final int EDGE_RIGHT = 1 << 1;
     private VelocityTracker mVelocityTracker;
-    private int collapseOffset = 100;
+    private int collapseOffset = 200;
+    private int line = 5;//将横屏分为5份
+    float scale;//滑动时的收缩比例
+    // Current drag state; idle, dragging or settling
+    private int mDragState;
+    /**
+     * A view is not currently being dragged or animating as a result of a fling/snap.
+     */
+    public static final int STATE_IDLE = 0;
+
+    /**
+     * A view is currently being dragged. The position is currently changing as a result
+     * of user input or simulated user input.
+     */
+    public static final int STATE_DRAGGING = 1;
+
+    /**
+     * A view is currently settling into place as a result of a fling or
+     * predefined non-interactive motion.
+     */
+    public static final int STATE_SETTLING = 2;
     @Slide
     int slide = Slide.LEFT;
     @State
     int slideState = State.CLOSE;
     View contentView;
-    private float dy;
-    private float dx;
     boolean isFollowing;
-    private float mLastX;
-    private float mLastY;
+    // Distance to travel before a drag may begin
+    private int mTouchSlop;
     OverScroller scroller;
     private int mEdgeSize;
     private int mPointersDown;
     BaseSlideView mSlideView;
-    private boolean isNeedMyMove;
     private boolean mEnable = true;//是否需要边缘触控    跟随移动时为false
     boolean canDrag;//边缘触控未唤醒时是否允许拖拽
     private int[] mInitialEdgesTouched;
+    private float dx;
+    private float dy;
+
     public void attachToActivity(Activity activity) {
         ViewGroup decor = (ViewGroup) activity.getWindow().getDecorView().findViewById(Window.ID_ANDROID_CONTENT);
         ViewGroup decorChild = (ViewGroup) decor.getChildAt(0);
@@ -91,6 +112,8 @@ public class SlideMenu extends FrameLayout {
         this.slideListener = slideListener;
     }
 
+    float mLastX;
+    float mLastY;
     public int getSlideState() {
         return slideState;
     }
@@ -152,29 +175,19 @@ public class SlideMenu extends FrameLayout {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int widthSize = MeasureSpec.getSize(widthMeasureSpec);
-        // 计算出所有的childView的宽和高
-        measureChildren(widthMeasureSpec, heightMeasureSpec);
-        resetSlideViewWidth(mSlideView.getView(), widthSize);
+        collapseOffset = widthSize / line;
+        scale = 1f / (line - 1);
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
-    private void resetSlideViewWidth(View view, int widthSize) {
-        ViewGroup.LayoutParams lp = view.getLayoutParams();
-        lp.width = widthSize - collapseOffset;
-        view.setLayoutParams(lp);
-    }
 
     public void addSlideView(BaseSlideView mSlideView, @Slide int slide) {
+        mSlideView.createView(LayoutInflater.from(getContext()).inflate(mSlideView.getLayoutId(), this, false));
         this.mSlideView = mSlideView;
         this.slide = slide;
-        mSlideView.createView(this);
         isFollowing = mSlideView.isFollowing();
         addView(mSlideView.getView());
-    }
 
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
-        return isNeedMyMove;
     }
 
 
@@ -200,14 +213,84 @@ public class SlideMenu extends FrameLayout {
     }
 
     @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        final int action = MotionEventCompat.getActionMasked(ev);
+        boolean interceptForTap = false;
+        initVelocityTracker(ev);
+        switch (action) {
+            case MotionEvent.ACTION_DOWN: {
+                interceptForTap = false;
+                break;
+            }
+            case MotionEvent.ACTION_MOVE: {
+                interceptForTap = true;
+                if (Math.abs(dx) > Math.abs(dy)) {
+                    removeCallbacks(mPeekRunnable);
+                }
+                break;
+            }
+
+            case MotionEvent.ACTION_CANCEL:
+            case MotionEvent.ACTION_UP: {
+                if (slideState == State.OPEN) {
+                    cancelChildViewTouch();
+                    scrollBy((int) -dx, 0);
+                    close();
+                }
+                mChildrenCanceledTouch = false;
+            }
+            break;
+        }
+
+        return interceptForTap || canDrag;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        final int action = MotionEventCompat.getActionMasked(ev);
+        switch (action) {
+            case MotionEvent.ACTION_DOWN: {
+                mChildrenCanceledTouch = false;
+                break;
+            }
+            case MotionEvent.ACTION_MOVE: {
+                if (mEnable) {//是否允许边缘触控
+                    if (canDrag || slideState == State.OPEN || isFollowing) {
+                        scrollBy((int) -dx, 0);
+                    }
+                } else {
+                    scrollBy((int) -dx, 0);
+                }
+                break;
+            }
+            case MotionEvent.ACTION_CANCEL:
+            case MotionEvent.ACTION_UP: {
+                removeCallbacks(mPeekRunnable);
+                mChildrenCanceledTouch = false;
+                canDrag = false;
+                eventUp();
+                if (mVelocityTracker != null) {
+                    mVelocityTracker.recycle();
+                    mVelocityTracker = null;
+                }
+            }
+            break;
+        }
+        return true;
+    }
+
+    @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         final int action = MotionEventCompat.getActionMasked(ev);
         final int pointerIndex = MotionEventCompat.getActionIndex(ev);
+        initVelocityTracker(ev);
         switch (action) {
             case MotionEvent.ACTION_DOWN: {
-                isNeedMyMove = false;
                 mChildrenCanceledTouch = false;
-                initVelocityTracker(ev);
+                if (mVelocityTracker != null) {
+                    // Add a user's movement to the tracker.
+                    mVelocityTracker.addMovement(ev);
+                }
                 final int pointerId = ev.getPointerId(0);
                 final float x = ev.getX(pointerIndex);
                 final float y = ev.getY(pointerIndex);
@@ -224,7 +307,10 @@ public class SlideMenu extends FrameLayout {
                 break;
             }
             case MotionEvent.ACTION_MOVE: {
-
+                if (mVelocityTracker != null) {
+                    // Add a user's movement to the tracker.
+                    mVelocityTracker.addMovement(ev);
+                }
                 final int index = ev.findPointerIndex(mActivePointerId);
                 final float x = ev.getX(index);
                 final float y = ev.getY(index);
@@ -232,28 +318,11 @@ public class SlideMenu extends FrameLayout {
                 dy = y - mLastY;
                 mLastY = y;
                 mLastX = x;
-                if (Math.abs(dx) > Math.abs(dy)) {
-                    removeCallbacks(mPeekRunnable);
-                    if (mVelocityTracker != null) {
-                        // Add a user's movement to the tracker.
-                        mVelocityTracker.addMovement(ev);
-                    }
-                    if (mEnable) {//是否允许边缘触控
-                        if (canDrag || slideState == State.OPEN || isFollowing) {
-                            isNeedMyMove = true;
-                            scrollBy((int) -dx, 0);
-                        }
-                    } else {
-                        isNeedMyMove = true;
-                        scrollBy((int) -dx, 0);
-                    }
 
-                }
                 break;
             }
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
-                eventUp();
                 cancel();
                 break;
             case MotionEventCompat.ACTION_POINTER_DOWN: {
@@ -292,12 +361,7 @@ public class SlideMenu extends FrameLayout {
         if (mVelocityTracker == null) {
             // Retrieve a new VelocityTracker object to watch the velocity of a motion.
             mVelocityTracker = VelocityTracker.obtain();
-        } else {
-            // Reset the velocity tracker back to its initial state.
-            mVelocityTracker.clear();
         }
-        // Add a user's movement to the tracker.
-        mVelocityTracker.addMovement(motionEvent);
     }
 
     private static final int SNAP_VELOCITY = 600;
@@ -316,8 +380,6 @@ public class SlideMenu extends FrameLayout {
 
     public void cancel() {
         mActivePointerId = MotionEvent.INVALID_POINTER_ID;
-        removeCallbacks(mPeekRunnable);
-        canDrag = false;
         if (mInitialEdgesTouched != null) {
             Arrays.fill(mInitialEdgesTouched, 0);
             mLastY = 0;
@@ -325,10 +387,6 @@ public class SlideMenu extends FrameLayout {
             dx = 0;
             dy = 0;
             mPointersDown = 0;
-        }
-        if (mVelocityTracker != null) {
-            mVelocityTracker.recycle();
-            mVelocityTracker = null;
         }
     }
 
@@ -402,7 +460,7 @@ public class SlideMenu extends FrameLayout {
         if (!isFollowing) {
             ViewHelper.setTranslationX(contentView, x * 1f);
         } else {
-            ViewHelper.setTranslationX(mSlideView.getView(), x * 0.3f);
+            ViewHelper.setTranslationX(mSlideView.getView(), x * scale);
         }
         if (getScrollX() != x) {
             super.scrollTo(x, y);
@@ -413,13 +471,6 @@ public class SlideMenu extends FrameLayout {
         final VelocityTracker velocityTracker = mVelocityTracker;
         velocityTracker.computeCurrentVelocity(1000);
         int velocityX = (int) velocityTracker.getXVelocity();
-
-        if (slideState == State.OPEN && !isNeedMyMove) {
-            cancelChildViewTouch();
-            scrollBy((int) -dx, 0);
-            close();
-            return;
-        }
         if (slide == Slide.LEFT) {
             if (velocityX > SNAP_VELOCITY) {
                 open();
@@ -508,6 +559,11 @@ public class SlideMenu extends FrameLayout {
                 child.layout(right, top, right + mSlideView.getMeasuredWidth(), bottom);
             }
         }
-        contentView.bringToFront();
+        if (!isFollowing) {
+            child.bringToFront();
+        } else {
+            contentView.bringToFront();
+        }
+        contentView.setClickable(true);
     }
 }

@@ -32,7 +32,7 @@ public abstract class BaseApplication extends Application  {
      * 初始化SharedPreference
      */
     protected void initPrefs() {
-        SharedPreferencesUtil.init(getApplicationContext(), getPackageName() + "_preference", Context.MODE_MULTI_PROCESS);
+        SharedPreferencesUtil.init(getApplicationContext(), getPackageName() + "_preference", Context.MODE_PRIVATE);
     }
 
     protected void initNightMode() {

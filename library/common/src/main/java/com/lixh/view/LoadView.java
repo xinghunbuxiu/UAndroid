@@ -81,7 +81,7 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
     private void initSlideMenu(boolean slideMenu) {
         if (slideMenu) {
             slideMenu1 = new SlideMenu(mContext);
-            slideMenu1.setId(View.NO_ID);
+            slideMenu1.setId(R.id.slideMenu);
             slideMenu1.setLayoutParams(new FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT));
@@ -195,12 +195,12 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
             mHelper.onPostCreate();
         }
         if (slideMenu1 != null) {
-            slideMenu1.attachToActivity(mContext);
             int slide = builder.slide;
             BaseSlideView view = builder.slideView;
             if (view != null && slide != Slide.NONE) {
                 slideMenu1.addSlideView(view, slide);
             }
+            slideMenu1.attachToActivity(mContext);
         }
     }
 

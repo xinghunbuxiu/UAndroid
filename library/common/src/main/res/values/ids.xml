@@ -8,5 +8,7 @@
     <item name="iv_right_image_two" type="id"/>
     <item name="tv_right_text" type="id"/>
     <item name="tv_right_text_two" type="id"/>
-
+    <item name="slideMenu" type="id" />
+    <item name="leftView" type="id" />
+    <item name="rightView" type="id" />
 </resources>
