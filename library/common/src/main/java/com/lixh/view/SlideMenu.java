@@ -223,9 +223,13 @@ public class SlideMenu extends FrameLayout {
                 break;
             }
             case MotionEvent.ACTION_MOVE: {
-                interceptForTap = true;
                 if (Math.abs(dx) > Math.abs(dy)) {
                     removeCallbacks(mPeekRunnable);
+                } else {
+                    if (slideState == State.OPEN) {
+                        cancelChildViewTouch();
+                    }
+
                 }
                 break;
             }
