@@ -212,6 +212,7 @@ public class SlideMenu extends FrameLayout {
         mTrackingEdges = edgeFlags;
     }
 
+    boolean isMove;
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         final int action = MotionEventCompat.getActionMasked(ev);
@@ -220,11 +221,15 @@ public class SlideMenu extends FrameLayout {
         switch (action) {
             case MotionEvent.ACTION_DOWN: {
                 interceptForTap = false;
+                isMove = false;
                 break;
             }
             case MotionEvent.ACTION_MOVE: {
                 if (Math.abs(dx) > Math.abs(dy)) {
                     removeCallbacks(mPeekRunnable);
+                    if (isFollowing || slideState == State.OPEN) {
+                        isMove = true;
+                    }
                 } else {
                     if (slideState == State.OPEN) {
                         cancelChildViewTouch();
@@ -246,7 +251,7 @@ public class SlideMenu extends FrameLayout {
             break;
         }
 
-        return interceptForTap || canDrag;
+        return interceptForTap || canDrag || isMove;
     }
 
     @Override
@@ -558,7 +563,7 @@ public class SlideMenu extends FrameLayout {
         View child = mSlideView.getView();
         if (child != null) {
             if (slide == Slide.LEFT) {
-                child.layout(-mSlideView.getMeasuredWidth() + collapseOffset, top, collapseOffset, bottom);
+                child.layout(-mSlideView.getMeasuredWidth() + collapseOffset, top, !isFollowing ? 0 : collapseOffset, bottom);
             } else {
                 child.layout(right, top, right + mSlideView.getMeasuredWidth(), bottom);
             }

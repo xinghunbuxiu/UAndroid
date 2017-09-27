@@ -2,6 +2,7 @@ package com.lixh.uandroid.ui;
 
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 
@@ -41,6 +42,7 @@ public class DialogActivity extends BaseActivity {
     Button b7;
     @Bind(R.id.b_8)
     Button b8;
+    private View pushView;
     ArrayList<String> array = new ArrayList<String>() {
         {
             add("nihaooo");
@@ -89,15 +91,29 @@ public class DialogActivity extends BaseActivity {
 
     }
 
+    private WindowManager windowManager;
+
     @Override
     public void init(Bundle savedInstanceState) {
-
+        pushView = View.inflate(this, R.layout.item_ciew, null);
+        windowManager = getWindowManager();
     }
 
     @OnClick({R.id.b_1, R.id.b_2, R.id.b_3, R.id.b_4, R.id.b_5, R.id.b_6, R.id.b_7, R.id.b_8})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.b_1://Edit
+//                WindowManager.LayoutParams params = new WindowManager.LayoutParams(
+//                        WindowManager.LayoutParams.MATCH_PARENT,
+//                        WindowManager.LayoutParams.WRAP_CONTENT,
+//                        WindowManager.LayoutParams.TYPE_SYSTEM_ERROR,
+//                        WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+//                                | WindowManager.LayoutParams.FLAG_FULLSCREEN,
+//                        PixelFormat.TRANSLUCENT);
+//                params.gravity = Gravity.TOP | Gravity.LEFT;
+//                params.y = 0;
+//                params.x = 0;
+//                windowManager.addView(pushView, params);
                 break;
             case R.id.b_2://warn
                 Alert.displayAlertDialog(this, "warn", "nihao", "cancel", "ok", new OnBtnClickL() {

@@ -78,7 +78,7 @@ public class Alert {
                         onOperItemClickL.onOperItemClick(parent, view, position, id);
                     }
                 });
-
+        showDialog(dialog);
     }
 
     public static void displayAlertSingledDialog(Activity context, String[] stringItems, final OnOperItemClickL onOperItemClickL) {
