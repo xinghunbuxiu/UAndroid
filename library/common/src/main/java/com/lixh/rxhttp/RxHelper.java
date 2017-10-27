@@ -7,6 +7,9 @@ import com.lixh.rxhttp.exception.ApiException;
 import com.lixh.rxlife.LifeEvent;
 import com.lixh.utils.ULog;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -27,15 +30,14 @@ public class RxHelper {
     private String caChe;
     boolean isForceRefresh = true;
     private LifeEvent event;
-
-    public BehaviorSubject<LifeEvent> lifeEvent;
+    private Map<String, BehaviorSubject<LifeEvent>> lifecycleSubject = new HashMap();
 
     private RxHelper(Activity activity) {
         this.c = activity;
     }
 
     public RxHelper bindLifeCycle(BehaviorSubject<LifeEvent> lifeEvent) {
-        this.lifeEvent = lifeEvent;
+        lifecycleSubject.put(c.getClass().getName(), lifeEvent);
         return this;
     }
 
@@ -78,13 +80,15 @@ public class RxHelper {
      */
     public <T> void createSubscriber(Observable fromNetwork, final RxSubscriber result) {
             //数据预处理
-            Observable observable = fromNetwork.compose(handleResult(getEvent(), lifeEvent)).compose(RxSchedulers.io_main());
+        BehaviorSubject<LifeEvent> lifeEvent = lifecycleSubject.get(c.getClass().getName());
+        Observable observable = fromNetwork.compose(handleResult(getEvent(), lifeEvent)).compose(RxSchedulers.io_main());
             RxCache.load(c, caChe, 1000 * 60 * 30, observable, isForceRefresh)
                     .subscribe(result);
 
     }
 
     public <T> void createSubscriber(Observable fromNetwork1, Observable fromNetwork2, final RxSubscriber result) {
+        BehaviorSubject<LifeEvent> lifeEvent = lifecycleSubject.get(c.getClass().getName());
         Observable observable = fromNetwork1.compose(handleResult(getEvent(), lifeEvent));
         Observable observable1 = fromNetwork2.compose(handleResult(getEvent(), lifeEvent));
         ;
@@ -153,4 +157,7 @@ public class RxHelper {
     }
 
 
+    public void clearSubject() {
+        lifecycleSubject.clear();
+    }
 }

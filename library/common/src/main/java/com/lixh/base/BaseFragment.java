@@ -1,11 +1,11 @@
 package com.lixh.base;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,16 +23,19 @@ import com.lixh.view.UToolBar;
 
 import butterknife.ButterKnife;
 import rx.subjects.BehaviorSubject;
+
 public abstract class BaseFragment<T extends BasePresenter> extends Fragment implements Observer<Message> {
     T mPresenter; //当前类需要的操作类
-    public Activity activity;
+    public FragmentActivity activity;
     public LoadingTip tip;
     public LoadView layout;
     public UToolBar toolBar;
     public View mContentView;
     public UIntent intent;
 
-    protected abstract void init(Bundle savedInstanceState);
+    protected  void init(Bundle savedInstanceState){
+
+    }
 
     public BaseFragment() {
         mPresenter = TUtil.getT(this, 0);
@@ -47,14 +50,16 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment imp
     public void initLoad(LoadView.Builder builder) {
 
     }
+
     public boolean isContentTop() {
         return true;
     }
+
     @Override
     public void onAttach(Context context) {
         lifecycleSubject.onNext(LifeEvent.ATTACH);
         super.onAttach(context);
-        activity = (Activity) context;
+        activity = (FragmentActivity) context;
         layout = new LoadView.Builder(activity) {
             {
                 mBottomLayout = getLayoutId();
@@ -65,6 +70,7 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment imp
         intent = layout.getIntent();
         tip = layout.getEmptyView();
     }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         lifecycleSubject.onNext(LifeEvent.CREATE);
@@ -99,6 +105,7 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment imp
 
 
     }
+
     protected void gone(final View... views) {
         if (views != null && views.length > 0) {
             for (View view : views) {
@@ -126,11 +133,11 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment imp
         if (mContentView == null) {
             mContentView = layout.getRootView();
             ButterKnife.bind(this, mContentView);
-        initTitleBar();
+            initTitleBar();
             init(savedInstanceState);
-        if (mPresenter != null) {
-            mPresenter.init(this, savedInstanceState, lifecycleSubject);
-        }
+            if (mPresenter != null) {
+                mPresenter.init(this, savedInstanceState, lifecycleSubject);
+            }
         }
         return mContentView;
     }

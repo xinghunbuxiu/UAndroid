@@ -1,0 +1,149 @@
+so文件结构详解 
+可执行链接格式（Executable and Linking Format）
+ELF 标准的目的是为软件开发人员提供一组二进制接口定义
+
+接口的内容包括目标模块格
+式、可执行文件格式以及调试记录信息与格式等。
+
+    可重定位文件（Relocatable File） 包含适合于与其他目标文件链接来创建可
+执行文件或者共享目标文件的代码和数据。
+    可执行文件（Executable File） 包含适合于执行的一个程序，此文件规定了
+exec() 如何创建一个程序的进程映像。
+    共享目标文件（Shared Object File） 包含可在两种上下文中链接的代码和数
+据。首先链接编辑器可以将它和其它可重定位文件和共享目标文件一起处理，
+生成另外一个目标文件。其次，动态链接器（Dynamic Linker）可能将它与某
+个可执行文件以及其它共享目标一起组合，创建进程映像。
+目标文件全部是程序的二进制表示，目的是直接在某种处理器上直接执行
+
+readelf -a xxx.so  显示所有
+
+readelf -h xxx.so 查看so文件的头部信息
+
+ Magic:   7f 45 4c 46 01 01 01 00 00 00 00 00 00 00 00 00
+  Class:                             ELF32
+  Data:                              2's complement, little endian
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - System V
+  ABI Version:                       0
+  Type:                              DYN (Shared object file)  //共享目标文件
+  Machine:                           ARM
+  Version:                           0x1
+  Entry point address:               0x0     程序入口的虚拟地址。如果目标文件没有程序入口，可以为 0。 
+  Start of program headers:          52 (bytes into file)  //程序头起点
+  Start of section headers:          353348 (bytes into file)
+  Flags: //标志                           0x5000000, Version5 EABI
+  Size of this header:               52 (bytes) //本头的大小
+  Size of program headers:          32 (bytes) //程序头的大小
+  Number of program headers:        8
+  Size of section headers:          40 (bytes) //节头大小 
+  Number of section headers:      28          //节头数量 
+  Section header string table index: 27      //字符串表索引节头
+  
+  readelf -S xxx.so   节区头部表
+   查看so文件的段(Section)头的信息
+   There are 28 section headers, starting at offset 0x56444:
+  Section Headers:   //头
+  [Nr] Name              Type            Addr     Off    Size   ES Flg Lk Inf Al
+  [ 0]                   NULL            00000000 000000 000000 00      0   0  0
+  [ 1] .interp           PROGBITS        00000134 000134 000013 00   A  0   0  1
+  此节区包含程序解释器的路径名。如果程序包含一个可加载的段，段中包含此节区，那么节区的属性将包含 SHF_ALLOC 位，否则该位为 0。 
+ 
+  [ 2] .dynsym           DYNSYM          00000148 000148 0007e0 10   A  3   1  4
+  此节区包含了动态链接符号表。
+  
+  [ 3] .dynstr           STRTAB          00000928 000928 00077b 00   A  0   0  1
+
+  此节区包含用于动态链接的字符串，大多数情况下这些字符串代表了与符号表项相关的名称。 
+ 
+ [ 4] .hash             HASH            000010a4 0010a4 000384 04   A  2   0  4
+ 此节区包含了一个符号哈希表。 
+  [ 5] .rel.dyn          REL             00001428 001428 000220 08   A  2   0  4
+  [ 6] .rel.plt          REL             00001648 001648 0001e0 08  AI  2   7  4
+  [ 7] .plt              PROGBITS        00001828 001828 0002e4 00  AX  0   0  4
+  
+  此节区包含过程链接表（procedure linkagetable）。 
+  
+  [ 8] .text             PROGBITS        00001b10 001b10 008e10 00  AX  0   0 16
+  此节区包含程序的可执行指令。 
+  [ 9] .engine           PROGBITS        0000a920 00a920 0010d8 00  AX  0   0  4
+  [10] .context          PROGBITS        0000b9f8 00b9f8 000044 00  AX  0   0  4
+  [11] .ARM.extab        PROGBITS        0000ba3c 00ba3c 0000b4 00   A  0   0  4
+  [12] .ARM.exidx        ARM_EXIDX       0000baf0 00baf0 0005d8 08  AL  8   0  4
+  [13] .rodata           PROGBITS        0000c0c8 00c0c8 0003b8 00   A  0   0  8
+  //这些节区包含只读数据，这些数据通常参与进程映像的不可写段。 
+  
+  [14] .fini_array       FINI_ARRAY      0000dd00 00cd00 000008 00  WA  0   0  4
+  
+  是进程终止代码的一部分。程序正常退出时，系统将安排执行这里的代码。 
+  
+  [15] .data.rel.ro      PROGBITS        0000dd08 00cd08 000090 00  WA  0   0  8
+  [16] .init_array       INIT_ARRAY      0000dd98 00cd98 000004 00  WA  0   0  1
+  [17] .dynamic          DYNAMIC         0000dd9c 00cd9c 000108 08  WA  3   0  4    
+  此节区包含动态链接信息。
+  [18] .got              PROGBITS        0000dea8 00cea8 000158 00  WA  0   0  4   
+  此节区包含全局偏移表。 
+
+  [19] .data             PROGBITS        0000e000 00d000 000160 00  WA  0   0  4
+  
+  这些节区包含初始化了的数据，将出现在程序的内存映像中。
+  
+  [20] .bmp              PROGBITS        0000e160 00d160 000428 00  WA  0   0  4
+  [21] .compiler         PROGBITS        0000e588 00d588 006318 00  WA  0   0  4
+  [22] .mips             PROGBITS        000148a0 0138a0 042a58 00  WA  0   0  4
+  [23] .bss              NOBITS          000572f8 0562f8 000178 00  WA  0   0  4
+  
+  包含将出现在程序的内存映像中的为初始化数据。根据定义，当程序开始执行，系统将把这些数据初始化为 0。此节区不占用文件空间。 
+  
+  [24] .comment          PROGBITS        00000000 0562f8 000010 01  MS  0   0  1
+  包含版本控制信息。
+  
+  [25] .note.gnu.gold-ve NOTE            00000000 056308 00001c 00      0   0  4
+  //注释
+  [26] .ARM.attributes   ARM_ATTRIBUTES  00000000 056324 00002b 00      0   0  1
+  [27] .shstrtab         STRTAB          00000000 05634f 0000f3 00      0   0  1
+ Key to Flags:
+  W (write), A (alloc), X (execute), M (merge), S (strings)
+  I (info), L (link order), G (group), x (unknown)
+  O (extra OS processing required) o (OS specific), p (processor specific)
+ 
+  
+  
+  
+  3、readelf -l xxx.so 程序头部表
+查看so文件的程序段头信息(Program)   ，告诉系统如何创建进程映像。
+
+紧对可执行文件和共享目标文件有意义
+
+Segment 段内容    
+Elf file type is DYN (Shared object file)
+Entry point 0x0
+There are 8 program headers, starting at offset 52
+
+Program Headers:
+  Type           Offset   VirtAddr   PhysAddr   FileSiz MemSiz  Flg Align
+  PHDR           0x000034 0x00000034 0x00000034 0x00100 0x00100 R   0x4
+  INTERP         0x000134 0x00000134 0x00000134 0x00013 0x00013 R   0x1
+      [Requesting program interpreter: /system/bin/linker]
+  LOAD           0x000000 0x00000000 0x00000000 0x0c480 0x0c480 R E 0x1000
+  LOAD           0x00cd00 0x0000dd00 0x0000dd00 0x495f8 0x49770 RW  0x1000
+  DYNAMIC        0x00cd9c 0x0000dd9c 0x0000dd9c 0x00108 0x00108 RW  0x4
+  GNU_STACK      0x000000 0x00000000 0x00000000 0x00000 0x00000 RW  0
+  EXIDX          0x00baf0 0x0000baf0 0x0000baf0 0x005d8 0x005d8 R   0x4
+  GNU_RELRO      0x00cd00 0x0000dd00 0x0000dd00 0x00300 0x00300 RW  0x8
+
+ Section to Segment mapping:
+  Segment Sections...
+   00
+   01     .interp
+   02     .interp .dynsym .dynstr .hash .rel.dyn .rel.plt .plt .text .engine .context .ARM.extab .ARM.exidx .rodata
+   03     .fini_array .data.rel.ro .init_array .dynamic .got .data .bmp .compiler .mips .bss
+   04     .dynamic
+   05
+   06     .ARM.exidx
+   07     .fini_array .data.rel.ro .init_array .dynamic .got
+
+ # readelf -s libjiagu.so 
+ Symbol table '.dynsym' contains 126 entries:
+ 
+   
+   

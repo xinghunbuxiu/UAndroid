@@ -25,7 +25,6 @@ public abstract class BasePresenter{
     public RxHelper rxHelper;
     public BaseActivity activity;
     private BaseFragment fragment;
-
     public abstract void onCreate(Bundle savedInstanceState);
 
     /**
@@ -92,7 +91,7 @@ public abstract class BasePresenter{
     }
 
     public void onDestroy() {
-
+        rxHelper.clearSubject();
     }
 
 

@@ -58,7 +58,9 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
     public void initLoad(Builder builder) {
 
     }
-
+    @Override
+    public void init(Bundle savedInstanceState) {
+    }
     @Override
     public boolean isBack() {
         return false;

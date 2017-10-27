@@ -3,6 +3,9 @@ package com.lixh.view;
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.IntDef;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +15,8 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 
+import com.ashokvarma.bottomnavigation.BottomNavigationBar;
+import com.ashokvarma.bottomnavigation.BottomNavigationItem;
 import com.lixh.R;
 import com.lixh.rxhttp.Observable;
 import com.lixh.swipeback.SwipeBackActivityBase;
@@ -34,6 +39,7 @@ import java.lang.annotation.RetentionPolicy;
 
 public class LoadView extends Observable implements SwipeBackActivityBase {
     public static final String TAG = "LoadView";
+    private static final int UBLayout = 0x999999;
     public static Activity mContext;
     private RelativeLayout RootView;
     private LoadingTip tip;
@@ -45,6 +51,7 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
     private SwipeBackActivityHelper mHelper;
     private SwipeBackLayout layout;
     SlideMenu slideMenu1;
+    BottomLayoutHelper bottomLayoutHelper;
     private UIntent intent;
 
     //定义通用的布局 根布局为Liearlayout +ToolBar + LinearLayout
@@ -70,12 +77,27 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
 
     //通用布局
     public void commonView(Builder builder) {
-        RootView = (RelativeLayout) inflate(builder.contentTop ? R.layout.status_toolbar_layout : R.layout.toolbar_layout);
+        RootView = (RelativeLayout) builder.inflate(builder.contentTop ? R.layout.status_toolbar_layout : R.layout.toolbar_layout);
         initToolBar();
         initBottomView();
         initSwipe(builder.swipeBack);
         initSlideMenu(builder.slideMenu);
         intent = new UIntent(mContext);
+    }
+
+    /**
+     * 底部导航条
+     * 支持自定义
+     *
+     * @param hasBottomBar
+     * @param root
+     */
+    private void initBottomBar(boolean hasBottomBar, LayoutParams root) {
+        if (hasBottomBar) {
+            bottomLayoutHelper = new BottomLayoutHelper(builder);
+            RootView.addView(bottomLayoutHelper.getLayout(), root);
+            bottomLayoutHelper.initBottomBarLayout();
+        }
     }
 
     private void initSlideMenu(boolean slideMenu) {
@@ -94,7 +116,9 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
         tip = getEmptyView();
         RootView.addView(tip, root);
         if (builder.mBottomLayout > 0) {
-            RootView.addView(inflate(builder.mBottomLayout), root);
+            RootView.addView(builder.inflate(builder.mBottomLayout), root);
+        } else {
+            initBottomBar(builder.hasBottomBar, root);
         }
         if (windowType == WindowType.ACTIVITY) {
             createActivity();
@@ -167,11 +191,7 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
     }
 
 
-    protected View inflate(int layoutResID) {
-        LayoutInflater layoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = layoutInflater.inflate(layoutResID, null);
-        return view;
-    }
+
 
     @Override
     public SwipeBackLayout getSwipeBackLayout() {
@@ -228,22 +248,66 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
         public boolean contentTop;
         public boolean swipeBack;
         public boolean slideMenu;
+        public boolean hasBottomBar;
+        public int bottomBarLayout;
         @Slide
         public int slide;
         public BaseSlideView slideView;
+        public LayoutInflater layoutInflater;
+        public FragmentManager supportFragmentManager;
+        public BottomNavigationItem items[];
+        public Fragment fragments[];
+        public BottomNavigationBar.OnTabSelectedListener tabSelectedListener;
 
-        public Builder(Activity context) {
+        public Builder(FragmentActivity context) {
             mContext = context;
+            supportFragmentManager = context.getSupportFragmentManager();
+            fragments = null;
+            items = null;
             mBottomLayout = -1;
+            bottomBarLayout = -1;
             hasToolbar=true;
             slideView = null;
             contentTop = true;
             slideMenu = false;
-            swipeBack=true;
+            swipeBack = true;
+            hasBottomBar = false;
+            tabSelectedListener = null;
             slide = Slide.NONE;
         }
 
+        /**
+         * 添加底部
+         *
+         * @param items
+         * @return
+         */
+        public Builder addItem(BottomNavigationItem... items) {
+            this.items = items;
+            return this;
+        }
 
+        /**
+         * 添加底部
+         *
+         * @param fragments
+         * @return
+         */
+        public Builder addFragment(Fragment... fragments) {
+            this.fragments = fragments;
+            return this;
+        }
+
+        public View inflate(int layoutResID) {
+            if (layoutInflater == null) {
+                layoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            }
+            return layoutInflater.inflate(layoutResID, null);
+        }
+
+        public void setOnTabSelectedListener(BottomNavigationBar.OnTabSelectedListener listener) {
+            this.tabSelectedListener = listener;
+        }
         public Builder setSlideMenu(@Slide int slide, BaseSlideView slideView) {
             this.slide = slide;
             if (slide != Slide.NONE) {
@@ -255,6 +319,7 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
         public LoadView createActivity() {
             return new LoadView(this, WindowType.ACTIVITY);
         }
+
 
         public LoadView createFragment() {
             return new LoadView(this, WindowType.FRAGMENT);
