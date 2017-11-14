@@ -1,14 +1,12 @@
 package com.lixh.rxhttp;
 
 import android.app.Activity;
+import android.support.v4.util.ArrayMap;
 
 import com.lixh.base.BaseResPose;
 import com.lixh.rxhttp.exception.ApiException;
 import com.lixh.rxlife.LifeEvent;
 import com.lixh.utils.ULog;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -30,7 +28,7 @@ public class RxHelper {
     private String caChe;
     boolean isForceRefresh = true;
     private LifeEvent event;
-    private Map<String, BehaviorSubject<LifeEvent>> lifecycleSubject = new HashMap();
+    private ArrayMap<String, BehaviorSubject<LifeEvent>> lifecycleSubject = new ArrayMap<>();
 
     private RxHelper(Activity activity) {
         this.c = activity;
