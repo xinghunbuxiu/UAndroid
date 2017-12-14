@@ -169,8 +169,10 @@ public class SlideMenu extends FrameLayout {
         scroller = new OverScroller(context);
         final float density = context.getResources().getDisplayMetrics().density;
         mEdgeSize = (int) (EDGE_SIZE * density + 0.5f);
-        setForeground(new ColorDrawable(Color.parseColor(DEFAULT_COLOR)));
-        getForeground().setAlpha(0);
+        if (isFollowing) {
+            setForeground(new ColorDrawable(Color.parseColor(DEFAULT_COLOR)));
+            getForeground().setAlpha(0);
+        }
     }
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
