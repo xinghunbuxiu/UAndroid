@@ -9,7 +9,6 @@ import android.support.annotation.IntDef;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -75,9 +74,10 @@ public class SlideMenu extends FrameLayout {
     @State
     int slideState = State.CLOSE;
     View contentView;
+    View slideView;
+    int slideWidth;
     boolean isFollowing;
-    // Distance to travel before a drag may begin
-    private int mTouchSlop;
+    boolean isAnim;
     OverScroller scroller;
     private int mEdgeSize;
     private int mPointersDown;
@@ -95,7 +95,6 @@ public class SlideMenu extends FrameLayout {
         addView(decorChild);
         setContentView(decorChild);
         decor.addView(this);
-
     }
 
     public void setEdgeEnable(boolean enable) {
@@ -103,6 +102,10 @@ public class SlideMenu extends FrameLayout {
     }
 
     private onSlideListener slideListener;
+
+    public int getSlideWidth() {
+        return slideWidth;
+    }
 
     public interface onSlideListener {
         void SlideState(@State int state);
@@ -114,6 +117,7 @@ public class SlideMenu extends FrameLayout {
 
     float mLastX;
     float mLastY;
+
     public int getSlideState() {
         return slideState;
     }
@@ -169,27 +173,36 @@ public class SlideMenu extends FrameLayout {
         scroller = new OverScroller(context);
         final float density = context.getResources().getDisplayMetrics().density;
         mEdgeSize = (int) (EDGE_SIZE * density + 0.5f);
-        if (isFollowing) {
-            setForeground(new ColorDrawable(Color.parseColor(DEFAULT_COLOR)));
-            getForeground().setAlpha(0);
-        }
+        setForeground(new ColorDrawable(Color.parseColor(DEFAULT_COLOR)));
+        getForeground().setAlpha(0);
     }
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int widthSize = MeasureSpec.getSize(widthMeasureSpec);
         collapseOffset = widthSize / line;
         scale = 1f / (line - 1);
+        if (mSlideView != null && mSlideView.isFullScreen()) {
+            collapseOffset = 0;
+        }
+        if (slideView != null) {
+            slideWidth = widthSize - collapseOffset;
+            slideView.getLayoutParams().width = slideWidth;
+
+        }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
     }
 
 
     public void addSlideView(BaseSlideView mSlideView, @Slide int slide) {
-        mSlideView.createView(LayoutInflater.from(getContext()).inflate(mSlideView.getLayoutId(), this, false));
         this.mSlideView = mSlideView;
+        mSlideView.setSlideMenu(this);
+        slideView = mSlideView.getView();
         this.slide = slide;
         isFollowing = mSlideView.isFollowing();
-        addView(mSlideView.getView());
-
+        isAnim = mSlideView.isAnim();
+        addView(slideView);
     }
 
 
@@ -215,6 +228,7 @@ public class SlideMenu extends FrameLayout {
     }
 
     boolean isMove;
+
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         final int action = MotionEventCompat.getActionMasked(ev);
@@ -409,7 +423,7 @@ public class SlideMenu extends FrameLayout {
     private final Runnable mPeekRunnable = new Runnable() {
         @Override
         public synchronized void run() {
-                peekDrawer();
+            peekDrawer();
         }
     };
 
@@ -453,8 +467,8 @@ public class SlideMenu extends FrameLayout {
                 setSlideState(State.CLOSE);
 
             }
-            if (x <= -mSlideView.getMeasuredWidth() + collapseOffset) {
-                x = -mSlideView.getMeasuredWidth() + collapseOffset;
+            if (x <= -slideWidth) {
+                x = -slideWidth;
                 setSlideState(State.OPEN);
             }
         } else {
@@ -462,8 +476,8 @@ public class SlideMenu extends FrameLayout {
                 x = 0;
                 setSlideState(State.CLOSE);
             }
-            if (x >= mSlideView.getMeasuredWidth() - collapseOffset) {
-                x = mSlideView.getMeasuredWidth() - collapseOffset;
+            if (x >= slideWidth) {
+                x = slideWidth;
                 setSlideState(State.OPEN);
             }
         }
@@ -471,12 +485,15 @@ public class SlideMenu extends FrameLayout {
         if (!isFollowing) {
             ViewHelper.setTranslationX(contentView, x * 1f);
         } else {
-            ViewHelper.setTranslationX(mSlideView.getView(), x * scale);
+            if (isAnim) {
+                ViewHelper.setTranslationX(slideView, x * scale);
+            }
         }
         if (getScrollX() != x) {
             super.scrollTo(x, y);
         }
     }
+
     private void eventUp() {
         int scrollX = getScrollX();
         final VelocityTracker velocityTracker = mVelocityTracker;
@@ -488,7 +505,7 @@ public class SlideMenu extends FrameLayout {
             } else if (velocityX < -SNAP_VELOCITY) {
                 close();
             } else {
-                if (scrollX < -mSlideView.getMeasuredWidth() / 2) {//打开
+                if (scrollX < -slideWidth / 2) {//打开
                     open();
                 } else {
                     close();
@@ -500,7 +517,7 @@ public class SlideMenu extends FrameLayout {
             } else if (velocityX < -SNAP_VELOCITY) {
                 close();
             } else {
-                if (scrollX > mSlideView.getMeasuredWidth() / 2) {//打开
+                if (scrollX > slideWidth / 2) {//打开
                     open();
                 } else {
                     close();
@@ -513,14 +530,15 @@ public class SlideMenu extends FrameLayout {
     public void open() {
         int scrollX = getScrollX();
         if (slide == Slide.LEFT) {
-            scroller.startScroll(scrollX, 0, -(scrollX + mSlideView.getMeasuredWidth()), 0, 400);
+            scroller.startScroll(scrollX, 0, -(scrollX + slideWidth), 0, 400);
             invalidate();
         } else if (slide == Slide.RIGHT) {
-            scroller.startScroll(scrollX, 0, mSlideView.getMeasuredWidth() - scrollX, 0, 400);
+            scroller.startScroll(scrollX, 0, slideWidth - scrollX, 0, 400);
             invalidate();
         }
 
     }
+
     public void close() {
         int scrollX = getScrollX();
         scroller.startScroll(scrollX, 0, -scrollX, 0, 400);
@@ -548,7 +566,6 @@ public class SlideMenu extends FrameLayout {
     }
 
 
-
     @Override
     public void computeScroll() {
         if (scroller.computeScrollOffset()) {
@@ -562,16 +579,15 @@ public class SlideMenu extends FrameLayout {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         contentView.layout(left, top, right, bottom);
-        View child = mSlideView.getView();
-        if (child != null) {
+        if (slideView != null) {
             if (slide == Slide.LEFT) {
-                child.layout(-mSlideView.getMeasuredWidth() + collapseOffset, top, !isFollowing ? 0 : collapseOffset, bottom);
+                slideView.layout(isAnim && isFollowing ? -slideWidth + collapseOffset : -slideWidth, top, isAnim && isFollowing ? collapseOffset : 0, bottom);
             } else {
-                child.layout(right, top, right + mSlideView.getMeasuredWidth(), bottom);
+                slideView.layout(right, top, right + slideWidth, bottom);
             }
         }
         if (!isFollowing) {
-            child.bringToFront();
+            slideView.bringToFront();
         } else {
             contentView.bringToFront();
         }

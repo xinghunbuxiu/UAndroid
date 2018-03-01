@@ -215,12 +215,13 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
             mHelper.onPostCreate();
         }
         if (slideMenu1 != null) {
+            slideMenu1.attachToActivity(mContext);
             int slide = builder.slide;
             BaseSlideView view = builder.slideView;
             if (view != null && slide != Slide.NONE) {
                 slideMenu1.addSlideView(view, slide);
             }
-            slideMenu1.attachToActivity(mContext);
+
         }
     }
 

@@ -13,8 +13,11 @@ import android.view.View;
 
 public abstract class BaseSlideView implements ISlideMenu {
     public View slideView;
+    public SlideMenu slideMenu;
     Activity activity;
     public boolean following;
+    public boolean isAnim;
+    public boolean isFullScreen;
 
     public <T> T getActivity() {
         return (T) activity;
@@ -22,16 +25,18 @@ public abstract class BaseSlideView implements ISlideMenu {
 
     public BaseSlideView(Activity activity) {
         this.activity = activity;
-        initView();
+        init();
     }
 
-    public void createView(View slideView) {
-        this.slideView =slideView;
-
+    public void setSlideMenu(SlideMenu slideMenu) {
+        this.slideMenu = slideMenu;
     }
-
     @Override
     public View getView() {
+        if (slideView == null) {
+            slideView = View.inflate(activity, getLayoutId(), null);
+            initView(slideView);
+        }
         return slideView;
     }
 
@@ -41,11 +46,19 @@ public abstract class BaseSlideView implements ISlideMenu {
 
     @Override
     public int getMeasuredWidth() {
-        slideView.measure(0, 0);
-        return slideView.getWidth();
+        return slideMenu.getSlideWidth();
     }
 
     public boolean isFollowing() {
         return following;
     }
+
+    public boolean isAnim() {
+        return isAnim;
+    }
+
+    public boolean isFullScreen() {
+        return isFullScreen;
+    }
+
 }

@@ -12,8 +12,8 @@ public interface ISlideMenu {
     int getLayoutId();
 
     View getView();
-    
-    void initView();
+    void init();
+    void initView(View slideView);
 
     int getMeasuredWidth();
 }

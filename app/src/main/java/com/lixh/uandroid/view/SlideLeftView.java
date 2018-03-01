@@ -1,6 +1,8 @@
 package com.lixh.uandroid.view;
 
 import android.app.Activity;
+import android.view.View;
+import android.widget.TextView;
 
 import com.lixh.uandroid.R;
 import com.lixh.view.BaseSlideView;
@@ -22,10 +24,16 @@ public class SlideLeftView extends BaseSlideView {
         return R.layout.slide_menu_layout;
     }
 
+    @Override
+    public void init() {
+        isAnim = false;
+        following = true;
+    }
 
     @Override
-    public void initView() {
-        following = true;
+    public void initView(View slideView) {
+        TextView textView = $(R.id.textView);
+        textView.setText("dddddddd");
     }
 
 
