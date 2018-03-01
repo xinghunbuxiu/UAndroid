@@ -25,7 +25,7 @@ public class TabsActivity extends BaseActivity<TabPresenter> {
     SlideLeftView slideLeftView;
 
     @Override
-    public boolean isBack( ) {
+    public boolean isShowBack( ) {
         return false;
     }
     @Override

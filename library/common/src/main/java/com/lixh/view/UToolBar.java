@@ -13,7 +13,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ActionMenuView;
@@ -31,7 +30,6 @@ import android.widget.TextView;
 
 import java.lang.reflect.Field;
 
-import static android.support.v7.appcompat.R.attr.listMenuViewStyle;
 import static android.support.v7.appcompat.R.attr.toolbarNavigationButtonStyle;
 import static android.support.v7.appcompat.R.attr.toolbarStyle;
 
@@ -144,7 +142,7 @@ public class UToolBar extends Toolbar {
     }
 
     /**
-     * 是否显示返回 默认带返回按钮 子类如果为true
+     * 是否显示返回 默认带返回按钮 子类如果为false
      * 将不显示返回按钮
      *
      * @param isShow

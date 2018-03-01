@@ -62,8 +62,8 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
     public void init(Bundle savedInstanceState) {
     }
     @Override
-    public boolean isBack() {
-        return false;
+    public boolean isShowBack() {
+        return true;
     }
 
     @Override
@@ -128,7 +128,7 @@ public abstract class BaseActivity<T extends BasePresenter> extends AppCompatAct
         toolBar = layout.getToolbar();
         if (toolBar != null) {
             toolBar.setDisplayShowTitleEnabled(false);
-            toolBar.setDisplayHomeAsUpEnabled(!isBack());
+            toolBar.setDisplayHomeAsUpEnabled(isShowBack());
             initTitle(toolBar);
             if (mPresenter != null) {
                 mPresenter.setToolBar(toolBar);

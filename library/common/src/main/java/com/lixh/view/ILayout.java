@@ -24,6 +24,6 @@ public interface ILayout {
      */
     int getLayoutId();
 
-    boolean isBack();
+    boolean isShowBack();
     boolean isDoubleExit();
 }
