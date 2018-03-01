@@ -200,6 +200,7 @@ public class SlideMenu extends FrameLayout {
         mSlideView.setSlideMenu(this);
         slideView = mSlideView.getView();
         this.slide = slide;
+        this.mTrackingEdges = slide == Slide.LEFT ? EDGE_LEFT : EDGE_RIGHT;
         isFollowing = mSlideView.isFollowing();
         isAnim = mSlideView.isAnim();
         addView(slideView);
@@ -257,7 +258,7 @@ public class SlideMenu extends FrameLayout {
 
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP: {
-                if (slideState == State.OPEN) {
+                if (slideState == State.OPEN && ((slide == Slide.RIGHT && ev.getX() <= collapseOffset) || (slide == Slide.LEFT && ev.getX() >= slideWidth))) {
                     cancelChildViewTouch();
                     scrollBy((int) -dx, 0);
                     close();
@@ -513,9 +514,9 @@ public class SlideMenu extends FrameLayout {
             }
         } else if (slide == Slide.RIGHT) {
             if (velocityX > SNAP_VELOCITY) {
-                open();
-            } else if (velocityX < -SNAP_VELOCITY) {
                 close();
+            } else if (velocityX < -SNAP_VELOCITY) {
+                open();
             } else {
                 if (scrollX > slideWidth / 2) {//打开
                     open();

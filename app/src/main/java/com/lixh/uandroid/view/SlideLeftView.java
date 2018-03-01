@@ -27,7 +27,7 @@ public class SlideLeftView extends BaseSlideView {
     @Override
     public void init() {
         isAnim = false;
-        following = true;
+        following = false;
     }
 
     @Override
