@@ -3,6 +3,7 @@ package com.lixh.view;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
@@ -18,7 +19,7 @@ import com.lixh.R;
  */
 
 public class BottomLayoutHelper {
-    LinearLayout view;
+    View view;
     FrameLayout layFrame;
     BottomNavigationBar bottomNavigationBar;
     LoadView.Builder builder;
@@ -29,10 +30,10 @@ public class BottomLayoutHelper {
     public BottomLayoutHelper(LoadView.Builder builder) {
         this.builder = builder;
         fm = builder.supportFragmentManager;
-        view = (LinearLayout) builder.inflate(builder.bottomBarLayout <= 0 ? R.layout.common_tab_layout : builder.bottomBarLayout);
+        view = builder.inflate(builder.bottomBarLayout <= 0 ? R.layout.common_tab_layout : builder.bottomBarLayout);
     }
 
-    public LinearLayout getLayout() {
+    public View getLayout() {
         return view;
     }
 
@@ -50,6 +51,8 @@ public class BottomLayoutHelper {
             fragments = builder.fragments;
             bottomNavigationBar.setTabSelectedListener(new MyOnTabSelectedListener());
             setDefaultFragment();
+        }else{
+            builder.initBottomBarLayout(view);
         }
     }
 

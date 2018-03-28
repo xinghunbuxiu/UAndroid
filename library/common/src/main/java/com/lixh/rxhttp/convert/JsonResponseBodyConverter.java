@@ -1,16 +1,14 @@
 package com.lixh.rxhttp.convert;
 
+import com.alibaba.fastjson.JSON;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
 import com.lixh.base.BaseResPose;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.nio.charset.Charset;
 
-import okhttp3.MediaType;
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
 
@@ -29,21 +27,24 @@ public class JsonResponseBodyConverter<T> implements Converter<ResponseBody, T> 
 
     @Override
     public T convert(ResponseBody value) throws IOException {
-
-        String response = value.string();
-        BaseResPose result = mGson.fromJson(response, BaseResPose.class);
-        String data = mGson.toJson(result.data);
-        result.data = data;
-        response = mGson.toJson(result);
-        MediaType mediaType = value.contentType();
-        Charset charset = mediaType != null ? mediaType.charset(UTF_8) : UTF_8;
-        ByteArrayInputStream bis = new ByteArrayInputStream(response.getBytes());
-        InputStreamReader reader = new InputStreamReader(bis, charset);
-        JsonReader jsonReader = mGson.newJsonReader(reader);
+        String json = verify(value.string());
         try {
-            return adapter.read(jsonReader);
+            return adapter.read(mGson.newJsonReader(new StringReader(json)));
         } finally {
             value.close();
         }
+    }
+
+    private String verify(String json) {
+        boolean isOk = json.matches("code|message|data");
+        if (!isOk) {
+            BaseResPose result = new BaseResPose();
+            result.message = "ok";
+            result.code = "200";
+            result.data = JSON.parse(json);
+            json = JSON.toJSONString(result);
+        }
+
+        return json;
     }
 }

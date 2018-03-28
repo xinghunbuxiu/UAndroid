@@ -334,7 +334,10 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
             mContext.requestWindowFeature(requestedOrientation);
             return this;
         }
-    }
 
+        public Builder initBottomBarLayout(View view) {
+            return this;
+        }
+    }
     ;
 }

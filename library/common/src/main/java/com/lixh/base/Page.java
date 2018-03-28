@@ -1,4 +1,4 @@
-package com.lixh.base;
+﻿package com.lixh.base;
 
 
 import android.content.Context;
@@ -48,7 +48,7 @@ public class Page<T> implements OnLoadMoreListener, SpringView.OnRefreshListener
     private OnLoadingListener onLoadingListener;
     LoadingTip tip;
     RecyclerView.OnScrollListener onScrollListener;
-
+    private MyOnLoadFinish onLoadFinish;
     @Override
     public void reload() {
         onRefresh();
@@ -61,7 +61,6 @@ public class Page<T> implements OnLoadMoreListener, SpringView.OnRefreshListener
     public interface OnLoadingListener {
         void load(int page, OnLoadFinish onLoadFinish);
     }
-
     /**
      * @return RecyclerArrayAdapter
      */
@@ -128,17 +127,25 @@ public class Page<T> implements OnLoadMoreListener, SpringView.OnRefreshListener
 
     public void onLoad(OnLoadingListener onLoadingListener) {
         if (this.onLoadingListener != null) {
-            this.onLoadingListener.load(page, new OnLoadFinish<T>() {
-
-                @Override
-                public void finish(List<T> list, @LoadingTip.LoadStatus int loadStatus) {
-                    onFinish(list);
-                    onError(loadStatus);
-                }
-            });
+            onLoadFinish = new MyOnLoadFinish(this);
+            this.onLoadingListener.load(page, onLoadFinish);
         }
     }
 
+    class MyOnLoadFinish<T> implements OnLoadFinish<T> {
+        Page page;
+
+        public MyOnLoadFinish(Page page) {
+            this.page = page;
+        }
+
+        @Override
+        public void finish(List<T> list, @LoadingTip.LoadStatus int loadStatus) {
+            page.finish(list, loadStatus);
+        }
+    }
+
+    ;
     @Override
     public void onRefresh() {
         page = 1;
@@ -174,6 +181,7 @@ public class Page<T> implements OnLoadMoreListener, SpringView.OnRefreshListener
         rootView = inflate(R.layout.base_recyview);
         recyclerView = $(R.id.recycle);
         springView = $(R.id.springView);
+        springView.setAutoRefresh(builder.isAutoRefresh);
         onLoadingListener = builder.getOnLoadingListener();
         tip = builder.getLoadTip();
         if (tip != null) {
@@ -271,6 +279,7 @@ public class Page<T> implements OnLoadMoreListener, SpringView.OnRefreshListener
         boolean refresh;
         boolean pullLoadMore;
         boolean isAutoLoadMore;
+        boolean isAutoRefresh;
         @DimenRes
         int divideHeight = R.dimen.space_2;
         @ColorRes
@@ -312,6 +321,11 @@ public class Page<T> implements OnLoadMoreListener, SpringView.OnRefreshListener
 
         public Builder setAutoLoadMore(boolean autoLoadMore) {
             isAutoLoadMore = autoLoadMore;
+            return this;
+        }
+
+        public Builder setAutoRefresh(boolean autoRefresh) {
+            this.isAutoRefresh = autoRefresh;
             return this;
         }
 

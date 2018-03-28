@@ -1,4 +1,4 @@
-package com.lixh.base;
+﻿package com.lixh.base;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -45,6 +45,9 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment imp
 
     public <T> T getFragment() {
         return (T) this;
+    }
+    public <T> T getPresenter() {
+        return (T) mPresenter.getPresenter();
     }
 
     public void initLoad(LoadView.Builder builder) {

@@ -200,8 +200,9 @@ public class SlideMenu extends FrameLayout {
         mSlideView.setSlideMenu(this);
         slideView = mSlideView.getView();
         this.slide = slide;
-        this.mTrackingEdges = slide == Slide.LEFT ? EDGE_LEFT : EDGE_RIGHT;
+        mTrackingEdges = slide == Slide.LEFT ? EDGE_LEFT : EDGE_RIGHT;
         isFollowing = mSlideView.isFollowing();
+        mEnable = mSlideView.isEnabledEdge();
         isAnim = mSlideView.isAnim();
         addView(slideView);
     }

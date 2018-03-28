@@ -18,6 +18,7 @@ public abstract class BaseSlideView implements ISlideMenu {
     public boolean following;
     public boolean isAnim;
     public boolean isFullScreen;
+    public boolean isEnabledEdge = true;
 
     public <T> T getActivity() {
         return (T) activity;
@@ -60,5 +61,12 @@ public abstract class BaseSlideView implements ISlideMenu {
     public boolean isFullScreen() {
         return isFullScreen;
     }
+
+    //是否允许 边缘触控
+    public boolean isEnabledEdge() {
+        return isEnabledEdge;
+    }
+
+
 
 }

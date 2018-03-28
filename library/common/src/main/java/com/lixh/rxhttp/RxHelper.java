@@ -1,4 +1,4 @@
-package com.lixh.rxhttp;
+﻿package com.lixh.rxhttp;
 
 import android.app.Activity;
 import android.support.v4.util.ArrayMap;
@@ -85,19 +85,11 @@ public class RxHelper {
 
     }
 
-    public <T> void createSubscriber(Observable fromNetwork1, Observable fromNetwork2, final RxSubscriber result) {
+    public <T> void createZipSubscriber(Observable o1, Observable o2, Func2 zipFunction, final RxSubscriber result) {
         BehaviorSubject<LifeEvent> lifeEvent = lifecycleSubject.get(c.getClass().getName());
-        Observable observable = fromNetwork1.compose(handleResult(getEvent(), lifeEvent));
-        Observable observable1 = fromNetwork2.compose(handleResult(getEvent(), lifeEvent));
-        ;
-        RxCache.load(c, caChe, 1000 * 60 * 30, observable1, isForceRefresh);
-        Observable.zip(RxCache.load(c, caChe, 1000 * 60 * 30, observable, isForceRefresh), RxCache.load(c, caChe, 1000 * 60 * 30, observable1, isForceRefresh), new Func2<BaseResPose<T>, BaseResPose<T>,Boolean>() {
-
-            @Override
-            public Boolean call(BaseResPose<T> tBaseResPose, BaseResPose<T> tBaseResPose2) {
-                return null;
-            }
-        }) .subscribe(result);;
+        Observable observable = o1.compose(handleResult(getEvent(), lifeEvent));
+        Observable observable1 = o2.compose(handleResult(getEvent(), lifeEvent));
+        Observable.zip(RxCache.load(c, caChe, 1000 * 60 * 30, observable, isForceRefresh), RxCache.load(c, caChe, 1000 * 60 * 30, observable1, isForceRefresh), zipFunction).subscribe(result);
     }
 
     /**

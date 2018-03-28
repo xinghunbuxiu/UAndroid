@@ -13,6 +13,7 @@ ext {
             annotations  : 'com.android.support:support-annotations:25.+',
             compat       : 'com.android.support:support-compat:25.+',
             rxpermissions: 'com.tbruyelle.rxpermissions:rxpermissions:0.7.0@aar',
-            butterknife  : 'com.jakewharton:butterknife:7.0.1'
+            butterknife  : 'com.jakewharton:butterknife:7.0.1',
+            fastJson     : 'com.alibaba:fastjson:1.1.68.android'
     ]
 }
