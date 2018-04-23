@@ -3,7 +3,7 @@ ext {
             compileSdkVersion: 25,
             buildToolsVersion: "25.0.2",
             minSdkVersion    : 15,
-            targetSdkVersion : 19,
+            targetSdkVersion : 25,
     ]
     dependencies = [
             appcompatV7  : 'com.android.support:appcompat-v7:25.+',
@@ -14,6 +14,7 @@ ext {
             compat       : 'com.android.support:support-compat:25.+',
             rxpermissions: 'com.tbruyelle.rxpermissions:rxpermissions:0.7.0@aar',
             butterknife  : 'com.jakewharton:butterknife:7.0.1',
-            fastJson     : 'com.alibaba:fastjson:1.1.68.android'
+            fastJson     : 'com.alibaba:fastjson:1.1.68.android',
+
     ]
 }

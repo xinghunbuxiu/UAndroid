@@ -36,6 +36,7 @@ dependencies {
     compile rootProject.ext.dependencies.design
     compile rootProject.ext.dependencies.spinkit
     compile rootProject.ext.dependencies.recycle
+    compile rootProject.ext.dependencies.fastJson
     compile rootProject.ext.dependencies.rxpermissions
     compile 'com.github.bumptech.glide:glide:3.6.1'
     compile 'com.squareup.retrofit2:retrofit:2.1.0'

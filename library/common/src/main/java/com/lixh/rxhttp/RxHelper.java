@@ -1,13 +1,10 @@
-﻿package com.lixh.rxhttp;
-
+package com.lixh.rxhttp;
 import android.app.Activity;
 import android.support.v4.util.ArrayMap;
-
 import com.lixh.base.BaseResPose;
 import com.lixh.rxhttp.exception.ApiException;
 import com.lixh.rxlife.LifeEvent;
 import com.lixh.utils.ULog;
-
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;

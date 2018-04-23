@@ -1,4 +1,4 @@
-﻿package com.lixh.base;
+package com.lixh.base;
 
 
 import android.content.Context;

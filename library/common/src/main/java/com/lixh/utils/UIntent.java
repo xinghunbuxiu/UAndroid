@@ -36,6 +36,8 @@ public class UIntent {
     public UIntent with(Bundle bundle) {
         if (null != bundle) {
             mBundle = bundle;
+        } else {
+            mBundle = new Bundle();
         }
 
         return this;

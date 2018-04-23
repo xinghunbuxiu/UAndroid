@@ -1,4 +1,4 @@
-﻿package com.lixh.base;
+package com.lixh.base;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -205,5 +205,4 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment imp
     public void update(Observable o, Message arg) {
 
     }
-
 }
