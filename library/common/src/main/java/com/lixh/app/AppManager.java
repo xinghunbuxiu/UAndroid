@@ -16,13 +16,14 @@ public class AppManager {
     private AppManager() {
 
     }
+
     /**
      * 单一实例
      */
     public static AppManager getAppManager() {
         if (instance == null) {
-            synchronized (AppManager.class){
-                if(instance==null){
+            synchronized (AppManager.class) {
+                if (instance == null) {
                     instance = new AppManager();
                     instance.activityStack = new Stack();
                 }
@@ -141,11 +142,12 @@ public class AppManager {
 
     /**
      * 是否已经打开指定的activity
+     *
      * @param cls
      * @return
      */
     public boolean isOpenActivity(Class<?> cls) {
-        if (activityStack!=null){
+        if (activityStack != null) {
             for (int i = 0, size = activityStack.size(); i < size; i++) {
                 if (cls == activityStack.peek().getClass()) {
                     return true;
@@ -157,7 +159,6 @@ public class AppManager {
 
     /**
      * 退出应用程序
-     *
      */
     public void NotifyExitApp() {
         AppExit(true);

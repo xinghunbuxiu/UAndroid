@@ -1,25 +1,26 @@
 package com.lixh.utils;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import androidx.annotation.NonNull;
 
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
+
+import java.security.MessageDigest;
 
 /**
  * description:glide转换圆角图片
  * Created by xsf
  * on 2016.04.15:17
  */
-public class GlideRoundTransformUtil extends BitmapTransformation {
-    public GlideRoundTransformUtil(Context context) {
-        super(context);
-    }
 
-    @Override protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
+public class GlideRoundTransformUtil extends BitmapTransformation {
+
+    @Override
+    protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
         return circleCrop(pool, toTransform);
     }
 
@@ -30,7 +31,7 @@ public class GlideRoundTransformUtil extends BitmapTransformation {
         int x = (source.getWidth() - size) / 2;
         int y = (source.getHeight() - size) / 2;
 
-        // TODO this could be acquired from the pool too
+        //  this could be acquired from the pool too
         Bitmap squared = Bitmap.createBitmap(source, x, y, size, size);
 
         Bitmap result = pool.get(size, size, Bitmap.Config.ARGB_8888);
@@ -47,7 +48,8 @@ public class GlideRoundTransformUtil extends BitmapTransformation {
         return result;
     }
 
-    @Override public String getId() {
-        return getClass().getName();
+    @Override
+    public void updateDiskCacheKey(@NonNull MessageDigest messageDigest) {
+
     }
 }

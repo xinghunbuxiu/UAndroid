@@ -5,9 +5,9 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.SystemClock;
-import android.support.annotation.IntDef;
-import android.support.v4.view.MotionEventCompat;
-import android.support.v4.widget.ViewDragHelper;
+import androidx.annotation.IntDef;
+import androidx.core.view.MotionEventCompat;
+import androidx.customview.widget.ViewDragHelper;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
@@ -20,6 +20,8 @@ import android.widget.OverScroller;
 import com.lixh.utils.ULog;
 import com.nineoldandroids.view.ViewHelper;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 
 /**
@@ -135,6 +137,7 @@ public class SlideMenu extends FrameLayout {
             Slide.RIGHT
     }
     )
+    @Retention(RetentionPolicy.SOURCE)
     public @interface Slide {
         int NONE = 0;
         int LEFT = 1;
@@ -146,6 +149,7 @@ public class SlideMenu extends FrameLayout {
             State.CLOSE,
     }
     )
+    @Retention(RetentionPolicy.SOURCE)
     public @interface State {
         int OPEN = 0;
         int CLOSE = 1;

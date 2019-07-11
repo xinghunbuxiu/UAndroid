@@ -6,8 +6,7 @@ import android.net.Uri;
 
 import java.io.File;
 
-import rx.Observable;
-import rx.functions.Func0;
+import io.reactivex.Observable;
 
 /**
  * 压缩图片类
@@ -80,21 +79,11 @@ public class Compressor {
     }
 
     public Observable<File> compressToFileAsObservable(final File file) {
-        return Observable.defer(new Func0<Observable<File>>() {
-            @Override
-            public Observable<File> call() {
-                return Observable.just(compressToFile(file));
-            }
-        });
+        return Observable.defer(() -> Observable.just(compressToFile(file)));
     }
 
     public Observable<Bitmap> compressToBitmapAsObservable(final File file) {
-        return Observable.defer(new Func0<Observable<Bitmap>>() {
-            @Override
-            public Observable<Bitmap> call() {
-                return Observable.just(compressToBitmap(file));
-            }
-        });
+        return Observable.defer(() -> Observable.just(compressToBitmap(file)));
     }
 
     public static class Builder {

@@ -2,13 +2,14 @@ package com.lixh.base;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.IdRes;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.IdRes;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import com.lixh.bean.Message;
 import com.lixh.presenter.BasePresenter;
@@ -16,39 +17,38 @@ import com.lixh.rxhttp.Observable;
 import com.lixh.rxhttp.Observer;
 import com.lixh.rxlife.LifeEvent;
 import com.lixh.utils.LoadingTip;
+import com.lixh.utils.Global;
 import com.lixh.utils.TUtil;
 import com.lixh.utils.UIntent;
+import com.lixh.view.IBase;
 import com.lixh.view.LoadView;
 import com.lixh.view.UToolBar;
 
 import butterknife.ButterKnife;
-import rx.subjects.BehaviorSubject;
+import butterknife.Unbinder;
+import io.reactivex.subjects.BehaviorSubject;
 
-public abstract class BaseFragment<T extends BasePresenter> extends Fragment implements Observer<Message> {
-    T mPresenter; //当前类需要的操作类
+public abstract class BaseFragment<T extends BasePresenter> extends Fragment implements Observer<Message>, IBase {
+    public T mPresenter; //当前类需要的操作类
     public FragmentActivity activity;
     public LoadingTip tip;
     public LoadView layout;
     public UToolBar toolBar;
     public View mContentView;
     public UIntent intent;
+    Unbinder unbinder;
 
-    protected  void init(Bundle savedInstanceState){
+    protected void init(Bundle savedInstanceState) {
 
     }
 
     public BaseFragment() {
-        mPresenter = TUtil.getT(this, 0);
+        mPresenter = TUtil.getT (this, 0);
+        Global.get( ).addObserver (this);
     }
 
-    protected final BehaviorSubject<LifeEvent> lifecycleSubject = BehaviorSubject.create();
+    protected final BehaviorSubject<LifeEvent> lifecycleSubject = BehaviorSubject.create ( );
 
-    public <T> T getFragment() {
-        return (T) this;
-    }
-    public <T> T getPresenter() {
-        return (T) mPresenter.getPresenter();
-    }
 
     public void initLoad(LoadView.Builder builder) {
 
@@ -60,24 +60,24 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment imp
 
     @Override
     public void onAttach(Context context) {
-        lifecycleSubject.onNext(LifeEvent.ATTACH);
-        super.onAttach(context);
+        lifecycleSubject.onNext (LifeEvent.ATTACH);
+        super.onAttach (context);
         activity = (FragmentActivity) context;
-        layout = new LoadView.Builder(activity) {
+        layout = new LoadView.Builder (activity) {
             {
-                mBottomLayout = getLayoutId();
-                initLoad(this);
+                mBottomLayout = getLayoutId ( );
+                initLoad (this);
             }
-        }.createFragment();
-        layout.addObserver(this);
-        intent = layout.getIntent();
-        tip = layout.getEmptyView();
+        }.createFragment ( );
+        intent = layout.getIntent ( );
+        intent.with (getArguments ( ));
+        tip = layout.getEmptyView ( );
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        lifecycleSubject.onNext(LifeEvent.CREATE);
-        super.onCreate(savedInstanceState);
+        lifecycleSubject.onNext (LifeEvent.CREATE);
+        super.onCreate (savedInstanceState);
 
     }
 
@@ -90,21 +90,21 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment imp
     public abstract int getLayoutId();
 
     private void initTitleBar() {
-        toolBar = layout.getToolbar();
+        toolBar = layout.getToolbar ( );
         if (toolBar != null) {
-            toolBar.setDisplayShowTitleEnabled(false);
-            toolBar.setDisplayHomeAsUpEnabled(isBack());
-            initTitle(toolBar);
+            toolBar.setDisplayShowTitleEnabled (false);
+            toolBar.setDisplayHomeAsUpEnabled (isBack ( ));
+            initTitle (toolBar);
             if (mPresenter != null) {
-                mPresenter.setToolBar(layout.getToolbar());
+                mPresenter.setToolBar (layout.getToolbar ( ));
             }
         }
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        lifecycleSubject.onNext(LifeEvent.CREATE_VIEW);
-        super.onViewCreated(view, savedInstanceState);
+        lifecycleSubject.onNext (LifeEvent.CREATE_VIEW);
+        super.onViewCreated (view, savedInstanceState);
 
 
     }
@@ -113,7 +113,7 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment imp
         if (views != null && views.length > 0) {
             for (View view : views) {
                 if (view != null) {
-                    view.setVisibility(View.GONE);
+                    view.setVisibility (View.GONE);
                 }
             }
         }
@@ -123,7 +123,7 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment imp
         if (views != null && views.length > 0) {
             for (View view : views) {
                 if (view != null) {
-                    view.setVisibility(View.VISIBLE);
+                    view.setVisibility (View.VISIBLE);
                 }
             }
         }
@@ -134,75 +134,81 @@ public abstract class BaseFragment<T extends BasePresenter> extends Fragment imp
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (mContentView == null) {
-            mContentView = layout.getRootView();
-            ButterKnife.bind(this, mContentView);
-            initTitleBar();
-            init(savedInstanceState);
+            mContentView = layout.getRootView ( );
+            unbinder = ButterKnife.bind (this, mContentView);
+            initTitleBar ( );
             if (mPresenter != null) {
-                mPresenter.init(this, savedInstanceState, lifecycleSubject);
+                mPresenter.bind (this).init (savedInstanceState, lifecycleSubject);
             }
+            init (savedInstanceState);
+
         }
         return mContentView;
     }
 
     protected <VT extends View> VT $(@IdRes int id) {
-        return (VT) mContentView.findViewById(id);
+        return (VT) mContentView.findViewById (id);
     }
 
     @Override
     public void onStart() {
-        lifecycleSubject.onNext(LifeEvent.START);
-        super.onStart();
+        lifecycleSubject.onNext (LifeEvent.START);
+        super.onStart ( );
     }
 
     @Override
     public void onResume() {
-        lifecycleSubject.onNext(LifeEvent.RESUME);
-        super.onResume();
+        lifecycleSubject.onNext (LifeEvent.RESUME);
+        super.onResume ( );
 
     }
 
 
     @Override
     public void onPause() {
-        lifecycleSubject.onNext(LifeEvent.PAUSE);
-        super.onPause();
+        lifecycleSubject.onNext (LifeEvent.PAUSE);
+        super.onPause ( );
 
     }
 
     @Override
     public void onStop() {
-        lifecycleSubject.onNext(LifeEvent.STOP);
-        super.onStop();
+        lifecycleSubject.onNext (LifeEvent.STOP);
+        super.onStop ( );
 
     }
 
     @Override
     public void onDestroy() {
-        lifecycleSubject.onNext(LifeEvent.DESTORY);
-        super.onDestroy();
+        lifecycleSubject.onNext (LifeEvent.DESTORY);
+        super.onDestroy ( );
 
 
     }
 
     @Override
     public void onDestroyView() {
-        lifecycleSubject.onNext(LifeEvent.DESTORY_VIEW);
-        super.onDestroyView();
+        lifecycleSubject.onNext (LifeEvent.DESTORY_VIEW);
+        super.onDestroyView ( );
 
     }
 
     @Override
     public void onDetach() {
-        lifecycleSubject.onNext(LifeEvent.DETACH);
-        super.onDetach();
+        lifecycleSubject.onNext (LifeEvent.DETACH);
+        super.onDetach ( );
         if (mPresenter != null)
-            mPresenter.onDestroy();
+            mPresenter.onDestroy ( );
 
     }
 
     @Override
     public void update(Observable o, Message arg) {
+
+    }
+
+    @Override
+    public void setData(Object bean) {
 
     }
 }

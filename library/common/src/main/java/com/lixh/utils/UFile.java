@@ -28,6 +28,8 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * 文件处理util
@@ -67,6 +69,7 @@ public class UFile {
 
     /**
      * 获取文件名
+     *
      * @param fileName
      * @return
      */
@@ -84,6 +87,7 @@ public class UFile {
 
     /**
      * 根据uri获取文件路径
+     *
      * @param context
      * @param uri
      * @return
@@ -116,6 +120,7 @@ public class UFile {
 
     /**
      * 根据uri获取真文件路径
+     *
      * @param context
      * @param contentUri
      * @return
@@ -195,17 +200,28 @@ public class UFile {
      */
     public static File getDir() {
         String packName = BaseApplication.getAppContext().getPackageName();
-        String name = packName.substring(packName.lastIndexOf(".") + 1,
-                packName.length());
         File dir = null;
         if ((!Environment.getExternalStorageState().equals(
                 Environment.MEDIA_MOUNTED))) {
             dir = BaseApplication.getAppContext().getCacheDir();
         } else {
             dir = new File(Environment.getExternalStorageDirectory()
-                    .getAbsolutePath() + "/" + name);
+                    .getAbsolutePath() + "/" + packName);
         }
         dir.mkdirs();
+        return dir;
+    }
+
+    /***
+     * 获取项目文件
+     *
+     * @return
+     */
+    public static File getRootDir() {
+        File dir = Environment.getExternalStorageDirectory().getParentFile();
+        if (dir == null || dir.listFiles() == null) {
+            dir = Environment.getExternalStorageDirectory();
+        }
         return dir;
     }
 
@@ -651,5 +667,24 @@ public class UFile {
         }
         return System.currentTimeMillis();
     }
+
+    public static void getDirList(List<File> list) {
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).getName().startsWith(".")) {
+                list.remove(i);
+            } else {
+                Collections.sort(list, (file, file2) -> {
+                    if (file.isDirectory() && file2.isFile()) {
+                        return -1;
+                    }
+                    if (file.isFile() && file2.isDirectory()) {
+                        return 1;
+                    }
+                    return file.getName().toLowerCase().compareTo(file2.getName().toLowerCase());
+                });
+            }
+        }
+    }
+
 
 }

@@ -1,20 +1,18 @@
 package com.lixh.app;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.res.Resources;
-import android.support.v7.app.AppCompatDelegate;
+import androidx.multidex.MultiDexApplication;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.lixh.setting.AppConfig;
+import com.lixh.utils.Global;
 import com.lixh.utils.SharedPreferencesUtil;
-
-import io.realm.Realm;
-import io.realm.RealmConfiguration;
 
 /**
  * APPLICATION
  */
-public abstract class BaseApplication extends Application  {
+public abstract class BaseApplication extends MultiDexApplication {
 
     private static BaseApplication baseApplication;
 
@@ -22,6 +20,7 @@ public abstract class BaseApplication extends Application  {
     public void onCreate() {
         super.onCreate();
         baseApplication = this;
+        Global.init(this);
         initPrefs();
         initNightMode();
         init();
@@ -43,8 +42,13 @@ public abstract class BaseApplication extends Application  {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
     }
-    public static BaseApplication getAppContext() {
+
+    public static BaseApplication getApplication() {
         return baseApplication;
+    }
+
+    public static Context getAppContext() {
+        return baseApplication.getApplicationContext();
     }
 
     public static Resources getAppResources() {
@@ -59,16 +63,6 @@ public abstract class BaseApplication extends Application  {
 
     public abstract void init();
 
-    /**
-     * 数据库初始化
-     * https://realm.io/docs/java/latest/
-     */
-    public void initRealm() {
-        Realm.init(this);
-        RealmConfiguration config = new RealmConfiguration.Builder().build();
-        Realm.deleteRealm(config);
-        Realm.setDefaultConfiguration(config);
-    }
 
     /**
      * 分包

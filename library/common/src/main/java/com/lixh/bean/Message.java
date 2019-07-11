@@ -13,6 +13,8 @@ package com.lixh.bean;/*
  * See the License for the specific language governing permissions and
 **/
 
+import androidx.annotation.NonNull;
+
 public class Message {
     public int what;
     public int arg1;
@@ -23,32 +25,45 @@ public class Message {
         return arg1;
     }
 
-    public void setArg1(int arg1) {
+    public Message setArg1(int arg1) {
         this.arg1 = arg1;
+        return this;
     }
 
     public int getArg2() {
         return arg2;
     }
 
-    public void setArg2(int arg2) {
+    public Message setArg2(int arg2) {
         this.arg2 = arg2;
+        return this;
     }
 
     public Object getObj() {
         return obj;
     }
 
-    public void setObj(Object obj) {
+    public Message setObj(Object obj) {
         this.obj = obj;
+        return this;
     }
 
     public int getWhat() {
         return what;
     }
 
-    public void setWhat(int what) {
+    public Message setWhat(int what) {
         this.what = what;
+        return this;
     }
 
+    @Override
+    public String toString() {
+        return "Message{" +
+                "what=" + what +
+                ", arg1=" + arg1 +
+                ", arg2=" + arg2 +
+                ", obj=" + obj +
+                '}';
+    }
 }

@@ -1,6 +1,5 @@
 package com.lixh.utils;
 
-import android.Manifest;
 import android.app.DownloadManager;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -12,14 +11,12 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.Environment;
 import android.os.IBinder;
-import android.support.v4.content.FileProvider;
+import androidx.core.content.FileProvider;
 
 import com.lixh.BuildConfig;
-import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.io.File;
-
-import rx.functions.Action1;
+import java.util.List;
 
 
 public class UpdateService extends Service {
@@ -72,23 +69,20 @@ public class UpdateService extends Service {
                 };
                 registerReceiver(receiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
                 //下载需要写SD卡权限, targetSdkVersion>=23 需要动态申请权限
-                RxPermissions.getInstance(mContext)
-                        // 申请权限
-                        .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        .subscribe(new Action1<Boolean>() {
-                            @Override
-                            public void call(Boolean granted) {
-                                if (granted) {
-                                    //请求成功
-                                    startDownload(downloadUrl, saveFileName);
-                                } else {
-                                    // 请求失败回收当前服务
-                                    UToast.showShort("没有SD卡储存权限,下载失败");
-                                    intentWebDown(downloadUrl);
-                                    stopSelf();
-                                }
-                            }
-                        });
+                PermissionUtils.externalStorage(getApplication(), new PermissionUtils.RequestPermission() {
+                    @Override
+                    public void onRequestPermissionFailure(List<String> list) {
+                        // 请求失败回收当前服务
+                        UToast.showShort("没有SD卡储存权限,下载失败");
+                        intentWebDown(downloadUrl);
+                        stopSelf();
+                    }
+
+                    @Override
+                    public void onRequestPermissionSuccess() {
+                        startDownload(downloadUrl, saveFileName);
+                    }
+                });
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -111,7 +105,7 @@ public class UpdateService extends Service {
         request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, saveFileName);
         //设置下载时或者下载完成时，通知栏是否显示
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-        request.setTitle(LocalAppInfo.getLocalAppInfo().getAppName());
+        request.setTitle(Global.get().getAppName());
         //执行下载，并返回任务唯一id
         enqueue = dm.enqueue(request);
     }

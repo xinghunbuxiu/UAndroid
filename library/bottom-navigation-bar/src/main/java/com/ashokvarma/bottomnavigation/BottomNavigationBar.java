@@ -5,14 +5,14 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Build;
-import android.support.annotation.ColorRes;
-import android.support.annotation.IntDef;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.ViewPropertyAnimatorCompat;
-import android.support.v4.view.animation.LinearOutSlowInInterpolator;
+import androidx.annotation.ColorRes;
+import androidx.annotation.IntDef;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.ViewPropertyAnimatorCompat;
+import androidx.interpolator.view.animation.LinearOutSlowInInterpolator;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,7 +32,7 @@ import java.util.ArrayList;
 
 /**
  * Class description : This class is used to draw the layout and this acts like a bridge between
- * library and app, all details can be modified via this class.
+ * library and com.angel.recycling.desewang.app, all details can be modified via this class.
  *
  * @author ashokvarma
  * @version 1.0
@@ -522,7 +522,7 @@ public class BottomNavigationBar extends FrameLayout {
 
                 final BottomNavigationTab clickedView = mBottomNavigationTabs.get(newPosition);
                 if (firstTab) {
-                    // Running a ripple on the opening app won't be good so on firstTab this won't run.
+                    // Running a ripple on the opening com.angel.recycling.desewang.app won't be good so on firstTab this won't run.
                     mContainer.setBackgroundColor(clickedView.getActiveColor());
                     mBackgroundOverlay.setVisibility(View.GONE);
                 } else {

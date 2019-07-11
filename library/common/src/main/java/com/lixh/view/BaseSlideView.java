@@ -1,8 +1,10 @@
 package com.lixh.view;
 
 import android.app.Activity;
-import android.support.annotation.IdRes;
+import androidx.annotation.IdRes;
 import android.view.View;
+
+import butterknife.ButterKnife;
 
 
 /**
@@ -26,7 +28,6 @@ public abstract class BaseSlideView implements ISlideMenu {
 
     public BaseSlideView(Activity activity) {
         this.activity = activity;
-        init();
     }
 
     public void setSlideMenu(SlideMenu slideMenu) {
@@ -36,7 +37,8 @@ public abstract class BaseSlideView implements ISlideMenu {
     public View getView() {
         if (slideView == null) {
             slideView = View.inflate(activity, getLayoutId(), null);
-            initView(slideView);
+            ButterKnife.bind(this,slideView);
+            init();
         }
         return slideView;
     }

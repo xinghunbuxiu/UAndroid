@@ -48,42 +48,42 @@ public class DefaultEventDelegate implements EventDelegate {
 
     public DefaultEventDelegate(RecyclerArrayAdapter adapter) {
         this.adapter = adapter;
-        footer = new EventFooter();
-        adapter.addFooter(footer);
+        footer = new EventFooter ( );
+        adapter.addFooter (footer);
     }
 
     public void onMoreViewShowed() {
-        log("onMoreViewShowed");
+        log ("onMoreViewShowed");
         if (!isLoadingMore && onLoadMoreListener != null) {
             isLoadingMore = true;
-            onLoadMoreListener.onLoadMore();
+            onLoadMoreListener.onLoadMore ( );
         }
     }
 
     public void onErrorViewShowed() {
-        resumeLoadMore();
+        resumeLoadMore ( );
     }
 
     //-------------------5个状态触发事件-------------------
     @Override
     public void addData(int length) {
-        log("addData" + length);
+        log ("addData" + length);
         if (hasMore) {
             if (length == 0) {
                 //当添加0个时，认为已结束加载到底
                 if (status == STATUS_INITIAL || status == STATUS_MORE) {
-                    footer.showNoMore();
+                    footer.showNoMore ( );
                 }
             } else {
                 //当Error或初始时。添加数据，如果有More则还原。
                 if (hasMore && (status == STATUS_INITIAL || status == STATUS_ERROR)) {
-                    footer.showMore();
+                    footer.showMore ( );
                 }
                 hasData = true;
             }
         } else {
             if (hasNoMore) {
-                footer.showNoMore();
+                footer.showNoMore ( );
                 status = STATUS_NOMORE;
             }
         }
@@ -92,25 +92,25 @@ public class DefaultEventDelegate implements EventDelegate {
 
     @Override
     public void clear() {
-        log("clear");
+        log ("clear");
         hasData = false;
         status = STATUS_INITIAL;
-        footer.hide();
+        footer.hide ( );
         isLoadingMore = false;
     }
 
     @Override
     public void stopLoadMore() {
-        log("stopLoadMore");
-        footer.showNoMore();
+        log ("stopLoadMore");
+        footer.showNoMore ( );
         status = STATUS_NOMORE;
         isLoadingMore = false;
     }
 
     @Override
     public void pauseLoadMore() {
-        log("pauseLoadMore");
-        footer.showError();
+        log ("pauseLoadMore");
+        footer.showError ( );
         status = STATUS_ERROR;
         isLoadingMore = false;
     }
@@ -118,38 +118,38 @@ public class DefaultEventDelegate implements EventDelegate {
     @Override
     public void resumeLoadMore() {
         isLoadingMore = false;
-        footer.showMore();
-        onMoreViewShowed();
+        footer.showMore ( );
+        onMoreViewShowed ( );
     }
 
     //-------------------3种View设置-------------------
 
     @Override
     public void setMore(View view, OnLoadMoreListener listener) {
-        this.footer.setMoreView(view);
+        this.footer.setMoreView (view);
         this.onLoadMoreListener = listener;
         hasMore = true;
-        log("setMore");
+        log ("setMore");
     }
 
     @Override
     public void setNoMore(View view) {
-        this.footer.setNoMoreView(view);
+        this.footer.setNoMoreView (view);
         hasNoMore = true;
-        log("setNoMore");
+        log ("setNoMore");
     }
 
     @Override
     public void setErrorMore(View view) {
-        this.footer.setErrorView(view);
+        this.footer.setErrorView (view);
         hasError = true;
-        log("setErrorMore");
+        log ("setErrorMore");
     }
 
     /**
      * footView 显示与隐藏
      */
-    private class EventFooter implements RecyclerArrayAdapter.FooterItemView {
+    private class EventFooter implements RecyclerArrayAdapter.ItemView {
         private FrameLayout container;
         private View moreView;
         private View noMoreView;
@@ -163,24 +163,24 @@ public class DefaultEventDelegate implements EventDelegate {
 
 
         public EventFooter() {
-            container = new FrameLayout(adapter.getContext());
-            container.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            container = new FrameLayout (adapter.getContext ( ));
+            container.setLayoutParams (new ViewGroup.LayoutParams (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         }
 
         @Override
-        public View OnCreateFooterViewHolder(ViewGroup parent) {
+        public View onCreateView(ViewGroup parent) {
             return container;
         }
 
         @Override
-        public void onBindFooterData(View headerView, int position) {
-            log("onBindView");
+        public void onBindView(View headerView) {
+            log ("onBindView");
             switch (flag) {
                 case ShowMore:
-                    onMoreViewShowed();
+                    onMoreViewShowed ( );
                     break;
                 case ShowError:
-                    onErrorViewShowed();
+                    onErrorViewShowed ( );
                     break;
             }
         }
@@ -189,11 +189,11 @@ public class DefaultEventDelegate implements EventDelegate {
         public void refreshStatus() {
             if (container != null) {
                 if (flag == Hide) {
-                    container.setVisibility(View.GONE);
+                    container.setVisibility (View.GONE);
                     return;
                 }
-                if (container.getVisibility() != View.VISIBLE)
-                    container.setVisibility(View.VISIBLE);
+                if (container.getVisibility ( ) != View.VISIBLE)
+                    container.setVisibility (View.VISIBLE);
                 View view = null;
                 switch (flag) {
                     case ShowMore:
@@ -207,36 +207,36 @@ public class DefaultEventDelegate implements EventDelegate {
                         break;
                 }
                 if (view == null) {
-                    hide();
+                    hide ( );
                     return;
                 }
-                if (view.getParent() == null) container.addView(view);
-                for (int i = 0; i < container.getChildCount(); i++) {
-                    if (container.getChildAt(i) == view) view.setVisibility(View.VISIBLE);
-                    else container.getChildAt(i).setVisibility(View.GONE);
+                if (view.getParent ( ) == null) container.addView (view);
+                for (int i = 0; i < container.getChildCount ( ); i++) {
+                    if (container.getChildAt (i) == view) view.setVisibility (View.VISIBLE);
+                    else container.getChildAt (i).setVisibility (View.GONE);
                 }
             }
         }
 
         public void showError() {
             flag = ShowError;
-            refreshStatus();
+            refreshStatus ( );
         }
 
         public void showMore() {
             flag = ShowMore;
-            refreshStatus();
+            refreshStatus ( );
         }
 
         public void showNoMore() {
             flag = ShowNoMore;
-            refreshStatus();
+            refreshStatus ( );
         }
 
         //初始化
         public void hide() {
             flag = Hide;
-            refreshStatus();
+            refreshStatus ( );
         }
 
         public void setMoreView(View moreView) {
@@ -256,7 +256,7 @@ public class DefaultEventDelegate implements EventDelegate {
 
     private static void log(String content) {
         if (BuildConfig.LOG_DEBUG) {
-            ULog.e(content);
+            ULog.e (content);
         }
     }
 }

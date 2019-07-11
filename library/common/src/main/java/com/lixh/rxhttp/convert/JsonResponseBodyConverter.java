@@ -35,16 +35,19 @@ public class JsonResponseBodyConverter<T> implements Converter<ResponseBody, T> 
         }
     }
 
-    private String verify(String json) {
-        boolean isOk = json.matches("code|message|data");
+    private <T> String verify(String json) {
+        boolean isOk = json.matches("code|msg|data");
         if (!isOk) {
             BaseResPose result = new BaseResPose();
             result.message = "ok";
-            result.code = "200";
-            result.data = JSON.parse(json);
+            result.code = 200;
+            if (json.startsWith("\\[|\\{")) {
+                result.data = JSON.parse(json);
+            } else {
+                result.data = json;
+            }
             json = JSON.toJSONString(result);
         }
-
         return json;
     }
 }

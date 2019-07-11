@@ -2,10 +2,6 @@ package com.lixh.view;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.annotation.IntDef;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,19 +9,21 @@ import android.view.ViewStub;
 import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
-import android.widget.RelativeLayout.LayoutParams;
+
+import androidx.annotation.IntDef;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import com.ashokvarma.bottomnavigation.BottomNavigationBar;
 import com.ashokvarma.bottomnavigation.BottomNavigationItem;
 import com.lixh.R;
-import com.lixh.rxhttp.Observable;
 import com.lixh.swipeback.SwipeBackActivityBase;
 import com.lixh.swipeback.Utils;
 import com.lixh.swipeback.app.SwipeBackActivityHelper;
 import com.lixh.swipeback.app.SwipeBackLayout;
 import com.lixh.utils.LoadingTip;
 import com.lixh.utils.UIntent;
-import com.lixh.view.SlideMenu.Slide;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -37,13 +35,13 @@ import java.lang.annotation.RetentionPolicy;
  * des
  */
 
-public class LoadView extends Observable implements SwipeBackActivityBase {
+public class LoadView implements SwipeBackActivityBase {
     public static final String TAG = "LoadView";
     private static final int UBLayout = 0x999999;
     public static Activity mContext;
     private RelativeLayout RootView;
     private LoadingTip tip;
-    private Builder builder;
+    private final LoadView.Builder builder;
     private UToolBar toolbar;
     private ViewStub view_Stub;
     int windowType;
@@ -55,35 +53,36 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
     private UIntent intent;
 
     //定义通用的布局 根布局为Liearlayout +ToolBar + LinearLayout
-    public LoadView(Builder builder, int windowType) {
+    public LoadView(LoadView.Builder builder, int windowType) {
         this.builder = builder;
         this.windowType = windowType;
-        commonView(builder);
+        this.commonView(builder);
 
     }
 
     public UToolBar getToolbar() {
-        return toolbar;
+        return this.toolbar;
     }
 
     public UIntent getIntent() {
-        return this.intent;
+        return intent;
     }
 
     //返回布局View
-    public View getRootView() {
-        return RootView;
+    public RelativeLayout getRootView() {
+        return this.RootView;
     }
 
     //通用布局
-    public void commonView(Builder builder) {
-        RootView = (RelativeLayout) builder.inflate(builder.contentTop ? R.layout.status_toolbar_layout : R.layout.toolbar_layout);
-        initToolBar();
-        initBottomView();
-        initSwipe(builder.swipeBack);
-        initSlideMenu(builder.slideMenu);
-        intent = new UIntent(mContext);
+    public void commonView(LoadView.Builder builder) {
+        this.RootView = (RelativeLayout) builder.inflate(builder.contentTop ? R.layout.status_toolbar_layout : R.layout.toolbar_layout);
+        this.initToolBar();
+        this.initBottomView();
+        this.initSwipe(builder.swipeBack);
+        this.initSlideMenu(builder.slideMenu);
+        this.intent = new UIntent(LoadView.mContext);
     }
+
 
     /**
      * 底部导航条
@@ -92,134 +91,141 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
      * @param hasBottomBar
      * @param root
      */
-    private void initBottomBar(boolean hasBottomBar, LayoutParams root) {
+    private void initBottomBar(boolean hasBottomBar, RelativeLayout.LayoutParams root) {
         if (hasBottomBar) {
-            bottomLayoutHelper = new BottomLayoutHelper(builder);
-            RootView.addView(bottomLayoutHelper.getLayout(), root);
-            bottomLayoutHelper.initBottomBarLayout();
+            this.bottomLayoutHelper = new BottomLayoutHelper(this.builder);
+            this.RootView.addView(this.bottomLayoutHelper.getLayout(), root);
+            this.bottomLayoutHelper.initBottomBarLayout();
         }
     }
 
     private void initSlideMenu(boolean slideMenu) {
         if (slideMenu) {
-            slideMenu1 = new SlideMenu(mContext);
-            slideMenu1.setId(R.id.slideMenu);
-            slideMenu1.setLayoutParams(new FrameLayout.LayoutParams(
+            this.slideMenu1 = new SlideMenu(LoadView.mContext);
+            this.slideMenu1.setId(R.id.slideMenu);
+            this.slideMenu1.setLayoutParams(new FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT));
         }
     }
 
     private void initBottomView() {
-        LayoutParams root = getLayoutParams();
+        RelativeLayout.LayoutParams root = this.getLayoutParams();
         root.addRule(RelativeLayout.BELOW, R.id.toolbar);
-        tip = getEmptyView();
-        RootView.addView(tip, root);
-        if (builder.mBottomLayout > 0) {
-            RootView.addView(builder.inflate(builder.mBottomLayout), root);
+        this.tip = this.getEmptyView();
+        if (this.builder.mBottomLayout > 0) {
+            this.RootView.addView(this.builder.inflate(this.builder.mBottomLayout), root);
         } else {
-            initBottomBar(builder.hasBottomBar, root);
+            this.initBottomBar(this.builder.hasBottomBar, root);
         }
-        if (windowType == WindowType.ACTIVITY) {
-            createActivity();
+        this.RootView.addView(this.tip, root);
+        if (this.windowType == LoadView.WindowType.ACTIVITY) {
+            this.createActivity();
         }
-        if (toolbar != null) {
-            toolbar.bringToFront();
+        if (this.toolbar != null) {
+            this.toolbar.bringToFront();
         }
     }
 
     public LoadView createActivity() {
-        mContext.findViewById(Window.ID_ANDROID_CONTENT);
-        Window window = mContext.getWindow();
+        LoadView.mContext.findViewById(Window.ID_ANDROID_CONTENT);
+        Window window = LoadView.mContext.getWindow();
         ViewGroup decorView = (ViewGroup) window.getDecorView();
         decorView.setId(Window.ID_ANDROID_CONTENT);
         decorView.removeAllViews();
-        decorView.addView(RootView);
+        decorView.addView(this.RootView);
         return this;
     }
-    public LayoutParams getLayoutParams() {
-        return new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+
+    public RelativeLayout.LayoutParams getLayoutParams() {
+        return new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
     }
 
     private void initToolBar() {
-        view_Stub = (ViewStub) RootView.findViewById(R.id.title_stub);
-        if (builder.hasToolbar) {
-            toolbar = (UToolBar) view_Stub.inflate();
-            if (builder.contentTop) {
-                toolbar.setHasBar();
+        this.view_Stub = this.RootView.findViewById(R.id.title_stub);
+        if (this.builder.hasToolbar) {
+            this.toolbar = (UToolBar) this.view_Stub.inflate();
+            if (this.builder.contentTop) {
+                this.toolbar.setHasBar();
             }
         } else {
-            RootView.removeView(view_Stub);
+            this.RootView.removeView(this.view_Stub);
         }
     }
 
     public static int sp2px(float spValue) {
-        final float fontScale = mContext.getResources().getDisplayMetrics().scaledDensity;
+        float fontScale = LoadView.mContext.getResources().getDisplayMetrics().scaledDensity;
         return (int) (spValue * fontScale + 0.5f);
     }
 
     public void setContentView(View view) {
-        setContentView(view, true);
+        this.setContentView(view, true);
     }
 
     public void setContentView(View view, boolean belowTitle) {
-        LayoutParams root = getLayoutParams();
+        RelativeLayout.LayoutParams root = this.getLayoutParams();
         if (belowTitle) {
             root.addRule(RelativeLayout.BELOW, R.id.toolbar);
         }
-        RootView.addView(view, root);
-        if (toolbar != null) {
-            toolbar.bringToFront();
+        this.RootView.addView(view, root);
+        if (this.toolbar != null) {
+            this.toolbar.bringToFront();
         }
+    }
+
+    public void addView(View view, RelativeLayout.LayoutParams lp, boolean belowTitle) {
+        if (belowTitle) {
+            lp.addRule(RelativeLayout.BELOW, R.id.toolbar);
+        }
+        this.RootView.addView(view, lp);
     }
 
     public void initSwipe(boolean enable) {
         if (enable) {
-            mHelper = new SwipeBackActivityHelper(mContext);
-            mHelper.onActivityCreate();
+            this.mHelper = new SwipeBackActivityHelper(LoadView.mContext);
+            this.mHelper.onActivityCreate();
             //侧滑
-            mSwipeBackLayout = getSwipeBackLayout();
-            mSwipeBackLayout.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);
-            setSwipeBackEnable(enable);
+            this.mSwipeBackLayout = this.getSwipeBackLayout();
+            this.mSwipeBackLayout.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);
+            this.setSwipeBackEnable(enable);
         }
     }
+
     public LoadingTip getEmptyView() {
-        if (tip == null) {
-            tip = new LoadingTip(mContext);
+        if (this.tip == null) {
+            this.tip = new LoadingTip(LoadView.mContext);
         }
-        return tip;
+        return this.tip;
     }
-
-
 
 
     @Override
     public SwipeBackLayout getSwipeBackLayout() {
-        if (mHelper != null) {
-            return mHelper.getSwipeBackLayout();
+        if (this.mHelper != null) {
+            return this.mHelper.getSwipeBackLayout();
         } else return null;
     }
 
 
     @Override
     public void scrollToFinishActivity() {
-        Utils.convertActivityToTranslucent(mContext);
-        SwipeBackLayout swipeBackLayout = getSwipeBackLayout();
+        Utils.convertActivityToTranslucent(LoadView.mContext);
+        SwipeBackLayout swipeBackLayout = this.getSwipeBackLayout();
         if (swipeBackLayout != null) {
             swipeBackLayout.scrollToFinishActivity();
         }
     }
 
     public void onPostCreate() {
-        if (mHelper != null) {
-            mHelper.onPostCreate();
+        if (this.mHelper != null) {
+            this.mHelper.onPostCreate();
         }
-        if (slideMenu1 != null) {
-            slideMenu1.attachToActivity(mContext);
-            int slide = builder.slide;
-            BaseSlideView view = builder.slideView;
-            if (view != null && slide != Slide.NONE) {
-                slideMenu1.addSlideView(view, slide);
+        if (this.slideMenu1 != null) {
+            this.slideMenu1.attachToActivity(LoadView.mContext);
+            int slide = this.builder.slide;
+            BaseSlideView view = this.builder.slideView;
+            if (view != null && slide != SlideMenu.Slide.NONE) {
+                this.slideMenu1.addSlideView(view, slide);
             }
 
         }
@@ -230,18 +236,19 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
      */
     @Override
     public void setSwipeBackEnable(boolean enable) {
-        getSwipeBackLayout().setEnableGesture(enable);
+        this.getSwipeBackLayout().setEnableGesture(enable);
     }
 
     @IntDef({
-            WindowType.ACTIVITY,
-            WindowType.FRAGMENT,
+            LoadView.WindowType.ACTIVITY,
+            LoadView.WindowType.FRAGMENT,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface WindowType {
         int FRAGMENT = 1;
         int ACTIVITY = 2;
     }
+
     public static class Builder {
 
         public int mBottomLayout;
@@ -251,7 +258,7 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
         public boolean slideMenu;
         public boolean hasBottomBar;
         public int bottomBarLayout;
-        @Slide
+        @SlideMenu.Slide
         public int slide;
         public BaseSlideView slideView;
         public LayoutInflater layoutInflater;
@@ -261,20 +268,20 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
         public BottomNavigationBar.OnTabSelectedListener tabSelectedListener;
 
         public Builder(FragmentActivity context) {
-            mContext = context;
-            supportFragmentManager = context.getSupportFragmentManager();
-            fragments = null;
-            items = null;
-            mBottomLayout = -1;
-            bottomBarLayout = -1;
-            hasToolbar=true;
-            slideView = null;
-            contentTop = true;
-            slideMenu = false;
-            swipeBack = true;
-            hasBottomBar = false;
-            tabSelectedListener = null;
-            slide = Slide.NONE;
+            LoadView.mContext = context;
+            this.supportFragmentManager = context.getSupportFragmentManager();
+            this.fragments = null;
+            this.items = null;
+            this.mBottomLayout = -1;
+            this.bottomBarLayout = -1;
+            this.hasToolbar = true;
+            this.slideView = null;
+            this.contentTop = true;
+            this.slideMenu = false;
+            this.swipeBack = true;
+            this.hasBottomBar = false;
+            this.tabSelectedListener = null;
+            this.slide = SlideMenu.Slide.NONE;
         }
 
         /**
@@ -283,7 +290,7 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
          * @param items
          * @return
          */
-        public Builder addItem(BottomNavigationItem... items) {
+        public LoadView.Builder addItem(BottomNavigationItem... items) {
             this.items = items;
             return this;
         }
@@ -294,50 +301,53 @@ public class LoadView extends Observable implements SwipeBackActivityBase {
          * @param fragments
          * @return
          */
-        public Builder addFragment(Fragment... fragments) {
+        public LoadView.Builder addFragment(Fragment... fragments) {
             this.fragments = fragments;
             return this;
         }
 
         public View inflate(int layoutResID) {
-            if (layoutInflater == null) {
-                layoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            if (this.layoutInflater == null) {
+                this.layoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             }
-            return layoutInflater.inflate(layoutResID, null);
+            return this.layoutInflater.inflate(layoutResID, null);
         }
 
         public void setOnTabSelectedListener(BottomNavigationBar.OnTabSelectedListener listener) {
-            this.tabSelectedListener = listener;
+            tabSelectedListener = listener;
         }
-        public Builder setSlideMenu(@Slide int slide, BaseSlideView slideView) {
+
+        public LoadView.Builder setSlideMenu(@SlideMenu.Slide int slide, BaseSlideView slideView) {
             this.slide = slide;
-            if (slide != Slide.NONE) {
-                slideMenu = true;
+            if (slide != SlideMenu.Slide.NONE) {
+                this.slideMenu = true;
             }
             this.slideView = slideView;
             return this;
         }
+
         public LoadView createActivity() {
-            return new LoadView(this, WindowType.ACTIVITY);
+            return new LoadView(this, LoadView.WindowType.ACTIVITY);
         }
 
 
         public LoadView createFragment() {
-            return new LoadView(this, WindowType.FRAGMENT);
+            return new LoadView(this, LoadView.WindowType.FRAGMENT);
         }
 
-        public Builder requestWindowFeature(int featureNoTitle) {
-            mContext.requestWindowFeature(featureNoTitle);
-            return this;
-        }
-        public Builder setRequestedOrientation(int requestedOrientation) {
-            mContext.requestWindowFeature(requestedOrientation);
+        public LoadView.Builder requestWindowFeature(int featureNoTitle) {
+            LoadView.mContext.requestWindowFeature(featureNoTitle);
             return this;
         }
 
-        public Builder initBottomBarLayout(View view) {
+        public LoadView.Builder setRequestedOrientation(int requestedOrientation) {
+            LoadView.mContext.requestWindowFeature(requestedOrientation);
+            return this;
+        }
+
+        public LoadView.Builder initBottomBarLayout(View view) {
             return this;
         }
     }
-    ;
+
 }

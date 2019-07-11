@@ -2,10 +2,21 @@
 <resources>
     <color name="blue">#58BEdf</color>
     <color name="gray">#5ffffd</color>
-    <color name="white">#FFFFFF</color>
     <color name="color_sys_bg">#58BEdf</color>
-    <color name="color_view_line">#58BEdf</color>
+    <color name="color_view_line">#cccccc</color>
     <color name="tip">#88303F9F</color>
+    <color name="white">#FFFFFF</color>
+    <!--common-->
+    <color name="transparent">#00000000</color>
+    <color name="translucent">#99343434</color>
+    <color name="orange">#DE6014</color>
+    <color name="light_pink">#fb9090</color>
+    <color name="light_white">#EEEEEE</color>
+    <color name="light_coffee">#A58D5E</color>
+    <color name="light_red">#EC4A48</color>
+    <color name="light_blue">#039BE5</color>
+    <color name="light_translucent">#23000000</color>
+    <color name="common_gray">#EEEEEE</color>
     <!-- 白色 -->
     <color name="common_pressed">#20000000</color>  <!--白色背景按下去的颜色-->
     <color name="line">#e8e8e8</color>

@@ -17,10 +17,10 @@
 package com.lixh.swipeback;
 
 import android.content.Context;
-import android.support.v4.view.MotionEventCompat;
-import android.support.v4.view.VelocityTrackerCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.widget.ScrollerCompat;
+import androidx.core.view.MotionEventCompat;
+import androidx.core.view.VelocityTrackerCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.widget.ScrollerCompat;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -255,7 +255,7 @@ public class ViewDragHelper {
 
         /**
          * Called when the user has started a deliberate drag away from one of
-         * the subscribed edges in the parent view while no child view is
+         * the subscribed edges in the parent com.angel.recycling.desewang.view while no child com.angel.recycling.desewang.view is
          * currently captured.
          *
          * @param edgeFlags A combination of edge flags describing the edge(s)
@@ -551,7 +551,7 @@ public class ViewDragHelper {
     }
 
     /**
-     * @return The currently captured view, or null if no view has been
+     * @return The currently captured com.angel.recycling.desewang.view, or null if no com.angel.recycling.desewang.view has been
      * captured.
      */
     public View getCapturedView() {
@@ -1208,7 +1208,7 @@ public class ViewDragHelper {
                         mCallback.onEdgeTouched(edgesTouched & mTrackingEdges, pointerId);
                     }
                 } else if (isCapturedViewUnder((int) x, (int) y)) {
-                    // We're still tracking a captured view. If the same view is
+                    // We're still tracking a captured com.angel.recycling.desewang.view. If the same com.angel.recycling.desewang.view is
                     // under this
                     // point, we'll swap to controlling it with this pointer
                     // instead.
@@ -1511,7 +1511,7 @@ public class ViewDragHelper {
 
     /**
      * Determine if the currently captured view is under the given point in the
-     * parent view's coordinate system. If there is no captured view this method
+     * parent com.angel.recycling.desewang.view's coordinate system. If there is no captured com.angel.recycling.desewang.view this method
      * will return false.
      *
      * @param x X position to test in the parent's coordinate system

@@ -2,8 +2,8 @@ package com.lixh.view.refresh;
 
 import android.content.Context;
 import android.os.Parcelable;
-import android.support.v4.view.MotionEventCompat;
-import android.support.v7.widget.RecyclerView;
+import androidx.core.view.MotionEventCompat;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -41,6 +41,7 @@ public class SpringView extends ViewGroup {
     ScrollState scrollState = ScrollState.NONE;
     StateType stateType = StateType.NONE;
     private int MOVE_TIME = 400;
+
     public void setImplPull(ImplPull implPull) {
         this.implPull = implPull;
     }
@@ -89,18 +90,19 @@ public class SpringView extends ViewGroup {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         // 计算出所有的childView的宽和高
         measureChildren(widthMeasureSpec, heightMeasureSpec);
-        if (mHeader != null) {
+        if (mHeader != null && onRefreshListener != null) {
             int th = mHeader.getDragMaxHeight();
             MAX_HEADER_PULL_HEIGHT = th > 0 ? th : MAX_HEADER_PULL_HEIGHT;
         }
-        if (mFooter != null) {
-            int bh = mHeader.getDragMaxHeight();
+        if (mFooter != null && onLoadListener != null) {
+            int bh = mFooter.getDragMaxHeight();
             MAX_HEADER_PULL_HEIGHT = bh > 0 ? bh : MAX_HEADER_PULL_HEIGHT;
         }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     boolean isFirstLoad = true;
+
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
@@ -111,6 +113,9 @@ public class SpringView extends ViewGroup {
         }
         if (mChildView == null) {
             mChildView = getChildAt(getChildCount() - 1);
+        }
+        if (mChildView instanceof RecyclerView){
+
         }
         if (footView == null && onLoadListener != null) {
             footView = new CustomFootView(context);
@@ -135,6 +140,7 @@ public class SpringView extends ViewGroup {
     }
 
     private OverScroller mScroller;
+
     private void init(Context context, AttributeSet attrs, int defstyleAttr) {
         if (isInEditMode()) {
             return;
@@ -360,6 +366,7 @@ public class SpringView extends ViewGroup {
             invalidate();
         }
     }
+
     @Override
     public void scrollTo(int x, int y) {
         if (implPull == null) {
@@ -390,8 +397,9 @@ public class SpringView extends ViewGroup {
             setStateType(StateType.LOADING);
             scrollState = ScrollState.NONE;
             mScroller.startScroll(0, getScrollY(), 0, -getScrollY() - implPull.getHeight(), MOVE_TIME);
-            onRefreshListener.onRefresh();
             invalidate();
+            postDelayed(() -> onRefreshListener.onRefresh(), 400);
+
         }
 
     }
@@ -401,24 +409,22 @@ public class SpringView extends ViewGroup {
             setStateType(StateType.LOADING);
             scrollState = ScrollState.NONE;
             mScroller.startScroll(0, getScrollY(), 0, -getScrollY() + implPull.getHeight(), MOVE_TIME);
-            onLoadListener.onLoad();
             invalidate();
+            postDelayed(() -> onLoadListener.onLoad(), 400);
         }
 
     }
 
     public void finishRefreshAndLoadMore() {
         setStateType(StateType.LOAD_CLOSE);
-        this.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (needResetAnim) {
-                    eventUp();
-                    setStateType(StateType.NONE);
-                }
+        this.postDelayed(() -> {
+            if (needResetAnim) {
+                eventUp();
+                setStateType(StateType.NONE);
             }
         }, 400);
     }
+
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         if (mHeader != null && onRefreshListener != null) {

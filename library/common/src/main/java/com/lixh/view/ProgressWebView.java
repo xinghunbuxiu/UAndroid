@@ -18,10 +18,13 @@ package com.lixh.view;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.webkit.DownloadListener;
 import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
@@ -82,19 +85,43 @@ public class ProgressWebView extends LinearLayout {
 
         mWebView.addJavascriptInterface(this, "android");
 
-        WebSettings webSettings = mWebView.getSettings();
+        WebSettings mWebSettings = mWebView.getSettings ( );
+        mWebSettings.setJavaScriptEnabled (true);
+        mWebSettings.setDefaultTextEncodingName ("utf-8");
+        mWebSettings.setCacheMode (WebSettings.LOAD_DEFAULT);
+        mWebSettings.setPluginState (WebSettings.PluginState.ON);
+        mWebSettings.setDisplayZoomControls (false);
+        mWebSettings.setUseWideViewPort (true);
+        mWebSettings.setAllowFileAccess (true);
+        mWebSettings.setAllowContentAccess (true);
+        mWebSettings.setSupportZoom (true);
+        mWebSettings.setAllowContentAccess (true);
+        mWebSettings.setLoadWithOverviewMode (true);
+        mWebSettings.setBuiltInZoomControls (true);// 隐藏缩放按钮
+        mWebSettings.setUseWideViewPort (true);// 可任意比例缩放
+        mWebSettings.setLoadWithOverviewMode (true);// setUseWideViewPort方法设置webview推荐使用的窗口。setLoadWithOverviewMode方法是设置webview加载的页面的模式。
+        mWebSettings.setSavePassword (true);
+        mWebSettings.setSaveFormData (true);// 保存表单数据
+        mWebSettings.setJavaScriptEnabled (true);
+        mWebSettings.setTextZoom (100);
 
-        webSettings.setJavaScriptEnabled(true);
-        // 设置可以访问文件
-        webSettings.setAllowFileAccess(true);
-        // 设置可以支持缩放
-        webSettings.setSupportZoom(true);
-        // 设置默认缩放方式尺寸是far
-        webSettings.setDefaultZoom(WebSettings.ZoomDensity.MEDIUM);
-        // 设置出现缩放工具
-        webSettings.setBuiltInZoomControls(false);
-        webSettings.setDefaultFontSize(16);
-
+        mWebSettings.setDomStorageEnabled (true);
+        mWebSettings.setSupportMultipleWindows (true);// 新加//我就是没有这一行，死活不出来。MD，硬是没有人写这一句！
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mWebSettings.setMixedContentMode (WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            mWebSettings.setMediaPlaybackRequiresUserGesture (true);
+        }
+        if (Build.VERSION.SDK_INT >= 16) {
+            mWebSettings.setAllowFileAccessFromFileURLs (true);
+            mWebSettings.setAllowUniversalAccessFromFileURLs (true);
+        }
+        mWebSettings.setJavaScriptCanOpenWindowsAutomatically (true);
+        mWebSettings.setAppCacheEnabled (false);
+        mWebSettings.setDatabaseEnabled (true);
+        mWebSettings.setGeolocationDatabasePath (getContext ( ).getDir ("database", 0).getPath ( ));
+        mWebSettings.setGeolocationEnabled (false);
         mWebView.loadUrl(url);
 
         // 设置WebViewClient

@@ -4,8 +4,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.RelativeLayout;
 
-import com.lixh.utils.ULog;
-
 /**
  * Created by LIXH on 2017/4/5.
  * email lixhVip9@163.com
@@ -40,7 +38,6 @@ public class MyRelativeLayout extends RelativeLayout {
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        ULog.e(t + "" + getPaddingTop());
         super.onLayout(changed, l, t, r, b);
 
     }

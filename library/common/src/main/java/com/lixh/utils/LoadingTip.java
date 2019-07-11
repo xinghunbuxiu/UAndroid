@@ -3,7 +3,7 @@ package com.lixh.utils;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
-import android.support.annotation.IntDef;
+import androidx.annotation.IntDef;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -117,7 +117,7 @@ public class LoadingTip extends LinearLayout {
     }
 
     @IntDef({
-            LoadStatus.SHOW_LOAD_MORE_VIEW,//分页加载失败
+            LoadStatus.SHOW_LOAD_MORE_ERROR,//分页加载失败
             LoadStatus.SERVER_ERROR,//分为服务器失败
             LoadStatus.NET_ERROR,//网络加载失败
             LoadStatus.EMPTY,//数据为空
@@ -126,7 +126,7 @@ public class LoadingTip extends LinearLayout {
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface LoadStatus {
-        int SHOW_LOAD_MORE_VIEW = 1;
+        int SHOW_LOAD_MORE_ERROR = 1;
         int SERVER_ERROR = 2;
         int NET_ERROR = 3;
         int EMPTY = 4;

@@ -6,8 +6,8 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
@@ -17,8 +17,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.lixh.base.adapter.ViewHelper;
-import com.lixh.utils.GlideCircleTransfromUtil;
-import com.lixh.utils.GlideRoundTransformUtil;
 
 public class EasyRVHolder extends RecyclerView.ViewHolder implements ViewHelper.RecyclerView<EasyRVHolder> {
 
@@ -125,23 +123,6 @@ public class EasyRVHolder extends RecyclerView.ViewHolder implements ViewHelper.
         return this;
     }
 
-    public EasyRVHolder setImageUrl(int viewId, String imgUrl, int placeHolderRes) {
-        ImageView view = getView(viewId);
-        Glide.with(mContext).load(imgUrl).placeholder(placeHolderRes).into(view);
-        return this;
-    }
-
-    public EasyRVHolder setCircleImageUrl(int viewId, String imgUrl, int placeHolderRes) {
-        ImageView view = getView(viewId);
-        Glide.with(mContext).load(imgUrl).placeholder(placeHolderRes) .transform(new GlideCircleTransfromUtil(mContext)).into(view);
-        return this;
-    }
-
-    public EasyRVHolder setRoundImageUrl(int viewId, String imgUrl, int placeHolderRes) {
-        ImageView view = getView(viewId);
-        Glide.with(mContext).load(imgUrl).placeholder(placeHolderRes) .transform(new GlideRoundTransformUtil(mContext)).into(view);
-        return this;
-    }
 
     @Override
     public EasyRVHolder setImageBitmap(int viewId, Bitmap imgBitmap) {

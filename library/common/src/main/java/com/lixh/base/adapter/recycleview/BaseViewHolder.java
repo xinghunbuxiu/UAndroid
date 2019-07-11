@@ -21,10 +21,9 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.annotation.IdRes;
-import android.support.annotation.LayoutRes;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.LayoutRes;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,8 +34,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.lixh.utils.GlideCircleTransfromUtil;
-import com.lixh.utils.GlideRoundTransformUtil;
 
 
 /**
@@ -76,10 +73,6 @@ public class BaseViewHolder<M> extends RecyclerView.ViewHolder {
         mContext = mConvertView.getContext();
     }
 
-    protected <T extends View> T $(@IdRes int id) {
-        return (T) itemView.findViewById(id);
-    }
-
     protected Context getContext() {
         return mContext == null ? (mContext = itemView.getContext()) : mContext;
     }
@@ -91,6 +84,10 @@ public class BaseViewHolder<M> extends RecyclerView.ViewHolder {
             mViews.put(viewId, view);
         }
         return (V) view;
+    }
+
+    public void setData(M item) {
+
     }
 
     public int getLayoutId() {
@@ -164,23 +161,6 @@ public class BaseViewHolder<M> extends RecyclerView.ViewHolder {
         return this;
     }
 
-    public BaseViewHolder setImageUrl(int viewId, String imgUrl, int placeHolderRes) {
-        ImageView view = getView(viewId);
-        Glide.with(mContext).load(imgUrl).placeholder(placeHolderRes).into(view);
-        return this;
-    }
-
-    public BaseViewHolder setCircleImageUrl(int viewId, String imgUrl, int placeHolderRes) {
-        ImageView view = getView(viewId);
-        Glide.with(mContext).load(imgUrl).placeholder(placeHolderRes).transform(new GlideCircleTransfromUtil(mContext)).into(view);
-        return this;
-    }
-
-    public BaseViewHolder setRoundImageUrl(int viewId, String imgUrl, int placeHolderRes) {
-        ImageView view = getView(viewId);
-        Glide.with(mContext).load(imgUrl).placeholder(placeHolderRes).transform(new GlideRoundTransformUtil(mContext)).into(view);
-        return this;
-    }
 
     public BaseViewHolder setImageBitmap(int viewId, Bitmap imgBitmap) {
         ImageView view = getView(viewId);
@@ -251,5 +231,6 @@ public class BaseViewHolder<M> extends RecyclerView.ViewHolder {
         view.setOnClickListener(listener);
         return this;
     }
+
 
 }

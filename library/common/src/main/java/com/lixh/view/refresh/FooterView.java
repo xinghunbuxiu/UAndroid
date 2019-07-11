@@ -1,7 +1,7 @@
 package com.lixh.view.refresh;
 
 import android.content.Context;
-import android.support.annotation.IdRes;
+import androidx.annotation.IdRes;
 import android.view.LayoutInflater;
 import android.view.View;
 

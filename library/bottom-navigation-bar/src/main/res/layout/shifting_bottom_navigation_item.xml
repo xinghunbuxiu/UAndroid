@@ -37,6 +37,7 @@
         android:id="@+id/shifting_bottom_navigation_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
         android:layout_gravity="center_horizontal|bottom"
         android:gravity="center"
         android:includeFontPadding="false"

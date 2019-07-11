@@ -1,18 +1,30 @@
 apply plugin: 'com.android.library'
-apply plugin: 'realm-android'
 
 android {
-    compileSdkVersion rootProject.ext.android.compileSdkVersion
-    buildToolsVersion rootProject.ext.android.buildToolsVersion
+    compileSdkVersion rootProject.ext.versions.compileSdkVersion
     defaultConfig {
-        minSdkVersion rootProject.ext.android.minSdkVersion
-        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        minSdkVersion rootProject.ext.versions.minSdkVersion
+        targetSdkVersion rootProject.ext.versions.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        //添加如下配置就OK了
+        javaCompileOptions {
+            annotationProcessorOptions {
+                includeCompileClasspath = true
+            }
+        }
+    }
+    lintOptions {
+        abortOnError false
     }
     buildTypes {
         debug {
+            // 显示Log
             buildConfigField "boolean", "LOG_DEBUG", "true"
+            versionNameSuffix "-debug"
+            minifyEnabled false
+            zipAlignEnabled false
+            shrinkResources false
         }
         release {
             buildConfigField "boolean", "LOG_DEBUG", "false"
@@ -20,6 +32,14 @@ android {
             zipAlignEnabled true
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    lintOptions {
+        abortOnError false
+    }
+
 }
 
 dependencies {
@@ -28,27 +48,38 @@ dependencies {
     //retrofit和rxjava
     //json解析封装框架
     //注解绑定
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile project(':library:bottom-navigation-bar')
+    api fileTree(include: ['*.jar'], dir: 'libs')
+    api project(':library:bottom-navigation-bar')
+    api rootProject.ext.dependencies.multidex
     //基本东西
-    compile rootProject.ext.dependencies.butterknife
-    compile rootProject.ext.dependencies.appcompatV7
-    compile rootProject.ext.dependencies.design
-    compile rootProject.ext.dependencies.spinkit
-    compile rootProject.ext.dependencies.recycle
-    compile rootProject.ext.dependencies.fastJson
-    compile rootProject.ext.dependencies.rxpermissions
-    compile 'com.github.bumptech.glide:glide:3.6.1'
-    compile 'com.squareup.retrofit2:retrofit:2.1.0'
-    compile 'com.squareup.okhttp3:logging-interceptor:3.1.2'
-    compile 'io.reactivex:rxjava:1.0.1'
-    compile 'io.reactivex:rxandroid:1.0.1'
-    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
-    compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
-    testCompile 'junit:junit:4.12'
+    api rootProject.ext.dependencies.butterknife
+    api rootProject.ext.dependencies.appcompatV7
+    api rootProject.ext.dependencies.design
+    api rootProject.ext.dependencies.recycle
+    api rootProject.ext.dependencies.fastJson
+    api rootProject.ext.dependencies.rxpermissions
+    api rootProject.ext.dependencies.constraintLayout
+    api rootProject.ext.dependencies.rxandroid
+    api rootProject.ext.dependencies.glide
+    api rootProject.ext.dependencies.retrofit2gson
+    api rootProject.ext.dependencies.retrofit2Adapter
+    api rootProject.ext.dependencies.okhttp
+    api rootProject.ext.dependencies.okhttpLog
+    api rootProject.ext.dependencies.zxing_android      //zxing核心依赖
+    api rootProject.ext.dependencies.zxing
+
+    api 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.22'
+    api 'com.github.walkermanx:PhotoPicker:1.0.5'
+
     //dialog
-    compile 'com.flyco.dialog:FlycoDialog_Lib:1.3.2@aar'
-    compile 'com.afollestad.material-dialogs:core:0.9.4.5'
-    compile 'com.nineoldandroids:library:2.4.0'
-    compile 'com.youth.banner:banner:1.4.9'  //最新版本
+    api 'com.flyco.dialog:FlycoDialog_Lib:1.3.2@aar'
+    api('com.afollestad.material-dialogs:core:0.9.4.5') {
+        exclude group: 'com.android.support'
+    }
+    api 'com.nineoldandroids:library:2.4.0'
+    api 'com.youth.banner:banner:1.4.9'  //最新版本
+    api('com.alibaba.android:vlayout:1.2.2@aar') {              //阿里巴巴UI
+        transitive = true
+    }
+
 }

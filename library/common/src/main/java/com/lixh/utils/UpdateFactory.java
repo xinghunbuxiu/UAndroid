@@ -80,8 +80,8 @@ public enum UpdateFactory {
 
     public void init(Activity context) {
         this.context = context;
-        LocalAppInfo.init(context);
-        apkUrl = LocalAppInfo.getLocalAppInfo().getPackageName() + ".apk";
+        Global.init(context);
+        apkUrl = Global.get().getPackageName() + ".apk";
         SharedPreferencesUtil.getInstance().init(context, "Update", Context.MODE_PRIVATE);
         mNotificationManager = (NotificationManager) context.getSystemService(android.content.Context.NOTIFICATION_SERVICE);
         builder = new UpdateHelper.Builder(context);

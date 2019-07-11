@@ -67,6 +67,7 @@ public class UToast {
         initToast(message, duration).show();
     }
 
+
     /**
      * 自定义显示Toast时间
      *

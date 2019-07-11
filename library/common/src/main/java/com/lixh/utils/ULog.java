@@ -35,6 +35,11 @@ public class ULog {
         }
     }
 
+    public static void w(String message) {
+        if (DEBUG_ENABLE) {
+            Logger.w(message);
+        }
+    }
     public static void e(String e) {
         if (DEBUG_ENABLE) {
             Logger.e(e);

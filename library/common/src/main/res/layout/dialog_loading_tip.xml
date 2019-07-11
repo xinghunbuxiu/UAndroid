@@ -13,9 +13,8 @@
         android:src="@mipmap/ic_empty_picture"
         android:visibility="gone" />
 
-    <com.github.ybq.android.spinkit.SpinKitView
+    <ProgressBar
         android:id="@+id/propress"
-        style="@style/SpinKitView.Circle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

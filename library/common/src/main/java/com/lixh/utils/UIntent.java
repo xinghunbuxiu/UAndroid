@@ -2,19 +2,22 @@ package com.lixh.utils;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.NavUtils;
-import android.support.v4.app.TaskStackBuilder;
+import android.text.TextUtils;
 import android.util.Size;
 import android.util.SizeF;
 import android.util.SparseArray;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.NavUtils;
+import androidx.core.app.TaskStackBuilder;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -36,8 +39,6 @@ public class UIntent {
     public UIntent with(Bundle bundle) {
         if (null != bundle) {
             mBundle = bundle;
-        } else {
-            mBundle = new Bundle();
         }
 
         return this;
@@ -51,6 +52,7 @@ public class UIntent {
         mBundle = new Bundle();
         return this;
     }
+
     /**
      * Set special flags controlling how this intent is handled.  Most values
      * here depend on the type of component being executed by the Intent,
@@ -362,21 +364,19 @@ public class UIntent {
     public UIntent(Activity mContext) {
         this.mContext = mContext;
         mBundle = mContext.getIntent().getExtras();
+        if (mBundle == null) {
+            mBundle = new Bundle();
+        }
     }
 
 
-    public void goSetActivity() {
-        Intent localIntent = new Intent();
-        if (Build.VERSION.SDK_INT >= 9) {
-            localIntent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS")
-                    .setData(Uri.fromParts("package", mContext.getPackageName(), null));
-        } else if (Build.VERSION.SDK_INT <= 8) {
-            localIntent.setAction(Intent.ACTION_VIEW).
-                    setClassName("com.android.settings", "com.android.settings.InstalledAppDetails")
-                    .putExtra("com.android.settings.ApplicationPkgName", mContext.getPackageName());
-        }
-        localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        mContext.startActivity(localIntent);
+    public static void goSetActivity(Context context) {
+        Intent intent = new Intent("android.settings.APPLICATION_DETAILS_SETTINGS");
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("package:");
+        stringBuilder.append(context.getPackageName());
+        intent.setData(Uri.parse(stringBuilder.toString()));
+        context.startActivity(intent);
     }
 
     /**
@@ -424,6 +424,14 @@ public class UIntent {
 
     public char getChar(String key, char defaultValue) {
         return mBundle.getChar(key, defaultValue);
+    }
+
+    public int getInt(String key) {
+        return mBundle.getInt(key);
+    }
+
+    public int getInt(String key, int defaultValue) {
+        return mBundle.getInt(key, defaultValue);
     }
 
     /**
@@ -603,8 +611,8 @@ public class UIntent {
      * @return a Serializable value, or null
      */
     @Nullable
-    public Serializable getSerializable(@Nullable String key) {
-        return mBundle.getSerializable(key);
+    public <T> T getSerializable(@Nullable String key) {
+        return (T) mBundle.getSerializable(key);
     }
 
     /**
@@ -631,6 +639,14 @@ public class UIntent {
     @Nullable
     public ArrayList<String> getStringArrayList(@Nullable String key) {
         return mBundle.getStringArrayList(key);
+    }
+
+    public String getString(@Nullable String key) {
+        return getString(key, "");
+    }
+
+    public String getString(@Nullable String key, String value) {
+        return TextUtils.isEmpty(mBundle.getString(key)) ? value : mBundle.getString(key);
     }
 
     /**

@@ -11,14 +11,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.Nullable;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.ActionMenuView;
-import android.support.v7.widget.AppCompatImageButton;
-import android.support.v7.widget.AppCompatTextView;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -28,10 +20,18 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.lang.reflect.Field;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.ActionMenuView;
+import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.appcompat.widget.AppCompatTextView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.ViewCompat;
 
-import static android.support.v7.appcompat.R.attr.toolbarNavigationButtonStyle;
-import static android.support.v7.appcompat.R.attr.toolbarStyle;
+import com.lixh.R;
+
+import java.lang.reflect.Field;
 
 public class UToolBar extends Toolbar {
 
@@ -65,24 +65,24 @@ public class UToolBar extends Toolbar {
         this.gravity = gravity;
     }
 
-    int gravity = Gravity.CENTER_HORIZONTAL;
+    int gravity = Gravity.LEFT;
 
     public UToolBar(Context context) {
-        this(context, null);
+        this (context, null);
     }
 
     public UToolBar(Context context, AttributeSet attrs) {
-        this(context, attrs, toolbarStyle);
+        this (context, attrs, R.attr.toolbarStyle);
 
     }
 
     public void setLogo(@DrawableRes int resId) {
-        super.setLogo(resId);
+        super.setLogo (resId);
 
         try {
-            mLogoView = (ImageView) get("mLogoView");
+            mLogoView = (ImageView) get ("mLogoView");
         } catch (NoSuchFieldException e) {
-            e.printStackTrace();
+            e.printStackTrace ( );
         }
 
     }
@@ -95,7 +95,7 @@ public class UToolBar extends Toolbar {
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void setElevation(float elevation) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            super.setElevation(elevation);
+            super.setElevation (elevation);
         }
 
     }
@@ -107,37 +107,37 @@ public class UToolBar extends Toolbar {
      * @return
      */
     public UToolBar setDisplayShowTitleEnabled(boolean isEnabled) {
-        ((AppCompatActivity) getContext()).setSupportActionBar(this);
-        (((AppCompatActivity) getContext())).getSupportActionBar().setDisplayShowTitleEnabled(isEnabled);
+        ((AppCompatActivity) getContext ( )).setSupportActionBar (this);
+        (((AppCompatActivity) getContext ( ))).getSupportActionBar ( ).setDisplayShowTitleEnabled (isEnabled);
         return this;
     }
 
     public int getStatusBarHeight() {
-        double statusBarHeight = Math.ceil(25 * getContext().getResources().getDisplayMetrics().density);
+        double statusBarHeight = Math.ceil (25 * getContext ( ).getResources ( ).getDisplayMetrics ( ).density);
         return (int) statusBarHeight;
     }
 
     public UToolBar setCustomView(View view, LayoutParams layoutParams) {
         //显示自定义视图
-        ((AppCompatActivity) getContext()).getSupportActionBar().setDisplayShowCustomEnabled(true);
-        ((AppCompatActivity) getContext()).getSupportActionBar().setCustomView(view, layoutParams);
+        ((AppCompatActivity) getContext ( )).getSupportActionBar ( ).setDisplayShowCustomEnabled (true);
+        ((AppCompatActivity) getContext ( )).getSupportActionBar ( ).setCustomView (view, layoutParams);
         return this;
     }
 
     public View getCustomView() {
-        ((AppCompatActivity) getContext()).getSupportActionBar().setDisplayShowCustomEnabled(true);
-        return ((AppCompatActivity) getContext()).getSupportActionBar().getCustomView();
+        ((AppCompatActivity) getContext ( )).getSupportActionBar ( ).setDisplayShowCustomEnabled (true);
+        return ((AppCompatActivity) getContext ( )).getSupportActionBar ( ).getCustomView ( );
     }
 
     public UToolBar setCustomView(View view) {
-        ((AppCompatActivity) getContext()).getSupportActionBar().setDisplayShowCustomEnabled(true);
-        ((AppCompatActivity) getContext()).getSupportActionBar().setCustomView(view);
+        ((AppCompatActivity) getContext ( )).getSupportActionBar ( ).setDisplayShowCustomEnabled (true);
+        ((AppCompatActivity) getContext ( )).getSupportActionBar ( ).setCustomView (view);
         return this;
     }
 
     public UToolBar setCustomView(int resId) {
-        ((AppCompatActivity) getContext()).getSupportActionBar().setDisplayShowCustomEnabled(true);
-        ((AppCompatActivity) getContext()).getSupportActionBar().setCustomView(resId);
+        ((AppCompatActivity) getContext ( )).getSupportActionBar ( ).setDisplayShowCustomEnabled (true);
+        ((AppCompatActivity) getContext ( )).getSupportActionBar ( ).setCustomView (resId);
         return this;
     }
 
@@ -149,11 +149,11 @@ public class UToolBar extends Toolbar {
      * @return
      */
     public UToolBar setDisplayHomeAsUpEnabled(boolean isShow) {
-        ((AppCompatActivity) getContext()).getSupportActionBar().setDisplayHomeAsUpEnabled(isShow);
-        setNavigationOnClickListener(new OnClickListener() {
+        ((AppCompatActivity) getContext ( )).getSupportActionBar ( ).setDisplayHomeAsUpEnabled (isShow);
+        setNavigationOnClickListener (new OnClickListener ( ) {
             @Override
             public void onClick(View v) {
-                ((AppCompatActivity) getContext()).onBackPressed();
+                ((AppCompatActivity) getContext ( )).onBackPressed ( );
             }
         });
         return this;
@@ -166,16 +166,16 @@ public class UToolBar extends Toolbar {
      * @param onClickListener
      */
     public void setNavigationIcon(int id, View.OnClickListener onClickListener) {
-        setNavigationIcon(id);
-        setNavigationOnClickListener(onClickListener);
+        setNavigationIcon (id);
+        setNavigationOnClickListener (onClickListener);
     }
 
     public UToolBar(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        menu = new ActionMenuView(getContext());
-        menu.setLayoutParams(getLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.RIGHT));
-        ViewCompat.setLayoutDirection(menu, ViewCompat.LAYOUT_DIRECTION_RTL);
-        set("mButtonGravity", Gravity.CENTER_VERTICAL);
+        super (context, attrs, defStyleAttr);
+        menu = new ActionMenuView (getContext ( ));
+        menu.setLayoutParams (getLayoutParams (ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.RIGHT));
+        ViewCompat.setLayoutDirection (menu, ViewCompat.LAYOUT_DIRECTION_RTL);
+        set ("mButtonGravity", Gravity.CENTER_VERTICAL);
 
     }
 
@@ -186,56 +186,56 @@ public class UToolBar extends Toolbar {
      * @return
      */
     public Toolbar.LayoutParams getLayoutParams(int width, int height, int gravity) {
-        return new LayoutParams(width, height, gravity);
+        return new LayoutParams (width, height, gravity);
 
     }
 
     public void setHasBar() {
-        setMinimumHeight(getSuggestedMinimumHeight() + getStatusBarHeight());
-        setPadding(0, getStatusBarHeight(), 0, 0);
+        setMinimumHeight (getSuggestedMinimumHeight ( ) + getStatusBarHeight ( ));
+        setPadding (0, getStatusBarHeight ( ), 0, 0);
     }
 
     @Override
     public void setTitle(CharSequence title) {
-        super.setTitle(title);
-        mTitleTextView = getTitleValue(title, "mTitleTextView");
+        super.setTitle (title);
+        mTitleTextView = getTitleValue (title, "mTitleTextView");
     }
 
     @Override
     public void setSubtitle(CharSequence subtitle) {
-        super.setSubtitle(subtitle);
-        mSubtitleTextView = getTitleValue(subtitle, "mSubtitleTextView");
+        super.setSubtitle (subtitle);
+        mSubtitleTextView = getTitleValue (subtitle, "mSubtitleTextView");
     }
 
     @Override
     public void setNavigationIcon(@Nullable Drawable icon) {
-        super.setNavigationIcon(icon);
+        super.setNavigationIcon (icon);
     }
 
     public void setNavigationIcon(@DrawableRes int resId, String backStr) {
         try {
-            mNavButtonView = (ImageButton) get("mNavButtonView");
-            Bitmap bitmap = drawTextToBitmap(resId, backStr);
-            mNavButtonView.setImageBitmap(bitmap);
+            mNavButtonView = (ImageButton) get ("mNavButtonView");
+            Bitmap bitmap = drawTextToBitmap (resId, backStr);
+            mNavButtonView.setImageBitmap (bitmap);
         } catch (NoSuchFieldException e) {
-            e.printStackTrace();
+            e.printStackTrace ( );
         }
     }
 
     public Bitmap drawTextToBitmap(@DrawableRes int icon, String text) {
-        Resources resources = getResources();
-        float scale = resources.getDisplayMetrics().density;
-        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setColor(Color.WHITE);
-        paint.setTextSize((int) (14 * scale));
+        Resources resources = getResources ( );
+        float scale = resources.getDisplayMetrics ( ).density;
+        Paint paint = new Paint (Paint.ANTI_ALIAS_FLAG);
+        paint.setColor (Color.WHITE);
+        paint.setTextSize ((int) (14 * scale));
         Bitmap bitmap =
-                BitmapFactory.decodeResource(resources, icon);
-        Rect bounds = new Rect();
-        paint.getTextBounds(text, 0, text.length(), bounds);
-        Bitmap canvasBmp = Bitmap.createBitmap(bitmap.getWidth() + bounds.width(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(canvasBmp);
-        canvas.drawBitmap(bitmap, 0, 0, paint);
-        canvas.drawText(text, bitmap.getWidth(), (bitmap.getHeight() + bounds.height()) / 2, paint);
+                BitmapFactory.decodeResource (resources, icon);
+        Rect bounds = new Rect ( );
+        paint.getTextBounds (text, 0, text.length ( ), bounds);
+        Bitmap canvasBmp = Bitmap.createBitmap (bitmap.getWidth ( ) + bounds.width ( ), bitmap.getHeight ( ), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas (canvasBmp);
+        canvas.drawBitmap (bitmap, 0, 0, paint);
+        canvas.drawText (text, bitmap.getWidth ( ), (bitmap.getHeight ( ) + bounds.height ( )) / 2, paint);
         return canvasBmp;
     }
 
@@ -243,27 +243,27 @@ public class UToolBar extends Toolbar {
     public TextView getTitleValue(CharSequence tittle, String fieldName) {
         TextView childTitle = null;
         try {
-            childTitle = (TextView) get(fieldName);
+            childTitle = (TextView) get (fieldName);
 
         } catch (NoSuchFieldException e) {
-            e.printStackTrace();
+            e.printStackTrace ( );
         }
         return childTitle;
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        super.onMeasure (widthMeasureSpec, heightMeasureSpec);
 
     }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        super.onLayout(changed, l, t, r, b);
+        super.onLayout (changed, l, t, r, b);
         if (gravity == Gravity.CENTER_HORIZONTAL) {
-            setCenter(mTitleTextView);
-            setCenter(mSubtitleTextView);
-            setLogoViewCenter(mLogoView);
+            setCenter (mTitleTextView);
+            setCenter (mSubtitleTextView);
+            setLogoViewCenter (mLogoView);
         }
     }
 
@@ -273,9 +273,9 @@ public class UToolBar extends Toolbar {
      * @param view
      */
     public void addActionMenu(View view) {
-        removeView(menu);
-        menu.addView(view);
-        addView(menu);
+        removeView (menu);
+        menu.addView (view);
+        addView (menu);
     }
 
     /**
@@ -284,11 +284,11 @@ public class UToolBar extends Toolbar {
      * @param view
      */
     public void addActionMenu(View... view) {
-        removeView(menu);
+        removeView (menu);
         for (View v : view) {
-            menu.addView(v);
+            menu.addView (v);
         }
-        addView(menu);
+        addView (menu);
     }
 
     /**
@@ -298,7 +298,7 @@ public class UToolBar extends Toolbar {
      * @param id    资源id
      */
     public void setRightImage(int resId, int id) {
-        createRightImage(resId, null, 0);
+        createRightImage (resId, null, 0);
     }
 
     /**
@@ -307,14 +307,14 @@ public class UToolBar extends Toolbar {
      * @param resId
      */
     public void setRightImage(int resId, View.OnClickListener clickListener) {
-        createRightImage(resId, clickListener, 0);
+        createRightImage (resId, clickListener, 0);
     }
 
     /**
      * @param resId 默认id=0
      */
     public void setRightImage(int resId) {
-        createRightImage(resId, null, 0);
+        createRightImage (resId, null, 0);
     }
 
     /**
@@ -324,7 +324,7 @@ public class UToolBar extends Toolbar {
      * @param clickListener 监听
      */
     public void setRightText(String str, View.OnClickListener clickListener) {
-        createRightText(str, clickListener, 1);
+        createRightText (str, clickListener, 1);
     }
 
     /**
@@ -334,7 +334,7 @@ public class UToolBar extends Toolbar {
      * @param id  资源id
      */
     public void setRightText(String str, int id) {
-        createRightText(str, null, id);
+        createRightText (str, null, id);
     }
 
     /**
@@ -343,36 +343,37 @@ public class UToolBar extends Toolbar {
      * @param str 默认id=1
      */
     public void setRightText(String str) {
-        createRightText(str, null, 1);
+        createRightText (str, null, 1);
     }
 
     private void createRightImage(int resId, View.OnClickListener clickListener, int id) {
         if (resId == 0) return;
         if (mRightIcon == null) {
-            mRightIcon = new AppCompatImageButton(getContext(), null,
-                    toolbarNavigationButtonStyle);
-            mRightIcon.setId(id);
-            mRightIcon.setImageResource(resId);
-            mRightIcon.setOnClickListener(clickListener);
-            menu.addView(mRightIcon);
-            removeView(menu);
-            addView(menu);
+            mRightIcon = new AppCompatImageButton (getContext ( ), null,
+                    R.attr.toolbarNavigationButtonStyle);
+            mRightIcon.setId (id);
+            mRightIcon.setImageResource (resId);
+            mRightIcon.setOnClickListener (clickListener);
+            menu.addView (mRightIcon);
+            removeView (menu);
+            addView (menu);
         }
     }
 
     private void createRightText(String str, View.OnClickListener clickListener, int id) {
-        if (!TextUtils.isEmpty(str)) {
+        if (!TextUtils.isEmpty (str)) {
             if (mRightTextView == null) {
-                final Context context = getContext();
-                mRightTextView = new AppCompatTextView(context);
-                mRightTextView.setSingleLine();
-                mRightTextView.setEllipsize(TextUtils.TruncateAt.END);
-                mRightTextView.setText(str);
-                mRightTextView.setPadding(0,0,16,0);
-                mRightTextView.setOnClickListener(clickListener);
-                menu.addView(mRightTextView);
-                removeView(menu);
-                addView(menu);
+                final Context context = getContext ( );
+                mRightTextView = new AppCompatTextView (context);
+                mRightTextView.setSingleLine ( );
+                mRightTextView.setEllipsize (TextUtils.TruncateAt.END);
+                mRightTextView.setText (str);
+                mRightTextView.setId (id);
+                mRightTextView.setPadding (0, 0, 16, 0);
+                mRightTextView.setOnClickListener (clickListener);
+                menu.addView (mRightTextView);
+                removeView (menu);
+                addView (menu);
             }
 
         }
@@ -381,72 +382,72 @@ public class UToolBar extends Toolbar {
 
     public void setLogoViewCenter(ImageView logoViewCenter) {
 
-        int deviceWidth = getMeasuredWidth();
+        int deviceWidth = getMeasuredWidth ( );
         float tx = deviceWidth;
         if (logoViewCenter == null) {
             return;
         }
-        tx = (tx - logoViewCenter.getMeasuredWidth()) / 2.0f;
+        tx = (tx - logoViewCenter.getMeasuredWidth ( )) / 2.0f;
         if (mTitleTextView != null) {
-            Paint p = mTitleTextView.getPaint();
-            float textWidth = p.measureText(mTitleTextView.getText().toString());
+            Paint p = mTitleTextView.getPaint ( );
+            float textWidth = p.measureText (mTitleTextView.getText ( ).toString ( ));
             if (textWidth != 0) {
-                tx = (deviceWidth - textWidth) / 2.0f - mTitleTextView.getLeft();
+                tx = (deviceWidth - textWidth) / 2.0f - mTitleTextView.getLeft ( );
             }
         }
         if (mSubtitleTextView != null) {
-            Paint p = mSubtitleTextView.getPaint();
-            float textWidth = p.measureText(mSubtitleTextView.getText().toString());
+            Paint p = mSubtitleTextView.getPaint ( );
+            float textWidth = p.measureText (mSubtitleTextView.getText ( ).toString ( ));
             if (textWidth != 0) {
-                tx = Math.min(tx, (deviceWidth - textWidth) / 2.0f - mSubtitleTextView.getLeft());
+                tx = Math.min (tx, (deviceWidth - textWidth) / 2.0f - mSubtitleTextView.getLeft ( ));
             }
         }
 
-        logoViewCenter.setTranslationX(tx);
+        logoViewCenter.setTranslationX (tx);
     }
 
     public void setCenter(TextView childTitle) {
         if (childTitle == null) {
             return;
         }
-        int deviceWidth = getMeasuredWidth();
-        Paint p = childTitle.getPaint();
-        float textWidth = p.measureText(childTitle.getText().toString());
-        float tx = (deviceWidth - textWidth) / 2.0f - childTitle.getLeft();
-        childTitle.setTranslationX(tx);
+        int deviceWidth = getMeasuredWidth ( );
+        Paint p = childTitle.getPaint ( );
+        float textWidth = p.measureText (childTitle.getText ( ).toString ( ));
+        float tx = (deviceWidth - textWidth) / 2.0f - childTitle.getLeft ( );
+        childTitle.setTranslationX (tx);
     }
 
     public void set(String variableName, Object value) {
-        Class targetClass = getClass().getSuperclass();
+        Class targetClass = getClass ( ).getSuperclass ( );
         try {
-            Field field = targetClass.getDeclaredField(variableName);
-            field.setAccessible(true);
-            field.set(this, value);
+            Field field = targetClass.getDeclaredField (variableName);
+            field.setAccessible (true);
+            field.set (this, value);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            e.printStackTrace ( );
         } catch (NoSuchFieldException e) {
-            e.printStackTrace();
+            e.printStackTrace ( );
         }
     }
 
     public Object get(String variableName) throws NoSuchFieldException {
-        Class targetClass = getClass().getSuperclass();
-        Toolbar superInst = (Toolbar) targetClass.cast(this);
+        Class targetClass = getClass ( ).getSuperclass ( );
+        Toolbar superInst = (Toolbar) targetClass.cast (this);
         Field field;
         try {
-            field = targetClass.getDeclaredField(variableName);
+            field = targetClass.getDeclaredField (variableName);
             //修改访问限制
-            field.setAccessible(true);
-            return field.get(superInst);
+            field.setAccessible (true);
+            return field.get (superInst);
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace ( );
             return null;
         }
     }
 
     public void setOnMenuItemClickListener(OnClickListener onClickListener) {
-        for (int i = 0; i < menu.getChildCount(); i++) {
-            menu.getChildAt(i).setOnClickListener(onClickListener);
+        for (int i = 0; i < menu.getChildCount ( ); i++) {
+            menu.getChildAt (i).setOnClickListener (onClickListener);
         }
     }
 }

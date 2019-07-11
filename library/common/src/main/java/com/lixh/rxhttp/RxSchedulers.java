@@ -1,8 +1,8 @@
 package com.lixh.rxhttp;
 
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import io.reactivex.ObservableTransformer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * RxJava调度管理
@@ -10,13 +10,8 @@ import rx.schedulers.Schedulers;
  * on 2016.08.14:50
  */
 public class RxSchedulers {
-    public static <T> Observable.Transformer<T, T> io_main() {
-        return new Observable.Transformer<T, T>() {
-            @Override
-            public Observable<T> call(Observable<T> observable) {
-                return observable.subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread());
-            }
-        };
+    public static <T> ObservableTransformer<T, T> io_main() {
+        return upstream -> upstream.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 }
