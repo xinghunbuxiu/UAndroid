@@ -1,20 +1,36 @@
 ext {
-    android = [
-            compileSdkVersion: 25,
-            buildToolsVersion: "25.0.2",
-            minSdkVersion    : 15,
-            targetSdkVersion : 25,
+    supportLibrary = '28.0.0'
+    versions = [
+            releaseVersionName: '1.0',
+            buildToolsVersion: "28.0.3",
+            releaseVersionCode: 1,
+            minSdkVersion     : 19,
+            compileSdkVersion : 28,
+            targetSdkVersion  : 28,
     ]
     dependencies = [
-            appcompatV7  : 'com.android.support:appcompat-v7:25.+',
-            design       : 'com.android.support:design:25.+',
-            spinkit      : 'com.github.ybq:Android-SpinKit:1.1.0',
-            recycle      : 'com.android.support:recyclerview-v7:25.+',
-            annotations  : 'com.android.support:support-annotations:25.+',
-            compat       : 'com.android.support:support-compat:25.+',
-            rxpermissions: 'com.tbruyelle.rxpermissions:rxpermissions:0.7.0@aar',
-            butterknife  : 'com.jakewharton:butterknife:7.0.1',
-            fastJson     : 'com.alibaba:fastjson:1.1.68.android',
-
+            constraintLayout: 'androidx.constraintlayout:constraintlayout:1.1.3',
+            appcompatV7     : 'androidx.appcompat:appcompat:1.0.0',
+            appcompatV4     : 'androidx.legacy:legacy-support-v4:1.0.0',
+            design          : 'com.google.android.material:material:1.0.0',
+            recycle         : 'androidx.recyclerview:recyclerview:1.0.0',
+            annotations     : "com.android.support:support-annotations:${supportLibrary}",
+            compat          : "com.android.support:support-compat:${supportLibrary}",
+            rxpermissions   : 'com.yanzhenjie:permission:2.0.0-rc12',
+            butterknife     : 'com.jakewharton:butterknife:10.1.0',
+            fastJson        : 'com.alibaba:fastjson:1.1.68.android',
+            multidex        : 'androidx.multidex:multidex:2.0.0',
+            okhttp          : 'com.squareup.okhttp3:okhttp:3.10.0',
+            okhttpLog       : 'com.squareup.okhttp3:logging-interceptor:3.1.0',
+            retrofit2gson   : 'com.squareup.retrofit2:converter-gson:2.2.0',
+            retrofit2Adapter: 'com.squareup.retrofit2:adapter-rxjava2:latest.integration',
+            glide           : 'com.github.bumptech.glide:glide:3.6.1',
+            rxandroid       : 'io.reactivex.rxjava2:rxandroid:2.0.1',
+            zxing           : 'com.google.zxing:core:3.2.1',
+            zxing_android   : 'com.journeyapps:zxing-android-embedded:3.3.0'
     ]
+    processor = [
+            butterknife: 'com.jakewharton:butterknife-compiler:10.1.0'
+    ]
+
 }
