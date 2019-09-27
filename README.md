@@ -276,50 +276,35 @@ public class TabsActivity extends BaseActivity<TabPresenter> {
 ------------------------------------
 Page 列表性的封装 支持 emptyView
 
-public class SecondFragment extends BaseFragment {
-    Page.Builder builder;
-    List<Integer> list = new ArrayList<>();
-    public SecondFragment() {
-
-    }
+public class MarketFragment extends BaseFragment<MarketPresenter> {
+    PageView page;
 
     @Override
     public void initTitle(UToolBar toolBar) {
-        toolBar.setTitle("recycle_view");
+        toolBar.setVisibility(View.GONE);
     }
 
     @Override
     protected void init(Bundle savedInstanceState) {
-        builder = new Page.Builder<Integer>(activity) {
-            @Override
-            public void onBindViewData(BaseViewHolder viewHolder, int position, Integer item) {
-                super.onBindViewData(viewHolder, position, item);
-            }
-
-            @Override
-            public void onItemClick(View view, int position, Integer data) {
-            }
-        }.setAutoLoadMore(true).setRefresh(true).setDivideHeight(R.dimen.space_7);
-        builder.setOnLoadingListener(onLoadingListener);
-        builder.setRVAdapter(R.layout.item_ciew, list);
-        layout.setContentView(builder.Build(Page.PageType.List).getRootView());
+        initVLayout();
+        page.onRefresh();
     }
 
-    Page.OnLoadingListener onLoadingListener = new Page.OnLoadingListener() {
-        @Override
-        public void load(int page, final Page.OnLoadFinish onLoadFinish) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
+    PageView.OnLoadingListener onLoadingListener = (page, onLoadFinish) -> mPresenter.getScriptList();
 
-                    for (int i = 0; i < 8; i++) {
-                        list.add(R.mipmap.ic_launcher);
-                    }
-                    onLoadFinish.finish(list, LoadingTip.LoadStatus.FINISH);
-                }
-            }, 100);
-        }
-    };
+    private void initVLayout() {
+        page = PageView.with(activity)
+                .setPullLoadMore(true)
+                .setRefresh(true)
+                .setDivideHeight(R.dimen.space_1)
+                .setLoadTip(tip)
+                .setOnLoadingListener(onLoadingListener)
+                .setAutoRefresh(false)
+                .setMaxRecycledViews(0, 20)
+                .build();
+        layout.setContentView(page.getRootView());
+    }
+
 
     @Override
     public int getLayoutId() {
@@ -327,7 +312,6 @@ public class SecondFragment extends BaseFragment {
     }
 
 
-}
 增加第一册进入 欢迎页面
 public class WelcomeActivity extends LaunchActivity {
 
